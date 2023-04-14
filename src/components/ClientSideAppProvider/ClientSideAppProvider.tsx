@@ -25,7 +25,7 @@ export const ClientSideAppProvider: React.FC<{ children: React.ReactNode }> = ({
         token: {
           colorPrimary: "#16171B",
           colorPrimaryBg: "#fff",
-          // fontFamily: "var(--font-family)",
+          fontFamily: "var(--font-family)",
         },
       }}
     >
