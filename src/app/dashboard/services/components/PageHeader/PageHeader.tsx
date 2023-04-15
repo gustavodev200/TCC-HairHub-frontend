@@ -3,8 +3,41 @@
 import styled from "styled-components";
 import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
 import { Input, Select, Button } from "antd";
+import { useCallback, useState } from "react";
+import { ModalService } from "../ModalService";
+import { GenericStatus } from "@/@types/genericStatus";
+import debounce from "lodash.debounce";
 
-export const PageHeader = () => {
+interface PageHeaderProps {
+  statusFilter: GenericStatus | "all";
+  onChangeStatusFilter: (status: GenericStatus | "all") => void;
+  onChangeSearch: (search: string) => void;
+}
+
+export const PageHeader: React.FC<PageHeaderProps> = ({
+  statusFilter,
+  onChangeStatusFilter,
+  onChangeSearch,
+}) => {
+  const debouncedSearch = useCallback(
+    debounce((value: string) => {
+      if (value === "" || value.length >= 3) {
+        onChangeSearch(value);
+      }
+    }, 500),
+    []
+  );
+  const [open, setOpen] = useState(false);
+
+  const showModal = () => {
+    setOpen(true);
+  };
+
+  const handleCancel = () => {
+    console.log("Clicked cancel button");
+    setOpen(false);
+  };
+
   return (
     <HeaderContainer>
       <HeaderTitle>
@@ -16,16 +49,19 @@ export const PageHeader = () => {
           size="large"
           placeholder="Pesquisar serviços"
           prefix={<SearchOutlined />}
+          onChange={(e) => debouncedSearch(e.target.value)}
         />
 
         <div>
           <SelectContainer
             size="large"
             defaultValue="todos"
+            value={statusFilter}
+            onChange={(value) => onChangeStatusFilter(value as GenericStatus)}
             options={[
-              { value: "todos", label: "Todos" },
-              { value: "active", label: "Ativos" },
-              { value: "inactive", label: "Inativos" },
+              { value: "all", label: "Todos" },
+              { value: GenericStatus.active, label: "Ativos" },
+              { value: GenericStatus.inactive, label: "Inativos" },
             ]}
           />
         </div>
@@ -35,6 +71,12 @@ export const PageHeader = () => {
             type="primary"
             icon={<PlusOutlined />}
             size="large"
+            onClick={showModal}
+          />
+          <ModalService
+            open={open}
+            handleCancel={handleCancel}
+            title="ADICIONAR SERVIÇO"
           />
         </div>
       </HeaderActions>

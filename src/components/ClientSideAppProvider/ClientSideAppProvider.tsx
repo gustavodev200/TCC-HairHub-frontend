@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { ConfigProvider } from "antd";
 import { useServerInsertedHTML } from "next/navigation";
+import pt_BR from "antd/locale/pt_BR";
 
 import { ServerStyleSheet, StyleSheetManager } from "styled-components";
 
@@ -25,11 +26,12 @@ export const ClientSideAppProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <ConfigProvider
+      locale={pt_BR}
       theme={{
         token: {
+          fontFamily: "var(--font-family)",
           colorPrimary: "#16171B",
           colorPrimaryBg: "#fff",
-          fontFamily: "var(--font-family)",
         },
       }}
     >

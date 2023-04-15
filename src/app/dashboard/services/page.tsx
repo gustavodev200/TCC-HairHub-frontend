@@ -25,7 +25,11 @@ const Page: React.FC = () => {
   });
   return (
     <div>
-      <PageHeader />
+      <PageHeader
+        statusFilter={statusFilter}
+        onChangeSearch={(value) => setSearch(value)}
+        onChangeStatusFilter={(value) => setStatusFilter(value)}
+      />
       <ServicesTable services={data?.data ?? []} />
       {data && (
         <div

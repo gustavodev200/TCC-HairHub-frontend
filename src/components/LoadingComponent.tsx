@@ -1,4 +1,4 @@
-import "@/styles/GlobalStyle.css";
+import "@/styles/Loading.css";
 import Image from "next/image";
 
 export const LoadingComponent = () => {
@@ -13,7 +13,7 @@ export const LoadingComponent = () => {
       />
       <span className="loader"></span>
       <span className="loading_setence">
-        Sempre rode o servidor! - João Victor 2023
+        Pequenos passos hoje, grandes conquistas amanhã!
       </span>
     </div>
   );

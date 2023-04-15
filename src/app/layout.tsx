@@ -3,11 +3,18 @@ import { ClientSideAppProvider } from "@/components/ClientSideAppProvider/Client
 import "@/styles/GlobalStyle.css";
 import { Poppins } from "next/font/google";
 
-const poppinsFont = Poppins({
-  weight: "500",
-  subsets: ["latin"],
-  variable: "--poppinsFont",
+import localFont from "next/font/local";
+
+const poppinsFont = localFont({
+  src: "../../public/fonts/Poppins-Regular.ttf",
+  display: "swap",
 });
+
+// const poppinsFont = Poppins({
+//   weight: "500",
+//   subsets: ["latin"],
+//   variable: "--poppinsFont",
+// });
 
 export const metadata = {
   title: {
