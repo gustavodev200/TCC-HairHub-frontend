@@ -39,7 +39,7 @@ const LayoutDashboard = ({ children }: { children: ReactNode }) => {
   const { push } = useRouter();
 
   return (
-    <Layout style={{ minHeight: "100vh" }}>
+    <Layout style={{ minHeight: "100vh", minWidth: "100%", position: "fixed" }}>
       <SideBarWrapper
         trigger={null}
         collapsible
