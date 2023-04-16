@@ -1,13 +1,17 @@
 "use client";
 
-import { IService } from "@/@types/service";
+import { ErrorMessages } from "@/@types/messages";
+import { IService, IServiceInputDTO } from "@/@types/service";
+import { serviceApi } from "@/services/service";
 import {
   UploadOutlined,
-  DollarCircleOutlined,
   FieldTimeOutlined,
   ScissorOutlined,
 } from "@ant-design/icons";
-import { Button, Form, Modal, Upload, Input } from "antd";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Button, Form, Modal, Upload, Input, InputNumber } from "antd";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 
 interface ModalProps {
@@ -22,24 +26,67 @@ export const ModalService: React.FC<ModalProps> = ({
   onClose,
 }) => {
   const [form] = Form.useForm();
+  const queryClient = useQueryClient();
 
   const { resetFields, setFieldsValue, validateFields, getFieldsValue } = form;
 
-  const normFile = (e: any) => {
-    if (Array.isArray(e)) {
-      return e;
-    }
-    return e?.fileList;
-  };
+  const createService = useMutation({
+    mutationFn: (data: IServiceInputDTO) => serviceApi.createService(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["services"]);
+    },
+  });
+
+  const editService = useMutation({
+    mutationFn: (data: IService) => serviceApi.editService(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["services"]);
+    },
+  });
 
   const handleCancel = () => {
-    // if (createDiscipline.isLoading || editDiscipline.isLoading) {
-    //   return;
-    // }
+    if (createService.isLoading || editService.isLoading) {
+      return;
+    }
 
-    // resetFields();
+    resetFields();
     onClose();
   };
+
+  const handleSubmit = () => {
+    validateFields()
+      .then((data) => {
+        if (serviceToEdit) {
+          editService
+            .mutateAsync({ ...serviceToEdit, ...data })
+            .then(() => {
+              handleCancel();
+            })
+            .catch(() => {});
+        } else {
+          createService
+            .mutateAsync(data)
+            .then(() => {
+              handleCancel();
+            })
+            .catch(() => {});
+        }
+      })
+      .catch(() => {
+        toast.error(`Ops, ${ErrorMessages.MSGE01}`);
+      });
+  };
+
+  useEffect(() => {
+    if (serviceToEdit) {
+      setFieldsValue({
+        name: serviceToEdit.name,
+        image: serviceToEdit.image,
+        price: serviceToEdit.price,
+        time: serviceToEdit.time,
+      });
+    }
+  }, [serviceToEdit]);
 
   return (
     <ModalWrapper
@@ -57,7 +104,13 @@ export const ModalService: React.FC<ModalProps> = ({
           Cancelar
         </ButtonModal>,
 
-        <ButtonModal key="save" type="primary" backgroundcolor="#6cb66f">
+        <ButtonModal
+          key="save"
+          type="primary"
+          backgroundcolor="#6cb66f"
+          loading={createService.isLoading || editService.isLoading}
+          onClick={handleSubmit}
+        >
           Salvar
         </ButtonModal>,
       ]}
@@ -66,7 +119,7 @@ export const ModalService: React.FC<ModalProps> = ({
         <Form
           layout="vertical"
           size="middle"
-          // disabled={createDiscipline.isLoading || editDiscipline.isLoading}
+          disabled={createService.isLoading || editService.isLoading}
           form={form}
           initialValues={{
             name: "",
@@ -76,39 +129,59 @@ export const ModalService: React.FC<ModalProps> = ({
         >
           <Form.Item
             required
-            name="upload"
-            valuePropName="fileList"
-            getValueFromEvent={normFile}
+            label="Image"
+            name="image"
+            valuePropName="image"
+            getValueFromEvent={(e) => e?.fileList}
           >
-            <Upload name="logo" listType="picture">
+            <Upload name="image" maxCount={1}>
               <Button icon={<UploadOutlined />}>Selecione uma imagem</Button>
             </Upload>
+          </Form.Item>
 
-            <Form.Item
-              required
-              label="Nome"
-              name="name"
-              rules={[
-                { required: true, message: "" },
-                { type: "string", min: 3, message: "" },
-                { type: "string", max: 120, message: "" },
-              ]}
-            >
-              <InputWrapper
-                size="large"
-                prefix={<ScissorOutlined />}
-                placeholder="Serviço"
-              />
-            </Form.Item>
-            <InputWrapper
+          <Form.Item
+            required
+            label="Nome"
+            name="name"
+            rules={[{ required: true, message: "Campo Obrigatório!" }]}
+          >
+            <Input
               size="large"
-              prefix={<DollarCircleOutlined className="site-form-item-icon" />}
-              placeholder="Preço"
+              prefix={<ScissorOutlined />}
+              placeholder="Serviço"
             />
-            <InputWrapper
+          </Form.Item>
+
+          <Form.Item
+            required
+            label="Preço"
+            name="price"
+            rules={[{ required: true, message: "Campo Obrigatório!" }]}
+          >
+            <InputNumber
               size="large"
+              min={1}
+              max={999}
+              addonBefore="R$"
+              placeholder="Preço"
+              style={{ width: "100%" }}
+            />
+          </Form.Item>
+
+          <Form.Item
+            required
+            label="Tempo"
+            name="time"
+            rules={[{ required: true, message: "Campo Obrigatório!" }]}
+          >
+            <InputNumber
+              size="large"
+              min={1}
+              max={999}
+              addonAfter="Min"
               prefix={<FieldTimeOutlined className="site-form-item-icon" />}
               placeholder="Tempo"
+              style={{ width: "100%" }}
             />
           </Form.Item>
         </Form>
@@ -119,10 +192,6 @@ export const ModalService: React.FC<ModalProps> = ({
 
 const FormContainer = styled.div`
   margin: 25px 0;
-`;
-
-const InputWrapper = styled(Input)`
-  margin-top: 15px;
 `;
 
 const ModalWrapper = styled(Modal)`

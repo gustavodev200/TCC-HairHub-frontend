@@ -5,6 +5,7 @@ import {
   PaginatedRequestParams,
 } from "@/@types/paginatedData";
 import Api from "./api";
+import { SuccessMessages } from "@/@types/messages";
 
 const baseUrl = "/services";
 
@@ -21,12 +22,14 @@ async function changeStatus(
   return Api.patch(`${baseUrl}/${id}`, { status }).then((res) => res.data);
 }
 
-async function createService(params: IServiceInputDTO): Promise<IService> {
-  return Api.post(`${baseUrl}`, { params }).then((res) => res.data);
+async function createService(data: IServiceInputDTO): Promise<IService> {
+  return Api.post(`${baseUrl}`, data, {
+    headers: { "success-message": SuccessMessages.MSGS03 },
+  }).then((res) => res.data);
 }
 
-async function editService(id: string): Promise<IService> {
-  return Api.put(`${baseUrl}/${id}`, { id }).then((res) => res.data);
+async function editService(data: IService): Promise<IService> {
+  return Api.put(`${baseUrl}/${data.id}`, data).then((res) => res.data);
 }
 
 export const serviceApi = {
