@@ -1,4 +1,4 @@
-import { IService } from "@/@types/service";
+import { IService, IServiceInputDTO } from "@/@types/service";
 import { GenericStatus } from "@/@types/genericStatus";
 import {
   PaginatedDataResponse,
@@ -21,4 +21,17 @@ async function changeStatus(
   return Api.patch(`${baseUrl}/${id}`, { status }).then((res) => res.data);
 }
 
-export const serviceApi = { getPaginated, changeStatus };
+async function createService(params: IServiceInputDTO): Promise<IService> {
+  return Api.post(`${baseUrl}`, { params }).then((res) => res.data);
+}
+
+async function editService(id: string): Promise<IService> {
+  return Api.put(`${baseUrl}/${id}`, { id }).then((res) => res.data);
+}
+
+export const serviceApi = {
+  getPaginated,
+  changeStatus,
+  createService,
+  editService,
+};

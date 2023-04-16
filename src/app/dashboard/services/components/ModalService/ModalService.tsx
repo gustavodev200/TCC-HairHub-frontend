@@ -1,3 +1,6 @@
+"use client";
+
+import { IService } from "@/@types/service";
 import {
   UploadOutlined,
   DollarCircleOutlined,
@@ -8,16 +11,20 @@ import { Button, Form, Modal, Upload, Input } from "antd";
 import styled from "styled-components";
 
 interface ModalProps {
-  title: string;
+  serviceToEdit?: IService;
   open: boolean;
-  handleCancel: () => void;
+  onClose: () => void;
 }
 
 export const ModalService: React.FC<ModalProps> = ({
-  title,
+  serviceToEdit,
   open,
-  handleCancel,
+  onClose,
 }) => {
+  const [form] = Form.useForm();
+
+  const { resetFields, setFieldsValue, validateFields, getFieldsValue } = form;
+
   const normFile = (e: any) => {
     if (Array.isArray(e)) {
       return e;
@@ -25,10 +32,19 @@ export const ModalService: React.FC<ModalProps> = ({
     return e?.fileList;
   };
 
+  const handleCancel = () => {
+    // if (createDiscipline.isLoading || editDiscipline.isLoading) {
+    //   return;
+    // }
+
+    // resetFields();
+    onClose();
+  };
+
   return (
     <ModalWrapper
       centered
-      title={title}
+      title={`${serviceToEdit ? "EDITAR" : "ADICIONAR"} SERVIÇO`}
       open={open}
       onCancel={handleCancel}
       footer={[
@@ -36,42 +52,66 @@ export const ModalService: React.FC<ModalProps> = ({
           onClick={handleCancel}
           key="cancel"
           type="primary"
-          backgroundColor="#F05761"
+          backgroundcolor="#F05761"
         >
           Cancelar
         </ButtonModal>,
 
-        <ButtonModal key="save" type="primary" backgroundColor="#6cb66f">
+        <ButtonModal key="save" type="primary" backgroundcolor="#6cb66f">
           Salvar
         </ButtonModal>,
       ]}
     >
       <FormContainer>
-        <Form.Item
-          name="upload"
-          valuePropName="fileList"
-          getValueFromEvent={normFile}
+        <Form
+          layout="vertical"
+          size="middle"
+          // disabled={createDiscipline.isLoading || editDiscipline.isLoading}
+          form={form}
+          initialValues={{
+            name: "",
+            price: 0,
+            time: 0,
+          }}
         >
-          <Upload name="logo" listType="picture">
-            <Button icon={<UploadOutlined />}>Selecione uma imagem</Button>
-          </Upload>
+          <Form.Item
+            required
+            name="upload"
+            valuePropName="fileList"
+            getValueFromEvent={normFile}
+          >
+            <Upload name="logo" listType="picture">
+              <Button icon={<UploadOutlined />}>Selecione uma imagem</Button>
+            </Upload>
 
-          <InputWrapper
-            size="large"
-            prefix={<ScissorOutlined />}
-            placeholder="Serviço"
-          />
-          <InputWrapper
-            size="large"
-            prefix={<DollarCircleOutlined className="site-form-item-icon" />}
-            placeholder="Preço"
-          />
-          <InputWrapper
-            size="large"
-            prefix={<FieldTimeOutlined className="site-form-item-icon" />}
-            placeholder="Tempo"
-          />
-        </Form.Item>
+            <Form.Item
+              required
+              label="Nome"
+              name="name"
+              rules={[
+                { required: true, message: "" },
+                { type: "string", min: 3, message: "" },
+                { type: "string", max: 120, message: "" },
+              ]}
+            >
+              <InputWrapper
+                size="large"
+                prefix={<ScissorOutlined />}
+                placeholder="Serviço"
+              />
+            </Form.Item>
+            <InputWrapper
+              size="large"
+              prefix={<DollarCircleOutlined className="site-form-item-icon" />}
+              placeholder="Preço"
+            />
+            <InputWrapper
+              size="large"
+              prefix={<FieldTimeOutlined className="site-form-item-icon" />}
+              placeholder="Tempo"
+            />
+          </Form.Item>
+        </Form>
       </FormContainer>
     </ModalWrapper>
   );
@@ -90,5 +130,5 @@ const ModalWrapper = styled(Modal)`
 `;
 
 const ButtonModal = styled(Button)`
-  background: ${(props) => props.backgroundColor};
+  background: ${(props) => props.backgroundcolor};
 `;

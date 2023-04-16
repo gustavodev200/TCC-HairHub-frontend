@@ -1,22 +1,32 @@
 "use client";
-import { useState } from "react";
+
 import { IService } from "@/@types/service";
-import { Table, Button, Tag, Modal, Space, Avatar } from "antd";
+import { Table, Button, Tag, Space, Avatar } from "antd";
 import styled from "styled-components";
 import { ColumnGroupType, ColumnType, ColumnsType } from "antd/es/table";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { serviceApi } from "@/services/service";
+import { UserOutlined } from "@ant-design/icons";
 
 interface ServicesTableProps {
   services: IService[];
+  onEdit: (service: IService) => void;
 }
 
-export const ServicesTable: React.FC<ServicesTableProps> = ({ services }) => {
+export const ServicesTable: React.FC<ServicesTableProps> = ({
+  services,
+  onEdit,
+}) => {
   const columns: ColumnsType<IService> = [
     {
       dataIndex: "image",
       key: "image",
-      render: (image) => <Avatar size="large" src={image} key={image} />,
+      render: (image) =>
+        image ? (
+          <Avatar size="large" src={image} key={image} />
+        ) : (
+          <Avatar size={64} icon={<UserOutlined />} />
+        ),
     },
     {
       title: "Serviços",
@@ -55,13 +65,17 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({ services }) => {
     {
       title: "Ações",
       key: "action",
-      render: (_, { id, status }) => (
+      render: ({ id, status }, record) => (
         <Space size="middle">
-          <StatusButton backgroundColor="#C1820B" type="primary">
+          <StatusButton
+            backgroundcolor="#C1820B"
+            type="primary"
+            onClick={() => onEdit(record)}
+          >
             Editar
           </StatusButton>
           <StatusButton
-            backgroundColor={status === "active" ? "#F05761" : "#6CB66F"}
+            backgroundcolor={status === "active" ? "#F05761" : "#6CB66F"}
             type="primary"
             onClick={() =>
               changeStatus.mutate({
@@ -78,7 +92,6 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({ services }) => {
   ];
 
   const queryClient = useQueryClient();
-  const { confirm } = Modal;
 
   const changeStatus = useMutation({
     mutationFn: (params: any) =>
@@ -97,7 +110,7 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({ services }) => {
 };
 
 const StatusButton = styled(Button)`
-  background: ${(props) => props.backgroundColor};
+  background: ${(props) => props.backgroundcolor};
 `;
 
 const TableImage = styled(Table)`

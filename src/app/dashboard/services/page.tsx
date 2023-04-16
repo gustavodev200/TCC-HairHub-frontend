@@ -7,6 +7,8 @@ import { ServicesTable } from "./components/ServicesTable";
 import { GenericStatus } from "@/@types/genericStatus";
 import { serviceApi } from "@/services/service";
 import { Pagination } from "antd";
+import { ModalService } from "./components/ModalService";
+import { IService } from "@/@types/service";
 
 const Page: React.FC = () => {
   const [search, setSearch] = useState("");
@@ -23,14 +25,44 @@ const Page: React.FC = () => {
         page,
       }),
   });
+
+  const [serviceToEdit, setServiceToEdit] = useState<IService>();
+  const [showModalService, setShowModalService] = useState(false);
+
+  const handleOpenModalService = (service?: IService) => {
+    if (service) {
+      setServiceToEdit(service);
+    }
+
+    setShowModalService(true);
+  };
+
+  const handleCloseModalService = () => {
+    setShowModalService(false);
+
+    if (serviceToEdit) {
+      setServiceToEdit(undefined);
+    }
+  };
+
   return (
-    <div>
+    <>
+      <ModalService
+        open={showModalService}
+        serviceToEdit={serviceToEdit}
+        onClose={handleCloseModalService}
+      />
+
       <PageHeader
         statusFilter={statusFilter}
         onChangeSearch={(value) => setSearch(value)}
         onChangeStatusFilter={(value) => setStatusFilter(value)}
+        handleOpenModalService={handleOpenModalService}
       />
-      <ServicesTable services={data?.data ?? []} />
+      <ServicesTable
+        services={data?.data ?? []}
+        onEdit={handleOpenModalService}
+      />
       {data && (
         <div
           style={{
@@ -49,7 +81,7 @@ const Page: React.FC = () => {
           />
         </div>
       )}
-    </div>
+    </>
   );
 };
 

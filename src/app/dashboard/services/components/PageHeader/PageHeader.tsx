@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
 import { Input, Select, Button } from "antd";
 import { useCallback, useState } from "react";
-import { ModalService } from "../ModalService";
 import { GenericStatus } from "@/@types/genericStatus";
 import debounce from "lodash.debounce";
 
@@ -12,12 +11,14 @@ interface PageHeaderProps {
   statusFilter: GenericStatus | "all";
   onChangeStatusFilter: (status: GenericStatus | "all") => void;
   onChangeSearch: (search: string) => void;
+  handleOpenModalService: () => void;
 }
 
 export const PageHeader: React.FC<PageHeaderProps> = ({
   statusFilter,
   onChangeStatusFilter,
   onChangeSearch,
+  handleOpenModalService,
 }) => {
   const debouncedSearch = useCallback(
     debounce((value: string) => {
@@ -34,7 +35,6 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   };
 
   const handleCancel = () => {
-    console.log("Clicked cancel button");
     setOpen(false);
   };
 
@@ -71,12 +71,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             type="primary"
             icon={<PlusOutlined />}
             size="large"
-            onClick={showModal}
-          />
-          <ModalService
-            open={open}
-            handleCancel={handleCancel}
-            title="ADICIONAR SERVIÇO"
+            onClick={() => handleOpenModalService()}
           />
         </div>
       </HeaderActions>
