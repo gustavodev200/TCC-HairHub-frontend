@@ -5,20 +5,11 @@ import { IService, IServiceInputDTO } from "@/@types/service";
 import { serviceApi } from "@/services/service";
 import { FieldTimeOutlined, ScissorOutlined } from "@ant-design/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  Button,
-  Form,
-  Modal,
-  Upload,
-  Input,
-  InputNumber,
-  UploadProps,
-} from "antd";
+import { Button, Form, Modal, Upload, Input, InputNumber } from "antd";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import { UploadButton } from "./components/UploadButton";
-import { RcFile, UploadChangeParam, UploadFile } from "antd/es/upload";
 
 interface ModalProps {
   serviceToEdit?: IService;
@@ -34,7 +25,7 @@ export const ModalService: React.FC<ModalProps> = ({
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
 
-  const { resetFields, setFieldsValue, validateFields, getFieldsValue } = form;
+  const { resetFields, setFieldsValue, validateFields } = form;
 
   const createService = useMutation({
     mutationFn: (data: IServiceInputDTO) => serviceApi.createService(data),
@@ -62,7 +53,6 @@ export const ModalService: React.FC<ModalProps> = ({
   const handleSubmit = () => {
     validateFields()
       .then((data) => {
-        console.log(data);
         const formData = new FormData();
         formData.append("name", data.name);
         formData.append("image", data.image.file?.originFileObj);
@@ -71,7 +61,10 @@ export const ModalService: React.FC<ModalProps> = ({
 
         if (serviceToEdit) {
           editService
-            .mutateAsync({ ...serviceToEdit, ...formData })
+            .mutateAsync({
+              ...serviceToEdit,
+              ...formData,
+            })
             .then(() => {
               handleCancel();
             })
@@ -85,31 +78,7 @@ export const ModalService: React.FC<ModalProps> = ({
             .catch(() => {});
         }
       })
-      .catch(() => {
-        toast.error(`Ops, ${ErrorMessages.MSGE01}`);
-      });
-  };
-
-  const getBase64 = (img: RcFile, callback: (url: string) => void) => {
-    const reader = new FileReader();
-    reader.addEventListener("load", () => callback(reader.result as string));
-    reader.readAsDataURL(img);
-  };
-
-  const handleChange: UploadProps["onChange"] = (
-    info: UploadChangeParam<UploadFile>
-  ) => {
-    if (info.file.status === "uploading") {
-      createService.isLoading || editService.isLoading;
-      return;
-    }
-    if (info.file.status === "done") {
-      // Get this url from response in real world.
-      getBase64(info.file.originFileObj as RcFile, () => {
-        createService.isLoading || editService.isLoading;
-        serviceToEdit?.image;
-      });
-    }
+      .catch(() => {});
   };
 
   useEffect(() => {
@@ -121,7 +90,7 @@ export const ModalService: React.FC<ModalProps> = ({
         time: serviceToEdit.time,
       });
     }
-  }, [serviceToEdit]);
+  }, [serviceToEdit, setFieldsValue]);
 
   return (
     <ModalWrapper
@@ -166,22 +135,18 @@ export const ModalService: React.FC<ModalProps> = ({
             <Upload
               name="image"
               listType="picture-card"
-              showUploadList={false}
+              maxCount={1}
               className="avatar-uploader"
-              onChange={handleChange}
             >
               {serviceToEdit?.image ? (
                 <img
                   src={serviceToEdit?.image}
                   alt="avatar"
-                  style={{ borderRadius: "10px" }}
-                  width={85}
+                  width={75}
                   height={85}
                 />
               ) : (
-                <UploadButton
-                  isLoading={createService.isLoading || editService.isLoading}
-                />
+                <UploadButton isLoading={createService.isLoading} />
               )}
             </Upload>
           </Form.Item>
@@ -209,6 +174,8 @@ export const ModalService: React.FC<ModalProps> = ({
               size="large"
               min={1}
               max={999}
+              precision={2}
+              step={0.1}
               addonBefore="R$"
               placeholder="Preço"
               style={{ width: "100%" }}

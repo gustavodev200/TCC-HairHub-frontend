@@ -7,7 +7,7 @@ type UploadButtonProps = {
 export const UploadButton: React.FC<UploadButtonProps> = (isLoading) => {
   return (
     <div>
-      {isLoading ? <LoadingOutlined /> : <PlusOutlined />}
+      {!isLoading ? <LoadingOutlined /> : <PlusOutlined />}
       <div style={{ marginTop: 8 }}>Upload</div>
     </div>
   );

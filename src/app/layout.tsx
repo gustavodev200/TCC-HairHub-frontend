@@ -1,9 +1,9 @@
 import { ClientComponentLoader } from "@/components/ClientComponentLoader/ClientComponentLoader";
 import { ClientSideAppProvider } from "@/components/ClientSideAppProvider/ClientSideAppProvider";
 import "@/styles/GlobalStyle.css";
-import { Poppins } from "next/font/google";
 
 import localFont from "next/font/local";
+import { ToastContainer } from "react-toastify";
 
 const poppinsFont = localFont({
   src: "../../public/fonts/Poppins-Regular.ttf",
