@@ -3,16 +3,22 @@
 import { ErrorMessages } from "@/@types/messages";
 import { IService, IServiceInputDTO } from "@/@types/service";
 import { serviceApi } from "@/services/service";
-import {
-  UploadOutlined,
-  FieldTimeOutlined,
-  ScissorOutlined,
-} from "@ant-design/icons";
+import { FieldTimeOutlined, ScissorOutlined } from "@ant-design/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Button, Form, Modal, Upload, Input, InputNumber } from "antd";
+import {
+  Button,
+  Form,
+  Modal,
+  Upload,
+  Input,
+  InputNumber,
+  UploadProps,
+} from "antd";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import styled from "styled-components";
+import { UploadButton } from "./components/UploadButton";
+import { RcFile, UploadChangeParam, UploadFile } from "antd/es/upload";
 
 interface ModalProps {
   serviceToEdit?: IService;
@@ -56,16 +62,23 @@ export const ModalService: React.FC<ModalProps> = ({
   const handleSubmit = () => {
     validateFields()
       .then((data) => {
+        console.log(data);
+        const formData = new FormData();
+        formData.append("name", data.name);
+        formData.append("image", data.image.file?.originFileObj);
+        formData.append("price", data.price);
+        formData.append("time", data.time);
+
         if (serviceToEdit) {
           editService
-            .mutateAsync({ ...serviceToEdit, ...data })
+            .mutateAsync({ ...serviceToEdit, ...formData })
             .then(() => {
               handleCancel();
             })
             .catch(() => {});
         } else {
           createService
-            .mutateAsync(data)
+            .mutateAsync(formData as unknown as IServiceInputDTO)
             .then(() => {
               handleCancel();
             })
@@ -75,6 +88,28 @@ export const ModalService: React.FC<ModalProps> = ({
       .catch(() => {
         toast.error(`Ops, ${ErrorMessages.MSGE01}`);
       });
+  };
+
+  const getBase64 = (img: RcFile, callback: (url: string) => void) => {
+    const reader = new FileReader();
+    reader.addEventListener("load", () => callback(reader.result as string));
+    reader.readAsDataURL(img);
+  };
+
+  const handleChange: UploadProps["onChange"] = (
+    info: UploadChangeParam<UploadFile>
+  ) => {
+    if (info.file.status === "uploading") {
+      createService.isLoading || editService.isLoading;
+      return;
+    }
+    if (info.file.status === "done") {
+      // Get this url from response in real world.
+      getBase64(info.file.originFileObj as RcFile, () => {
+        createService.isLoading || editService.isLoading;
+        serviceToEdit?.image;
+      });
+    }
   };
 
   useEffect(() => {
@@ -127,15 +162,27 @@ export const ModalService: React.FC<ModalProps> = ({
             time: 0,
           }}
         >
-          <Form.Item
-            required
-            label="Image"
-            name="image"
-            valuePropName="image"
-            getValueFromEvent={(e) => e?.fileList}
-          >
-            <Upload name="image" maxCount={1}>
-              <Button icon={<UploadOutlined />}>Selecione uma imagem</Button>
+          <Form.Item required label="Image" name="image" valuePropName="image">
+            <Upload
+              name="image"
+              listType="picture-card"
+              showUploadList={false}
+              className="avatar-uploader"
+              onChange={handleChange}
+            >
+              {serviceToEdit?.image ? (
+                <img
+                  src={serviceToEdit?.image}
+                  alt="avatar"
+                  style={{ borderRadius: "10px" }}
+                  width={85}
+                  height={85}
+                />
+              ) : (
+                <UploadButton
+                  isLoading={createService.isLoading || editService.isLoading}
+                />
+              )}
             </Upload>
           </Form.Item>
 

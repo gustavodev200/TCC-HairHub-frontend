@@ -105,6 +105,7 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({
     <TableImage
       columns={columns as Array<ColumnType<object> | ColumnGroupType<object>>}
       dataSource={services}
+      rowKey="id"
     />
   );
 };

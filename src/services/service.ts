@@ -24,7 +24,9 @@ async function changeStatus(
 
 async function createService(data: IServiceInputDTO): Promise<IService> {
   return Api.post(`${baseUrl}`, data, {
-    headers: { "success-message": SuccessMessages.MSGS03 },
+    headers: {
+      "success-message": SuccessMessages.MSGS03,
+    },
   }).then((res) => res.data);
 }
 
