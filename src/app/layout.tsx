@@ -3,7 +3,7 @@ import { ClientSideAppProvider } from "@/components/ClientSideAppProvider/Client
 import "@/styles/GlobalStyle.css";
 
 import localFont from "next/font/local";
-import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const poppinsFont = localFont({
   src: "../../public/fonts/Poppins-Regular.ttf",

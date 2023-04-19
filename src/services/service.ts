@@ -19,7 +19,15 @@ async function changeStatus(
   id: string,
   status: GenericStatus
 ): Promise<IService> {
-  return Api.patch(`${baseUrl}/${id}`, { status }).then((res) => res.data);
+  return Api.patch(
+    `${baseUrl}/${id}`,
+    { status },
+    {
+      headers: {
+        "success-message": SuccessMessages.MSGS04,
+      },
+    }
+  ).then((res) => res.data);
 }
 
 async function createService(data: IServiceInputDTO): Promise<IService> {
@@ -30,8 +38,12 @@ async function createService(data: IServiceInputDTO): Promise<IService> {
   }).then((res) => res.data);
 }
 
-async function editService(data: IService): Promise<IService> {
-  return Api.put(`${baseUrl}/${data.id}`, data).then((res) => res.data);
+async function editService(data: FormData): Promise<IService> {
+  return Api.put(`${baseUrl}/${data.get("id")}`, data, {
+    headers: {
+      "success-message": SuccessMessages.MSGS02,
+    },
+  }).then((res) => res.data);
 }
 
 export const serviceApi = {

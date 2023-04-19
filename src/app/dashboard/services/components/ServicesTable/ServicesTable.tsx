@@ -102,7 +102,8 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({
   });
 
   return (
-    <TableImage
+    <TableWrapper
+      pagination={false}
       columns={columns as Array<ColumnType<object> | ColumnGroupType<object>>}
       dataSource={services}
       rowKey="id"
@@ -114,8 +115,14 @@ const StatusButton = styled(Button)`
   background: ${(props) => props.backgroundcolor};
 `;
 
-const TableImage = styled(Table)`
-  tbody > tr > td {
-    width: 2rem;
+const TableWrapper = styled(Table)`
+  border-radius: 8px;
+  overflow: auto;
+  min-width: 750px;
+  min-height: 529px;
+  filter: drop-shadow(0px 2px 8px rgba(0, 0, 0, 0.15));
+
+  thead tr th::before {
+    display: none;
   }
 `;

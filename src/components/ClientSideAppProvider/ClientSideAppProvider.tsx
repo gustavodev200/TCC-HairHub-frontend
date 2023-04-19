@@ -7,6 +7,7 @@ import { useServerInsertedHTML } from "next/navigation";
 import pt_BR from "antd/locale/pt_BR";
 
 import { ServerStyleSheet, StyleSheetManager } from "styled-components";
+import { ToastContainer } from "react-toastify";
 
 export const ClientSideAppProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -35,6 +36,7 @@ export const ClientSideAppProvider: React.FC<{ children: React.ReactNode }> = ({
         },
       }}
     >
+      <ToastContainer position="top-right" limit={3} />
       <QueryClientProvider client={queryClient}>
         {typeof window === "undefined" ? (
           <StyleSheetManager sheet={styledComponentsStyleSheet.instance}>

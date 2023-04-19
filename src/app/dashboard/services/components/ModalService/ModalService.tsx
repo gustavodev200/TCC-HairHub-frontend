@@ -1,13 +1,11 @@
 "use client";
 
-import { ErrorMessages } from "@/@types/messages";
 import { IService, IServiceInputDTO } from "@/@types/service";
 import { serviceApi } from "@/services/service";
 import { FieldTimeOutlined, ScissorOutlined } from "@ant-design/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button, Form, Modal, Upload, Input, InputNumber } from "antd";
 import { useEffect } from "react";
-import { toast } from "react-toastify";
 import styled from "styled-components";
 import { UploadButton } from "./components/UploadButton";
 
@@ -35,7 +33,7 @@ export const ModalService: React.FC<ModalProps> = ({
   });
 
   const editService = useMutation({
-    mutationFn: (data: IService) => serviceApi.editService(data),
+    mutationFn: (data: FormData) => serviceApi.editService(data),
     onSuccess: () => {
       queryClient.invalidateQueries(["services"]);
     },
@@ -55,22 +53,24 @@ export const ModalService: React.FC<ModalProps> = ({
       .then((data) => {
         const formData = new FormData();
         formData.append("name", data.name);
-        formData.append("image", data.image.file?.originFileObj);
         formData.append("price", data.price);
         formData.append("time", data.time);
 
+        if (data.image.file) {
+          formData.append("image", data.image.file?.originFileObj);
+        }
+
         if (serviceToEdit) {
+          formData.append("id", serviceToEdit.id ?? "");
           editService
-            .mutateAsync({
-              ...serviceToEdit,
-              ...formData,
-            })
+            .mutateAsync(formData)
             .then(() => {
               handleCancel();
             })
             .catch(() => {});
         } else {
           createService
+
             .mutateAsync(formData as unknown as IServiceInputDTO)
             .then(() => {
               handleCancel();
@@ -139,6 +139,7 @@ export const ModalService: React.FC<ModalProps> = ({
               className="avatar-uploader"
             >
               {serviceToEdit?.image ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={serviceToEdit?.image}
                   alt="avatar"

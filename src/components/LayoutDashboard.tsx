@@ -65,8 +65,14 @@ const LayoutDashboard = ({ children }: { children: ReactNode }) => {
       </SideBarWrapper>
       <Layout className="site-layout">
         <HeaderWrapper collapsed={collapsed} setCollapsed={setCollapsed} />
-        <Content>
-          <MainContent>{children}</MainContent>
+        <Content
+          style={{
+            height: "calc(100vh - 64px)",
+            overflowY: "auto",
+            padding: "32px",
+          }}
+        >
+          {children}
         </Content>
       </Layout>
     </Layout>

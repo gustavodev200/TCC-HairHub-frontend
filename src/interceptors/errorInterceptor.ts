@@ -8,7 +8,7 @@ export function errorInterceptor(error: any) {
   if (res && res.data.message) {
     toast.error(res.data.message);
   } else {
-    toast.error(ErrorMessages.unknown);
+    toast.error(ErrorMessages.MSGE07);
   }
 
   return Promise.reject(error);
