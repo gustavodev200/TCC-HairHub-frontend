@@ -24,7 +24,7 @@ async function changeStatus(
     { status },
     {
       headers: {
-        "success-message": SuccessMessages.MSGS04,
+        "success-message": SuccessMessages.MSGS03,
       },
     }
   ).then((res) => res.data);
@@ -33,7 +33,7 @@ async function changeStatus(
 async function createService(data: IServiceInputDTO): Promise<IService> {
   return Api.post(`${baseUrl}`, data, {
     headers: {
-      "success-message": SuccessMessages.MSGS03,
+      "success-message": SuccessMessages.MSGS04,
     },
   }).then((res) => res.data);
 }

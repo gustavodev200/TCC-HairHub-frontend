@@ -1,8 +1,8 @@
 export enum SuccessMessages {
   MSGS01 = "Cadastro realizado com sucesso!",
   MSGS02 = "Atualizado com sucesso!",
-  MSGS03 = "Criado com sucesso!",
-  MSGS04 = "Status alterado com sucesso!",
+  MSGS03 = "Status alterado com sucesso!",
+  MSGS04 = "Criado com sucesso!",
 }
 
 export enum ErrorMessages {
