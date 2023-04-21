@@ -103,9 +103,3 @@ const LogoWrapper = styled.div`
     margin: 10px 0 30px 0;
   }
 `;
-
-const MainContent = styled(Content)`
-  width: 100%;
-  height: 100%;
-  padding: 50px 100px;
-`;

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { ConfigProvider } from "antd";
 import { useServerInsertedHTML } from "next/navigation";
 import pt_BR from "antd/locale/pt_BR";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import { ServerStyleSheet, StyleSheetManager } from "styled-components";
 import { ToastContainer } from "react-toastify";
@@ -45,6 +46,7 @@ export const ClientSideAppProvider: React.FC<{ children: React.ReactNode }> = ({
         ) : (
           <>{children}</>
         )}
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </ConfigProvider>
   );
