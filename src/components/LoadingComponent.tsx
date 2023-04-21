@@ -12,7 +12,7 @@ export const LoadingComponent = () => {
         alt="Logo Hair Hub Barbershop"
       />
       <span className="loader"></span>
-      <span className="loading_setence">
+      <span className="loading_setence" style={{ textAlign: "center" }}>
         Pequenos passos hoje, grandes conquistas amanhã!
       </span>
     </div>
