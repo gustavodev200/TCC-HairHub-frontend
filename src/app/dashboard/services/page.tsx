@@ -2,13 +2,13 @@
 
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { PageHeader } from "./components/PageHeader";
 import { ServicesTable } from "./components/ServicesTable";
 import { GenericStatus } from "@/@types/genericStatus";
 import { serviceApi } from "@/services/service";
 import { Pagination } from "antd";
 import { ModalService } from "./components/ModalService";
 import { IService } from "@/@types/service";
+import { PageHeader } from "@/components/PageHeader";
 
 const Page: React.FC = () => {
   const [search, setSearch] = useState("");
@@ -54,10 +54,11 @@ const Page: React.FC = () => {
       />
 
       <PageHeader
+        pageTitle="Serviços"
         statusFilter={statusFilter}
         onChangeSearch={(value) => setSearch(value)}
         onChangeStatusFilter={(value) => setStatusFilter(value)}
-        handleOpenModalService={handleOpenModalService}
+        handleOpenModal={handleOpenModalService}
       />
       <ServicesTable
         services={data?.data ?? []}

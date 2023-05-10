@@ -8,17 +8,19 @@ import { GenericStatus } from "@/@types/genericStatus";
 import debounce from "lodash.debounce";
 
 interface PageHeaderProps {
+  pageTitle: string;
   statusFilter: GenericStatus | "all";
   onChangeStatusFilter: (status: GenericStatus | "all") => void;
   onChangeSearch: (search: string) => void;
-  handleOpenModalService: () => void;
+  handleOpenModal: () => void;
 }
 
 export const PageHeader: React.FC<PageHeaderProps> = ({
+  pageTitle,
   statusFilter,
   onChangeStatusFilter,
   onChangeSearch,
-  handleOpenModalService,
+  handleOpenModal,
 }) => {
   const debouncedSearch = useCallback(
     debounce((value: string) => {
@@ -41,7 +43,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   return (
     <HeaderContainer>
       <HeaderTitle>
-        <h3>Serviços</h3>
+        <h3>{pageTitle}</h3>
       </HeaderTitle>
 
       <HeaderActions>
@@ -71,7 +73,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             type="primary"
             icon={<PlusOutlined />}
             size="large"
-            onClick={() => handleOpenModalService()}
+            onClick={() => handleOpenModal()}
           />
         </div>
       </HeaderActions>

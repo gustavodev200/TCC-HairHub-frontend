@@ -4,8 +4,17 @@ import { IService, IServiceInputDTO } from "@/@types/service";
 import { serviceApi } from "@/services/service";
 import { FieldTimeOutlined, ScissorOutlined } from "@ant-design/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Button, Form, Modal, Upload, Input, InputNumber } from "antd";
-import { useEffect } from "react";
+import {
+  Button,
+  Form,
+  Modal,
+  Upload,
+  Input,
+  InputNumber,
+  UploadFile,
+  UploadProps,
+} from "antd";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { UploadButton } from "./components/UploadButton";
 
@@ -183,12 +192,7 @@ export const ModalService: React.FC<ModalProps> = ({
             />
           </Form.Item>
 
-          <Form.Item
-            required
-            label="Tempo"
-            name="time"
-            rules={[{ required: true, message: "Campo Obrigatório!" }]}
-          >
+          <Form.Item required label="Tempo" name="time">
             <InputNumber
               size="large"
               min={1}

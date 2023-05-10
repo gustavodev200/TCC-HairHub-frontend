@@ -1,14 +1,45 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Checkbox, Form, Input } from "antd";
 import { MailOutlined, LockOutlined } from "@ant-design/icons";
 import { LoginComponent } from "@/components/LoginComponent";
 import Link from "next/link";
 import styled from "styled-components";
 import { ErrorMessages } from "@/@types/messages";
+import { useRouter } from "next/navigation";
+import { useUser } from "@/stores/useUser";
+import { authService } from "@/services/auth";
 
 export default function Page() {
+  const { push } = useRouter();
+  const { accessToken, setAccessToken } = useUser();
+  const [isLoading, setIsLoading] = useState(false);
+
+  interface FormValues {
+    email: string;
+    password: string;
+  }
+
+  const onFinish = (values: unknown) => {
+    const formValues = values as FormValues;
+    setIsLoading(true);
+
+    authService
+      .login(formValues.email, formValues.password)
+      .then((token) => {
+        setAccessToken(token);
+        push("/dashboard");
+      })
+      .finally(() => setIsLoading(false));
+  };
+
+  useEffect(() => {
+    if (accessToken) {
+      push("/dashboard");
+    }
+  }, [accessToken]); // eslint-disable-line
+
   return (
     <LoginComponent>
       <Link style={{ color: "#fff " }} href="/dashboard">
@@ -16,10 +47,9 @@ export default function Page() {
       </Link>
       <FormConatainer
         name="basic"
-        initialValues={{ remember: true }}
         layout="vertical"
-        // onFinish={onFinish}
-        // onFinishFailed={onFinishFailed}
+        onFinish={onFinish}
+        disabled={isLoading}
         autoComplete="off"
         size="large"
       >
@@ -56,7 +86,7 @@ export default function Page() {
         </Form.Item>
 
         <Form.Item>
-          <ButtonSubmit type="primary" htmlType="submit">
+          <ButtonSubmit type="primary" htmlType="submit" loading={isLoading}>
             ENTRAR
           </ButtonSubmit>
         </Form.Item>

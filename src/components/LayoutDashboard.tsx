@@ -1,7 +1,11 @@
 "use client";
 
 import React, { ReactNode, useState } from "react";
-import { ScissorOutlined, HomeOutlined } from "@ant-design/icons";
+import {
+  ScissorOutlined,
+  HomeOutlined,
+  UsergroupAddOutlined,
+} from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Layout, Menu, theme } from "antd";
 import styled from "styled-components";
@@ -30,6 +34,7 @@ function getItem(
 
 const items: MenuItem[] = [
   getItem("Home", "/dashboard", <HomeOutlined />),
+  getItem("Colaboradores", "/dashboard/employees", <UsergroupAddOutlined />),
   getItem("Serviços", "/dashboard/services", <ScissorOutlined />),
 ];
 

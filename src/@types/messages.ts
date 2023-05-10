@@ -3,6 +3,7 @@ export enum SuccessMessages {
   MSGS02 = "Atualizado com sucesso!",
   MSGS03 = "Status alterado com sucesso!",
   MSGS04 = "Criado com sucesso!",
+  MSGS05 = "Enviado com sucesso!",
 }
 
 export enum ErrorMessages {
@@ -17,4 +18,5 @@ export enum ErrorMessages {
   MSGE09 = "Campo excede a quantidade máxima permitida de caracteres",
   MSGE10 = "Valor do campo menor que o mínimo permitido",
   MSGE11 = "Valor do campo maior que o máximo permitido",
+  MSGE12 = "Acesso não autorizado",
 }
