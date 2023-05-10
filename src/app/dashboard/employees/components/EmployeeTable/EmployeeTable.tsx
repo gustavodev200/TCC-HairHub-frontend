@@ -3,7 +3,11 @@
 import { Table, Button, Tag, Space, Avatar } from "antd";
 import styled from "styled-components";
 import { ColumnGroupType, ColumnType, ColumnsType } from "antd/es/table";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  UseMutateFunction,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { UserOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import { EmployeeInputDTO } from "@/@types/employee";
 import { employeeService } from "@/services/employee";
@@ -14,12 +18,14 @@ interface EmployeeTableProps {
   employees: EmployeeInputDTO[];
   onEdit: (employee: EmployeeInputDTO) => void;
   handleOpenModalEmployee: (id: string) => void;
+  resetPassword: (id: string) => void;
 }
 
 export const EmployeeTable: React.FC<EmployeeTableProps> = ({
   employees,
   onEdit,
   handleOpenModalEmployee,
+  resetPassword,
 }) => {
   const columns: ColumnsType<EmployeeInputDTO> = [
     {
@@ -61,7 +67,11 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
       key: "password",
       render: ({ id, password }, result) => (
         <Space size="middle">
-          <StatusButton backgroundcolor="#53A5FF" type="primary">
+          <StatusButton
+            backgroundcolor="#53A5FF"
+            type="primary"
+            onClick={() => resetPassword(id)}
+          >
             Reenviar senha
           </StatusButton>
         </Space>

@@ -1,8 +1,8 @@
 "use client";
-import { Employee, EmployeeInputDTO } from "@/@types/employee";
+import { Employee } from "@/@types/employee";
 import { GenericStatus } from "@/@types/genericStatus";
 import { PageHeader } from "@/components/PageHeader";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pagination } from "antd";
 import { useState } from "react";
 import { EmployeeTable } from "./components/EmployeeTable";
@@ -25,6 +25,16 @@ const Page: React.FC = () => {
       }),
     staleTime: Infinity,
   });
+
+  const queryClient = useQueryClient();
+
+  const resetPassword = useMutation({
+    mutationFn: (id: string) => employeeService.resetPassword(id),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries(["employees"]);
+    },
+  });
+
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>();
   const [employeeToEdit, setEmployeeToEdit] = useState<Employee>();
   const [showModalEmployee, setShowModalEmployee] = useState(false);
@@ -71,6 +81,7 @@ const Page: React.FC = () => {
         employees={data?.data ?? []}
         onEdit={() => {}}
         handleOpenModalEmployee={handleOpenModalEmployee}
+        resetPassword={(id) => resetPassword.mutate(id)}
       />
       {data && (
         <div
