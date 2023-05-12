@@ -36,7 +36,7 @@ async function changeStatus(
   return Api.patch(
     `${baseUrl}/${id}`,
     { status },
-    { headers: { authHeader: true, "success-message": SuccessMessages.MSGS04 } }
+    { headers: { authHeader: true, "success-message": SuccessMessages.MSGS03 } }
   ).then((res) => res.data);
 }
 
