@@ -13,6 +13,8 @@ import { Employee, EmployeeInputDTO } from "@/@types/employee";
 import { employeeService } from "@/services/employee";
 import { formatCpf } from "@/helpers/utils/formatCpf";
 import { formatPhoneNumber } from "@/helpers/utils/formatPhoneNumber";
+import { AssignmentType } from "@/@types/role";
+import { TagColor } from "@/components/Tag";
 
 interface EmployeeTableProps {
   employees: Employee[];
@@ -44,17 +46,31 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
       key: "name",
       render: (name) => <h4>{name}</h4>,
     },
+    // {
+    //   title: "CPF",
+    //   dataIndex: "cpf",
+    //   key: "cpf",
+    //   render: (cpf) => <span>{formatCpf(cpf)}</span>,
+    // },
+    // {
+    //   title: "Telefone",
+    //   dataIndex: "phone",
+    //   key: "phone",
+    //   render: (phone) => <span>{formatPhoneNumber(phone)}</span>,
+    // },
     {
-      title: "CPF",
-      dataIndex: "cpf",
-      key: "cpf",
-      render: (cpf) => <span>{formatCpf(cpf)}</span>,
-    },
-    {
-      title: "Telefone",
-      dataIndex: "phone",
-      key: "phone",
-      render: (phone) => <span>{formatPhoneNumber(phone)}</span>,
+      title: "Atribuição",
+      dataIndex: "role",
+      key: "role",
+      render: (role) => {
+        if (role === AssignmentType.EMPLOYEE) {
+          return <TagColor tag="Barbeiro" color="green" />;
+        } else if (role === AssignmentType.ADMIN) {
+          return <TagColor tag="Administrador(a)" color="blue" />;
+        } else {
+          return <TagColor tag="Atendente" color="red" />;
+        }
+      },
     },
     {
       title: "E-mail",

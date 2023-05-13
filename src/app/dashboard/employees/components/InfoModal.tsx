@@ -47,7 +47,7 @@ export const InfoModal = ({ open, onClose, employeeInfo }: ModalProps) => {
               <AddressGap>
                 <strong>Atribuição: </strong>
                 {employeeInfo.role === AssignmentType.EMPLOYEE && (
-                  <TagColor tag="Colaborador(a)" color="green" />
+                  <TagColor tag="Barbeiro" color="green" />
                 )}
 
                 {employeeInfo.role === AssignmentType.ADMIN && (
