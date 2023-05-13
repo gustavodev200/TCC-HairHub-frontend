@@ -9,25 +9,25 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { UserOutlined, InfoCircleOutlined } from "@ant-design/icons";
-import { EmployeeInputDTO } from "@/@types/employee";
+import { Employee, EmployeeInputDTO } from "@/@types/employee";
 import { employeeService } from "@/services/employee";
 import { formatCpf } from "@/helpers/utils/formatCpf";
 import { formatPhoneNumber } from "@/helpers/utils/formatPhoneNumber";
 
 interface EmployeeTableProps {
-  employees: EmployeeInputDTO[];
-  onEdit: (employee: EmployeeInputDTO) => void;
-  handleOpenModalEmployee: (id: string) => void;
+  employees: Employee[];
+  onEdit: (employee: Employee) => void;
+  handleOpenModalInfoEmployee: (id: string) => void;
   resetPassword: (id: string) => void;
 }
 
 export const EmployeeTable: React.FC<EmployeeTableProps> = ({
   employees,
   onEdit,
-  handleOpenModalEmployee,
+  handleOpenModalInfoEmployee,
   resetPassword,
 }) => {
-  const columns: ColumnsType<EmployeeInputDTO> = [
+  const columns: ColumnsType<Employee> = [
     {
       dataIndex: "image",
       key: "image",
@@ -103,7 +103,7 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
           <StatusButton
             backgroundcolor="#53A5FF"
             type="primary"
-            onClick={() => handleOpenModalEmployee(id)}
+            onClick={() => handleOpenModalInfoEmployee(id)}
           >
             <InfoCircleOutlined />
           </StatusButton>

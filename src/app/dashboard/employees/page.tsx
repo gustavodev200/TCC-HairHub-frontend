@@ -8,6 +8,7 @@ import { useState } from "react";
 import { EmployeeTable } from "./components/EmployeeTable";
 import { employeeService } from "@/services/employee";
 import { InfoModal } from "./components/InfoModal";
+import { EmployeeDialogForm } from "./components/ModalEmployee";
 
 const Page: React.FC = () => {
   const [search, setSearch] = useState("");
@@ -38,16 +39,25 @@ const Page: React.FC = () => {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>();
   const [employeeToEdit, setEmployeeToEdit] = useState<Employee>();
   const [showModalEmployee, setShowModalEmployee] = useState(false);
+  const [showModalInfoEmployee, setShowModalInfoEmployee] = useState(false);
 
-  const handleOpenModalEmployee = (id?: string) => {
+  const handleOpenModalInfoEmployee = (id?: string) => {
     if (id) {
       setSelectedEmployeeId(id);
     }
+    setShowModalInfoEmployee(true);
+  };
+
+  const handleOpenModalEmployee = (employee?: Employee) => {
+    if (employee) {
+      setEmployeeToEdit(employee);
+    }
+
     setShowModalEmployee(true);
   };
 
   const handleCloseModalEmployee = () => {
-    setShowModalEmployee(false);
+    setShowModalEmployee(false), setShowModalInfoEmployee(false);
 
     if (employeeToEdit) {
       setEmployeeToEdit(undefined);
@@ -56,14 +66,14 @@ const Page: React.FC = () => {
 
   return (
     <>
-      {/* <ModalService
-          open={showModalService}
-          serviceToEdit={serviceToEdit}
-          onClose={handleCloseModalService}
-        /> */}
+      <EmployeeDialogForm
+        open={showModalEmployee}
+        employeeToEdit={employeeToEdit}
+        onClose={handleCloseModalEmployee}
+      />
 
       <InfoModal
-        open={showModalEmployee}
+        open={showModalInfoEmployee}
         onClose={handleCloseModalEmployee}
         employeeInfo={data?.data.find(
           (employee) => employee.id === selectedEmployeeId
@@ -79,8 +89,8 @@ const Page: React.FC = () => {
       />
       <EmployeeTable
         employees={data?.data ?? []}
-        onEdit={() => {}}
-        handleOpenModalEmployee={handleOpenModalEmployee}
+        onEdit={handleOpenModalEmployee}
+        handleOpenModalInfoEmployee={handleOpenModalInfoEmployee}
         resetPassword={(id) => resetPassword.mutate(id)}
       />
       {data && (

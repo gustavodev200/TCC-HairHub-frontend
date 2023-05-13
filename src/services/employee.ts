@@ -17,7 +17,7 @@ async function getPaginated(
   );
 }
 
-async function create(data: EmployeeInputDTO): Promise<Employee> {
+async function create(data: Employee): Promise<Employee> {
   return Api.post(baseUrl, data, {
     headers: { authHeader: true, "success-message": SuccessMessages.MSGS01 },
   }).then((res) => res.data);

@@ -1,4 +1,5 @@
 import { Employee } from "@/@types/employee";
+import { AssignmentType } from "@/@types/role";
 import { TagColor } from "@/components/Tag";
 import { formatCEP } from "@/helpers/utils/formatCep";
 import { formatCpf } from "@/helpers/utils/formatCpf";
@@ -45,15 +46,17 @@ export const InfoModal = ({ open, onClose, employeeInfo }: ModalProps) => {
               </AddressGap>
               <AddressGap>
                 <strong>Atribuição: </strong>
+                {employeeInfo.role === AssignmentType.EMPLOYEE && (
+                  <TagColor tag="Colaborador(a)" color="green" />
+                )}
 
-                <TagColor
-                  tag={
-                    employeeInfo.role === "employee"
-                      ? "Colaborador"
-                      : employeeInfo.role
-                  }
-                  color="blue"
-                />
+                {employeeInfo.role === AssignmentType.ADMIN && (
+                  <TagColor tag="Administrador(a)" color="blue" />
+                )}
+
+                {employeeInfo.role === AssignmentType.ATTENDANT && (
+                  <TagColor tag="Atendente" color="red" />
+                )}
               </AddressGap>
               <AddressContainer>
                 <h4>Endereço:</h4>
