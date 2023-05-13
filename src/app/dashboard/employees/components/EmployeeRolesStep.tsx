@@ -1,6 +1,6 @@
 import { Employee } from "@/@types/employee";
 import { AssignmentType } from "@/@types/role";
-import { Checkbox, Form, FormInstance } from "antd";
+import { Checkbox, Form, FormInstance, Select } from "antd";
 import { useState } from "react";
 import styled from "styled-components";
 
@@ -24,8 +24,8 @@ export const EmployeeRolesStep: React.FC<EmployeeRolesStepProps> = ({
 }) => {
   const { getFieldValue, getFieldsValue } = form;
 
-  const [selectedRoles, setSelectedRoles] = useState<AssignmentType[]>(
-    getFieldValue("role") ?? []
+  const [selectedRoles, setSelectedRoles] = useState<AssignmentType>(
+    getFieldValue("role") ?? ""
   );
 
   return (
@@ -34,7 +34,9 @@ export const EmployeeRolesStep: React.FC<EmployeeRolesStepProps> = ({
       layout="vertical"
       size="middle"
       form={form}
-      initialValues={getFieldsValue()}
+      initialValues={{
+        role: AssignmentType.EMPLOYEE,
+      }}
       onValuesChange={(fields) => {
         setSelectedRoles(fields.role);
       }}
@@ -44,38 +46,18 @@ export const EmployeeRolesStep: React.FC<EmployeeRolesStepProps> = ({
         label="Selecione as atribuições do colaborador"
         name="role"
         rules={[{ required: true, message: "" }]}
+        style={{ width: "100%" }}
       >
-        <StyledCheckboxGroup>
-          <Checkbox
-            disabled={
-              selectedRoles.includes(AssignmentType.EMPLOYEE) ||
-              selectedRoles.includes(AssignmentType.ATTENDANT)
-            }
-            value={AssignmentType.ADMIN}
-          >
-            Administrador(a)
-          </Checkbox>
-
-          <Checkbox
-            disabled={
-              selectedRoles.includes(AssignmentType.ADMIN) ||
-              selectedRoles.includes(AssignmentType.ATTENDANT)
-            }
-            value={AssignmentType.EMPLOYEE}
-          >
-            Colaborador(a)
-          </Checkbox>
-
-          <Checkbox
-            disabled={
-              selectedRoles.includes(AssignmentType.EMPLOYEE) ||
-              selectedRoles.includes(AssignmentType.ADMIN)
-            }
-            value={AssignmentType.ATTENDANT}
-          >
-            Atendente
-          </Checkbox>
-        </StyledCheckboxGroup>
+        <Select
+          optionFilterProp="children"
+          size="large"
+          style={{ width: "100%" }}
+          options={[
+            { value: AssignmentType.ADMIN, label: "Administrador(a)" },
+            { value: AssignmentType.EMPLOYEE, label: "Barbairo(a)" },
+            { value: AssignmentType.ATTENDANT, label: "Atendente" },
+          ]}
+        />
       </Form.Item>
     </Form>
   );

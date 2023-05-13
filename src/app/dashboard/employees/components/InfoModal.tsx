@@ -21,6 +21,7 @@ export const InfoModal = ({ open, onClose, employeeInfo }: ModalProps) => {
       open={open}
       onOk={onClose}
       onCancel={onClose}
+      footer={null}
     >
       <div>
         {employeeInfo ? (

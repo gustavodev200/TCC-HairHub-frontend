@@ -20,41 +20,6 @@ import { EmployeeAddressStep } from "./EmployeeAddressStep";
 import { EmployeePersonalInfoStep } from "./EmployeePersonaInfoStep";
 import { EmployeeRolesStep } from "./EmployeeRolesStep";
 
-const StyledModal = styled(Modal)`
-  @media (max-width: 600px) {
-    max-width: unset;
-    width: 100% !important;
-    height: 100%;
-
-    .ant-modal-content {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      border-radius: 0;
-      padding: 0;
-
-      & > button {
-        top: 24px;
-      }
-
-      .ant-modal-title {
-        padding: 24px 16px 0;
-      }
-
-      .ant-modal-body {
-        height: 100%;
-        padding: 8px 16px;
-        overflow-y: auto;
-      }
-
-      .ant-modal-footer {
-        padding: 8px 16px 16px;
-        margin-top: 0;
-      }
-    }
-  }
-`;
-
 interface EmployeeDialogFormProps {
   open: boolean;
   employeeToEdit?: Employee;
@@ -77,7 +42,7 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
   const { resetFields, setFieldsValue, validateFields, getFieldsValue } = form;
 
   const createEmployee = useMutation({
-    mutationFn: (data: EmployeeInputDTO) => employeeService.create(data),
+    mutationFn: (data: Employee) => employeeService.create(data),
     onSuccess: (newItem) => {
       queryClient.setQueriesData(
         {
@@ -213,23 +178,24 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
       onCancel={handleCancel}
       title={`${employeeToEdit ? "Editar" : "Adicionar"} Colaborador`}
       footer={[
-        <Button
-          danger
-          key="cancel"
-          style={{ width: "calc(50% - 4px)" }}
+        <ButtonModal
           onClick={handleCancel}
+          key="cancel"
+          type="primary"
+          backgroundcolor="#F05761"
         >
           Cancelar
-        </Button>,
-        <Button
+        </ButtonModal>,
+
+        <ButtonModal
           key="submit"
-          loading={createEmployee.isLoading}
           type="primary"
+          backgroundcolor="#6cb66f"
+          loading={createEmployee.isLoading}
           disabled={
             (!isFirstStepValid && step === 0) ||
             (!isSecondStepValid && step === 1)
           }
-          style={{ width: "calc(50% - 4px)" }}
           onClick={() => {
             if (step < 2) {
               setStep(step + 1);
@@ -241,7 +207,7 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
           }}
         >
           {step < 2 ? "Próximo" : "Salvar"}
-        </Button>,
+        </ButtonModal>,
       ]}
     >
       <Steps
@@ -291,3 +257,42 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
     </StyledModal>
   );
 };
+
+const ButtonModal = styled(Button)`
+  background: ${(props) => props.backgroundcolor};
+`;
+
+const StyledModal = styled(Modal)`
+  @media (max-width: 600px) {
+    max-width: unset;
+    width: 100% !important;
+    height: 100%;
+
+    .ant-modal-content {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      border-radius: 0;
+      padding: 0;
+
+      & > button {
+        top: 24px;
+      }
+
+      .ant-modal-title {
+        padding: 24px 16px 0;
+      }
+
+      .ant-modal-body {
+        height: 100%;
+        padding: 8px 16px;
+        overflow-y: auto;
+      }
+
+      .ant-modal-footer {
+        padding: 8px 16px 16px;
+        margin-top: 0;
+      }
+    }
+  }
+`;
