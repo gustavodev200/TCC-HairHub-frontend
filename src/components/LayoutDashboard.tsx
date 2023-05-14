@@ -2,12 +2,13 @@
 
 import React, { ReactNode, useState } from "react";
 import {
+  TagsOutlined,
   ScissorOutlined,
   HomeOutlined,
   UsergroupAddOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import { Layout, Menu, theme } from "antd";
+import { Layout, Menu } from "antd";
 import styled from "styled-components";
 import { HeaderWrapper } from "./Header";
 import Image from "next/image";
@@ -36,6 +37,7 @@ const items: MenuItem[] = [
   getItem("Home", "/dashboard", <HomeOutlined />),
   getItem("Colaboradores", "/dashboard/employees", <UsergroupAddOutlined />),
   getItem("Serviços", "/dashboard/services", <ScissorOutlined />),
+  getItem("Categorias", "/dashboard/categories", <TagsOutlined />),
 ];
 
 const LayoutDashboard = ({ children }: { children: ReactNode }) => {

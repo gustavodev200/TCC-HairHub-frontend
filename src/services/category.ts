@@ -1,29 +1,29 @@
-import { SuccessMessages } from "@/@types/messages";
-import Api from "./api";
+import { CategoryInputDTO, CategoryOutputDTO } from "@/@types/category";
 import {
   PaginatedDataResponse,
   PaginatedRequestParams,
 } from "@/@types/paginatedData";
-import { Employee } from "@/@types/employee";
+import Api from "./api";
+import { SuccessMessages } from "@/@types/messages";
 import { GenericStatus } from "@/@types/genericStatus";
 
-const baseUrl = "/employees";
+const baseUrl = "/categories";
 
 async function getPaginated(
   params?: PaginatedRequestParams
-): Promise<PaginatedDataResponse<Employee>> {
+): Promise<PaginatedDataResponse<CategoryOutputDTO>> {
   return Api.get(baseUrl, { params, headers: { authHeader: true } }).then(
     (res) => res.data
   );
 }
 
-async function create(data: Employee): Promise<Employee> {
+async function create(data: CategoryInputDTO): Promise<CategoryOutputDTO> {
   return Api.post(baseUrl, data, {
     headers: { authHeader: true, "success-message": SuccessMessages.MSGS01 },
   }).then((res) => res.data);
 }
 
-async function update(data: Employee): Promise<Employee> {
+async function update(data: CategoryOutputDTO): Promise<CategoryOutputDTO> {
   return Api.put(`${baseUrl}/${data.id}`, data, {
     headers: { authHeader: true, "success-message": SuccessMessages.MSGS02 },
   }).then((res) => res.data);
@@ -32,7 +32,7 @@ async function update(data: Employee): Promise<Employee> {
 async function changeStatus(
   id: string,
   status: GenericStatus
-): Promise<Employee> {
+): Promise<CategoryOutputDTO> {
   return Api.patch(
     `${baseUrl}/${id}`,
     { status },
@@ -40,20 +40,9 @@ async function changeStatus(
   ).then((res) => res.data);
 }
 
-async function resetPassword(id: string): Promise<Employee> {
-  return Api.put(
-    `${baseUrl}/${id}/reset-password`,
-    {},
-    {
-      headers: { authHeader: true, "success-message": SuccessMessages.MSGS05 },
-    }
-  ).then((res) => res.data);
-}
-
-export const employeeService = {
+export const categoryService = {
   getPaginated,
   create,
   update,
   changeStatus,
-  resetPassword,
 };

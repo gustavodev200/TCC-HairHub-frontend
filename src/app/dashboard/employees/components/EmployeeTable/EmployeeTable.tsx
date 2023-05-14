@@ -1,6 +1,6 @@
 "use client";
 
-import { Table, Button, Tag, Space, Avatar } from "antd";
+import { Table, Button, Tag, Space, Avatar, Tooltip } from "antd";
 import styled from "styled-components";
 import { ColumnGroupType, ColumnType, ColumnsType } from "antd/es/table";
 import {
@@ -46,18 +46,6 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
       key: "name",
       render: (name) => <h4>{name}</h4>,
     },
-    // {
-    //   title: "CPF",
-    //   dataIndex: "cpf",
-    //   key: "cpf",
-    //   render: (cpf) => <span>{formatCpf(cpf)}</span>,
-    // },
-    // {
-    //   title: "Telefone",
-    //   dataIndex: "phone",
-    //   key: "phone",
-    //   render: (phone) => <span>{formatPhoneNumber(phone)}</span>,
-    // },
     {
       title: "Atribuição",
       dataIndex: "role",
@@ -71,11 +59,6 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
           return <TagColor tag="Atendente" color="red" />;
         }
       },
-    },
-    {
-      title: "E-mail",
-      dataIndex: "email",
-      key: "email",
     },
 
     {
@@ -116,13 +99,15 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
       key: "action",
       render: ({ id, status }, record) => (
         <Space size="middle">
-          <StatusButton
-            backgroundcolor="#53A5FF"
-            type="primary"
-            onClick={() => handleOpenModalInfoEmployee(id)}
-          >
-            <InfoCircleOutlined />
-          </StatusButton>
+          <Tooltip title="Ver datalhes">
+            <StatusButton
+              backgroundcolor="#53A5FF"
+              type="primary"
+              onClick={() => handleOpenModalInfoEmployee(id)}
+            >
+              <InfoCircleOutlined />
+            </StatusButton>
+          </Tooltip>
           <StatusButton
             backgroundcolor="#C1820B"
             type="primary"
