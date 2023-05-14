@@ -9,10 +9,13 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import { ServerStyleSheet, StyleSheetManager } from "styled-components";
 import { ToastContainer } from "react-toastify";
+import { LoadingComponent } from "../LoadingComponent";
+import { useProgressIndicator } from "@/stores/useProgressIndicator";
 
 export const ClientSideAppProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const { items } = useProgressIndicator();
   const [styledComponentsStyleSheet] = useState(() => new ServerStyleSheet());
 
   const [queryClient] = useState(() => new QueryClient());
@@ -46,6 +49,7 @@ export const ClientSideAppProvider: React.FC<{ children: React.ReactNode }> = ({
         ) : (
           <>{children}</>
         )}
+        {items.length > 0 && <LoadingComponent />}
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </ConfigProvider>

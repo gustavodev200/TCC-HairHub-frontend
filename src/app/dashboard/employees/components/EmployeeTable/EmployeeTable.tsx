@@ -15,6 +15,7 @@ import { formatCpf } from "@/helpers/utils/formatCpf";
 import { formatPhoneNumber } from "@/helpers/utils/formatPhoneNumber";
 import { AssignmentType } from "@/@types/role";
 import { TagColor } from "@/components/Tag";
+import { useProgressIndicator } from "@/stores/useProgressIndicator";
 
 interface EmployeeTableProps {
   employees: Employee[];
@@ -29,6 +30,9 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
   handleOpenModalInfoEmployee,
   resetPassword,
 }) => {
+  const { addProgressIndicatorItem, removeProgressIndicatorItem } =
+    useProgressIndicator();
+
   const columns: ColumnsType<Employee> = [
     {
       dataIndex: "image",
@@ -69,7 +73,7 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
           <StatusButton
             backgroundcolor="#53A5FF"
             type="primary"
-            onClick={() => resetPassword(id)}
+            onClick={() => handleResetPassword(id)}
           >
             Reenviar senha
           </StatusButton>
@@ -141,6 +145,17 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
       queryClient.invalidateQueries(["employees"]);
     },
   });
+
+  const handleResetPassword = (id: string) => {
+    addProgressIndicatorItem({
+      id: "reset-password",
+      message: "Reenviando e-mail...",
+    });
+
+    employeeService.resetPassword(id).finally(() => {
+      removeProgressIndicatorItem("reset-password");
+    });
+  };
 
   return (
     <TableWrapper
