@@ -6,6 +6,7 @@ import {
   ScissorOutlined,
   HomeOutlined,
   UsergroupAddOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Layout, Menu } from "antd";
@@ -36,6 +37,7 @@ function getItem(
 const items: MenuItem[] = [
   getItem("Home", "/dashboard", <HomeOutlined />),
   getItem("Colaboradores", "/dashboard/employees", <UsergroupAddOutlined />),
+  getItem("Clientes", "/dashboard/clients", <UserOutlined />),
   getItem("Serviços", "/dashboard/services", <ScissorOutlined />),
   getItem("Categorias", "/dashboard/categories", <TagsOutlined />),
 ];
