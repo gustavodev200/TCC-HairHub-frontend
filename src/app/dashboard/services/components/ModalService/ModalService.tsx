@@ -4,16 +4,7 @@ import { IService, IServiceInputDTO } from "@/@types/service";
 import { serviceApi } from "@/services/service";
 import { FieldTimeOutlined, ScissorOutlined } from "@ant-design/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  Button,
-  Form,
-  Modal,
-  Upload,
-  Input,
-  InputNumber,
-  UploadFile,
-  UploadProps,
-} from "antd";
+import { Button, Form, Modal, Upload, Input, InputNumber } from "antd";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { UploadButton } from "./components/UploadButton";

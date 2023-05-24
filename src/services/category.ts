@@ -6,6 +6,7 @@ import {
 import Api from "./api";
 import { SuccessMessages } from "@/@types/messages";
 import { GenericStatus } from "@/@types/genericStatus";
+import { CategoriesWithProducts } from "@/@types/categoriesWithProducts";
 
 const baseUrl = "/categories";
 
@@ -15,6 +16,12 @@ async function getPaginated(
   return Api.get(baseUrl, { params, headers: { authHeader: true } }).then(
     (res) => res.data
   );
+}
+
+async function listProductsWithCategories(): Promise<CategoriesWithProducts[]> {
+  return Api.get(`${baseUrl}/products`, {
+    headers: { authHeader: true },
+  }).then((res) => res.data);
 }
 
 async function create(data: CategoryInputDTO): Promise<CategoryOutputDTO> {
@@ -42,6 +49,7 @@ async function changeStatus(
 
 export const categoryService = {
   getPaginated,
+  listProductsWithCategories,
   create,
   update,
   changeStatus,

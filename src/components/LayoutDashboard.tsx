@@ -7,6 +7,7 @@ import {
   HomeOutlined,
   UsergroupAddOutlined,
   UserOutlined,
+  ShoppingOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Layout, Menu } from "antd";
@@ -40,6 +41,7 @@ const items: MenuItem[] = [
   getItem("Clientes", "/dashboard/clients", <UserOutlined />),
   getItem("Serviços", "/dashboard/services", <ScissorOutlined />),
   getItem("Categorias", "/dashboard/categories", <TagsOutlined />),
+  getItem("Produtos", "/dashboard/products", <ShoppingOutlined />),
 ];
 
 const LayoutDashboard = ({ children }: { children: ReactNode }) => {

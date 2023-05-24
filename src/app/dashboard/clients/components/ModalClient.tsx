@@ -176,7 +176,7 @@ export const ClientDialogForm: React.FC<ClientDialogFormProps> = ({
       centered
       open={open}
       onCancel={handleCancel}
-      title={`${clientToEdit ? "Editar" : "Adicionar"} Client`}
+      title={`${clientToEdit ? "Editar" : "Adicionar"} Cliente`}
       footer={[
         <ButtonModal
           onClick={handleCancel}
