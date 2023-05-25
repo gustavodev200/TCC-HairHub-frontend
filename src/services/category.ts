@@ -18,8 +18,11 @@ async function getPaginated(
   );
 }
 
-async function listProductsWithCategories(): Promise<CategoriesWithProducts[]> {
+async function listProductsWithCategories(
+  params?: PaginatedRequestParams
+): Promise<CategoriesWithProducts[]> {
   return Api.get(`${baseUrl}/products`, {
+    params,
     headers: { authHeader: true },
   }).then((res) => res.data);
 }

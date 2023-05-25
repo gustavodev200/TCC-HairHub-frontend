@@ -79,6 +79,10 @@ export const ModalProduct: React.FC<ModalProps> = ({
     if (productToEdit) {
       setFieldsValue({
         name: productToEdit.name,
+        description: productToEdit.description,
+        price: productToEdit.price,
+        amount: productToEdit.amount,
+        category_id: productToEdit.category_id,
       });
     }
   }, [productToEdit, setFieldsValue]);
@@ -152,12 +156,10 @@ export const ModalProduct: React.FC<ModalProps> = ({
               size="large"
               defaultValue="Selecione uma categoria"
               style={{ width: "100%" }}
-              options={[
-                ...categories.map((item) => ({
-                  value: item.id,
-                  label: item.name,
-                })),
-              ]}
+              options={categories.map((item) => ({
+                value: item.id,
+                label: item.name,
+              }))}
             />
           </Form.Item>
 

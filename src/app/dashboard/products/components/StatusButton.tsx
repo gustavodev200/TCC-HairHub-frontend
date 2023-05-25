@@ -3,28 +3,23 @@ import { Button } from "antd";
 import styled from "styled-components";
 
 interface StatusButtonProps {
-  status: GenericStatus;
-  id: string;
-  changeStatus: any;
+  bgColor: string;
+  changeStatus: () => void;
+  currentStatus: GenericStatus;
 }
 
 export const StatusButton: React.FC<StatusButtonProps> = ({
   changeStatus,
-  id,
-  status,
+  bgColor,
+  currentStatus,
 }) => {
   return (
     <StatusButtonWrapper
-      backgroundcolor={status === "active" ? "#F05761" : "#6CB66F"}
+      backgroundcolor={bgColor}
       type="primary"
-      onClick={() =>
-        changeStatus.mutate({
-          id,
-          status: status === "active" ? "inactive" : "active",
-        })
-      }
+      onClick={changeStatus}
     >
-      {status === "active" ? "Inativar" : "Ativar"}
+      {currentStatus === "active" ? "Inativar" : "Ativar"}
     </StatusButtonWrapper>
   );
 };

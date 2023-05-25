@@ -7,16 +7,23 @@ import { Products } from "@/@types/products";
 import { PageHeaderProducts } from "./components";
 import { categoryService } from "@/services/category";
 import styled from "styled-components";
-import { Col, Row } from "antd";
+import { GenericStatus } from "@/@types/genericStatus";
 
 export default function Page() {
-  const { isLoading, error, data } = useQuery(
-    ["categories", "products"],
-    categoryService.listProductsWithCategories
-  );
-
   const [productToEdit, setProductToEdit] = useState<Products>();
   const [showModalProduct, setShowModalProduct] = useState(false);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<GenericStatus | "all">(
+    "all"
+  );
+
+  const { data } = useQuery(["categories", "products", statusFilter, search], {
+    queryFn: () =>
+      categoryService.listProductsWithCategories({
+        filterByStatus: statusFilter !== "all" ? statusFilter : undefined,
+        query: search,
+      }),
+  });
 
   const handleOpenModalProduct = (product?: Products) => {
     if (product) {
@@ -37,7 +44,9 @@ export default function Page() {
     <>
       <PageHeaderProducts
         pageTitle="Produtos"
-        statusFilter={"all"}
+        statusFilter={statusFilter}
+        onChangeSearch={(value) => setSearch(value)}
+        onChangeStatusFilter={(value) => setStatusFilter(value)}
         handleOpenModal={handleOpenModalProduct}
       />
 
@@ -54,16 +63,21 @@ export default function Page() {
         productToEdit={productToEdit}
         onClose={handleCloseModalProduct}
       />
-      {data?.map((category) => (
-        <CardWrapper key={category.id}>
-          <h2 style={{ marginBottom: "16px" }}>{category.name}</h2>
-          <ProductsGrid>
-            {category.products.map((product) => (
-              <CardProduct key={product.id} product={product} />
-            ))}
-          </ProductsGrid>
-        </CardWrapper>
-      ))}
+      {data &&
+        data?.map((category) => (
+          <CardWrapper key={category.id}>
+            <h2 style={{ marginBottom: "16px" }}>{category.name}</h2>
+            <ProductsGrid>
+              {category.products.map((product) => (
+                <CardProduct
+                  onEdit={handleOpenModalProduct}
+                  key={product.id}
+                  product={product}
+                />
+              ))}
+            </ProductsGrid>
+          </CardWrapper>
+        ))}
     </>
   );
 }

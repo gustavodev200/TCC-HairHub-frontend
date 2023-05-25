@@ -50,7 +50,7 @@ export const ClientSideAppProvider: React.FC<{ children: React.ReactNode }> = ({
           <>{children}</>
         )}
         {items.length > 0 && <LoadingComponent />}
-        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </ConfigProvider>
   );

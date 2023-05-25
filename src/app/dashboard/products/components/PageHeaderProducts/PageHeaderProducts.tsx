@@ -10,35 +10,26 @@ import debounce from "lodash.debounce";
 interface PageHeaderProps {
   pageTitle: string;
   statusFilter: GenericStatus | "all";
-  // onChangeStatusFilter: (status: GenericStatus | "all") => void;
-  // onChangeSearch: (search: string) => void;
+  onChangeStatusFilter: (status: GenericStatus | "all") => void;
+  onChangeSearch: (search: string) => void;
   handleOpenModal: () => void;
 }
 
 export const PageHeaderProducts: React.FC<PageHeaderProps> = ({
   pageTitle,
   statusFilter,
-  // onChangeStatusFilter,
-  // onChangeSearch,
+  onChangeStatusFilter,
+  onChangeSearch,
   handleOpenModal,
 }) => {
-  // const debouncedSearch = useCallback(
-  //   debounce((value: string) => {
-  //     if (value === "" || value.length >= 3) {
-  //       onChangeSearch(value);
-  //     }
-  //   }, 500),
-  //   []
-  // );
-  const [open, setOpen] = useState(false);
-
-  const showModal = () => {
-    setOpen(true);
-  };
-
-  const handleCancel = () => {
-    setOpen(false);
-  };
+  const debouncedSearch = useCallback(
+    debounce((value: string) => {
+      if (value === "" || value.length >= 3) {
+        onChangeSearch(value);
+      }
+    }, 500),
+    []
+  );
 
   return (
     <HeaderContainer>
@@ -51,7 +42,7 @@ export const PageHeaderProducts: React.FC<PageHeaderProps> = ({
           size="large"
           placeholder="Pesquisar serviços"
           prefix={<SearchOutlined />}
-          // onChange={(e) => debouncedSearch(e.target.value)}
+          onChange={(e) => debouncedSearch(e.target.value)}
         />
 
         <div>
@@ -59,7 +50,7 @@ export const PageHeaderProducts: React.FC<PageHeaderProps> = ({
             size="large"
             defaultValue="todos"
             value={statusFilter}
-            // onChange={(value) => onChangeStatusFilter(value as GenericStatus)}
+            onChange={(value) => onChangeStatusFilter(value as GenericStatus)}
             options={[
               { value: "all", label: "Todos" },
               { value: GenericStatus.active, label: "Ativos" },

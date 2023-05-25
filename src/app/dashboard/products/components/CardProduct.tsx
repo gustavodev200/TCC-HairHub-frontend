@@ -5,22 +5,44 @@ import { EditOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import { Products } from "@/@types/products";
 import { formatCurrency } from "@/helpers/utils/formatCurrency";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { productService } from "@/services/product";
 
 interface CardProductProps {
   product: Products;
+  onEdit: (product: Products) => void;
 }
-export const CardProduct: React.FC<CardProductProps> = ({ product }) => {
+export const CardProduct: React.FC<CardProductProps> = ({
+  product,
+  onEdit,
+}) => {
+  const queryClient = useQueryClient();
+
+  const changeStatus = useMutation({
+    mutationFn: (params: any) =>
+      productService.changeStatus(params.id, params.status),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries(["categories", "products"]);
+    },
+  });
+
   return (
     <Card
       extra={
         <Space>
           <StatusButton
-            changeStatus={false}
-            id="1"
-            status={GenericStatus.inactive}
+            changeStatus={() =>
+              changeStatus.mutate({
+                id: product.id,
+                status: product.status === "active" ? "inactive" : "active",
+              })
+            }
+            currentStatus={product.status as GenericStatus}
+            bgColor={product.status === "active" ? "#F05761" : "#6CB66F"}
           />
-
-          <EditOutlined />
+          <ButtonEdit onClick={() => onEdit(product)}>
+            <EditOutlined />
+          </ButtonEdit>
         </Space>
       }
       style={{ width: 350 }}
@@ -60,4 +82,15 @@ const DescriptLimitedRow = styled.p`
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
+`;
+
+const ButtonEdit = styled.button`
+  padding: 10px;
+  background-color: #f0f0f0;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  &:hover {
+    background-color: #e0e0e0;
+  }
 `;
