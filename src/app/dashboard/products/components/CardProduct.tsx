@@ -31,6 +31,7 @@ export const CardProduct: React.FC<CardProductProps> = ({
       extra={
         <Space>
           <StatusButton
+            isLoading={changeStatus.isLoading}
             changeStatus={() =>
               changeStatus.mutate({
                 id: product.id,

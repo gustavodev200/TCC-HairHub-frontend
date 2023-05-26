@@ -154,7 +154,7 @@ export const ModalProduct: React.FC<ModalProps> = ({
           >
             <Select
               size="large"
-              defaultValue="Selecione uma categoria"
+              placeholder="Selecione uma categoria"
               style={{ width: "100%" }}
               options={categories.map((item) => ({
                 value: item.id,
