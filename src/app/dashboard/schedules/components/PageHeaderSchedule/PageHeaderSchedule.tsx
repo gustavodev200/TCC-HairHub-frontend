@@ -6,6 +6,9 @@ import { Input, Select, Button } from "antd";
 import { useCallback, useState } from "react";
 import { GenericStatus } from "@/@types/genericStatus";
 import debounce from "lodash.debounce";
+import { DatePicker, Space } from "antd";
+import type { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 
 interface PageHeaderProps {
   pageTitle: string;
@@ -15,7 +18,29 @@ interface PageHeaderProps {
   handleOpenModal: () => void;
 }
 
-export const PageHeaderProducts: React.FC<PageHeaderProps> = ({
+const onRangeChange = (
+  dates: null | (Dayjs | null)[],
+  dateStrings: string[]
+) => {
+  if (dates) {
+    console.log("De: ", dates[0], ", Para: ", dates[1]);
+    console.log("De: ", dateStrings[0], ", Para: ", dateStrings[1]);
+  } else {
+    console.log("Limpar");
+  }
+};
+
+const rangePresets: {
+  label: string;
+  value: [Dayjs, Dayjs];
+}[] = [
+  { label: "Last 7 Days", value: [dayjs().add(-7, "d"), dayjs()] },
+  { label: "Last 14 Days", value: [dayjs().add(-14, "d"), dayjs()] },
+  { label: "Last 30 Days", value: [dayjs().add(-30, "d"), dayjs()] },
+  { label: "Last 90 Days", value: [dayjs().add(-90, "d"), dayjs()] },
+];
+
+export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
   pageTitle,
   statusFilter,
   onChangeStatusFilter,
@@ -30,6 +55,25 @@ export const PageHeaderProducts: React.FC<PageHeaderProps> = ({
     }, 500),
     []
   );
+  const [open, setOpen] = useState(false);
+
+  const { RangePicker } = DatePicker;
+
+  const onChange = (value: Dayjs | null, dateString: string) => {
+    if (value) {
+      console.log("Date: ", value);
+    } else {
+      console.log("Clear");
+    }
+  };
+
+  const showModal = () => {
+    setOpen(true);
+  };
+
+  const handleCancel = () => {
+    setOpen(false);
+  };
 
   return (
     <HeaderContainer>
@@ -38,23 +82,20 @@ export const PageHeaderProducts: React.FC<PageHeaderProps> = ({
       </HeaderTitle>
 
       <HeaderActions>
-        <Input
-          size="large"
-          placeholder="Pesquisar serviços"
-          prefix={<SearchOutlined />}
-          onChange={(e) => debouncedSearch(e.target.value)}
-        />
+        <Space direction="vertical" size={12}>
+          <DatePicker onChange={onChange} format="DD/MM/YYYY" size="large" />
+        </Space>
 
         <div>
           <SelectContainer
             size="large"
-            defaultValue="todos"
-            value={statusFilter}
+            defaultValue="Selecione um barbeiro"
+            value={1}
             onChange={(value) => onChangeStatusFilter(value as GenericStatus)}
             options={[
-              { value: "all", label: "Todos" },
-              { value: GenericStatus.active, label: "Ativos" },
-              { value: GenericStatus.inactive, label: "Inativos" },
+              { value: 1, label: "Carlin Corte" },
+              { value: 2, label: "Gustavo Cardoso" },
+              { value: 3, label: "Josiel" },
             ]}
           />
         </div>
@@ -73,8 +114,6 @@ export const PageHeaderProducts: React.FC<PageHeaderProps> = ({
 };
 
 const HeaderContainer = styled.div`
-  width: 90%;
-  padding: 0 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -104,7 +143,7 @@ const HeaderTitle = styled.div`
 `;
 
 const SelectContainer = styled(Select)`
-  width: 8rem;
+  width: 15rem;
   margin: 0 1.5rem;
 `;
 

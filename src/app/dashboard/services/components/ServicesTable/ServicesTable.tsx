@@ -51,11 +51,11 @@ export const ServicesTable: React.FC<ServicesTableProps> = ({
       key: "status",
       render: (status) => {
         return status === "active" ? (
-          <Tag color="green" key={status}>
+          <Tag color="#059101" key={status}>
             ATIVO
           </Tag>
         ) : (
-          <Tag color="red" key={status}>
+          <Tag color="#bd0000" key={status}>
             INATIVO
           </Tag>
         );

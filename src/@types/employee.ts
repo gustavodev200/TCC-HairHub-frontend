@@ -1,6 +1,7 @@
 import { AddressInputDTO } from "./address";
 import { GenericStatus } from "./genericStatus";
 import { AssignmentType } from "./role";
+import { ShiftInputDTO } from "./shifts";
 
 export interface EmployeeInputDTO {
   name: string;
@@ -10,6 +11,7 @@ export interface EmployeeInputDTO {
   email: string;
   role: AssignmentType;
   address: AddressInputDTO;
+  shifts: ShiftInputDTO[];
 }
 
 export interface Employee extends EmployeeInputDTO {

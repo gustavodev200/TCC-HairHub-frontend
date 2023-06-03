@@ -52,7 +52,7 @@ export const InfoModal = ({ open, onClose, employeeInfo }: ModalProps) => {
                 )}
 
                 {employeeInfo.role === AssignmentType.ADMIN && (
-                  <TagColor tag="Administrador(a)" color="blue" />
+                  <TagColor tag="Gerente/Proprietário" color="blue" />
                 )}
 
                 {employeeInfo.role === AssignmentType.ATTENDANT && (

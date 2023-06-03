@@ -1,6 +1,5 @@
 "use client";
 
-import { EmployeeInputDTO } from "@/@types/employee";
 import { Employee } from "@/@types/employee";
 import { ErrorMessages } from "@/@types/messages";
 import { employeeService } from "@/services/employee";
@@ -8,6 +7,7 @@ import {
   EnvironmentFilled,
   IdcardOutlined,
   UserOutlined,
+  ContactsOutlined,
 } from "@ant-design/icons";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -19,6 +19,7 @@ import styled from "styled-components";
 import { EmployeeAddressStep } from "./EmployeeAddressStep";
 import { EmployeePersonalInfoStep } from "./EmployeePersonaInfoStep";
 import { EmployeeRolesStep } from "./EmployeeRolesStep";
+import { EmployeeShiftsStep } from "./EmployeeShiftsStep";
 
 interface EmployeeDialogFormProps {
   open: boolean;
@@ -36,6 +37,7 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
   const [step, setStep] = useState(0);
   const [isFirstStepValid, setIsFirstStepValid] = useState(false);
   const [isSecondStepValid, setIsSecondStepValid] = useState(false);
+  const [isThirdStepValid, setIsThirdStepValid] = useState(false);
 
   const [form] = Form.useForm<Employee>();
 
@@ -107,6 +109,7 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
     resetFields();
     setIsFirstStepValid(false);
     setIsSecondStepValid(false);
+    setIsThirdStepValid(false);
     setStep(0);
     onClose();
   };
@@ -123,6 +126,7 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
           "phone",
           "address",
           "role",
+          "shifts",
         ]);
 
         dataToSend.cpf = dataToSend.cpf.replace(/\D/g, "");
@@ -157,6 +161,7 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
     if (employeeToEdit) {
       setIsFirstStepValid(true);
       setIsSecondStepValid(true);
+      setIsThirdStepValid(true);
 
       setFieldsValue({
         id: employeeToEdit.id,
@@ -167,6 +172,7 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
         phone: employeeToEdit.phone,
         address: employeeToEdit.address,
         role: employeeToEdit.role,
+        shifts: employeeToEdit.shifts,
       });
     }
   }, [employeeToEdit]);
@@ -194,10 +200,11 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
           loading={createEmployee.isLoading}
           disabled={
             (!isFirstStepValid && step === 0) ||
-            (!isSecondStepValid && step === 1)
+            (!isSecondStepValid && step === 1) ||
+            (!isThirdStepValid && step === 2)
           }
           onClick={() => {
-            if (step < 2) {
+            if (step < 3) {
               setStep(step + 1);
 
               return;
@@ -206,7 +213,7 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
             handleSubmit();
           }}
         >
-          {step < 2 ? "Próximo" : "Salvar"}
+          {step < 3 ? "Próximo" : "Salvar"}
         </ButtonModal>,
       ]}
     >
@@ -227,10 +234,19 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
             icon: <EnvironmentFilled />,
           },
           {
+            title: "Expediente",
+            disabled:
+              !isFirstStepValid ||
+              !isSecondStepValid ||
+              createEmployee.isLoading,
+            icon: <ContactsOutlined />,
+          },
+          {
             title: "Atribuições",
             disabled:
               !isFirstStepValid ||
               !isSecondStepValid ||
+              !isThirdStepValid ||
               createEmployee.isLoading,
             icon: <IdcardOutlined />,
           },
@@ -252,6 +268,13 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
       )}
 
       {step === 2 && (
+        <EmployeeShiftsStep
+          employeeForm={form}
+          onStepValidate={(isValid) => setIsThirdStepValid(isValid)}
+        />
+      )}
+
+      {step === 3 && (
         <EmployeeRolesStep form={form} disabled={createEmployee.isLoading} />
       )}
     </StyledModal>

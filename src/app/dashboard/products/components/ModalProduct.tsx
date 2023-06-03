@@ -1,11 +1,13 @@
 "use client";
 
 import { CategoriesWithProducts } from "@/@types/categoriesWithProducts";
+import { CategoryOutputDTO } from "@/@types/category";
 import { Products, ProductsInputDTO } from "@/@types/products";
+import { categoryService } from "@/services/category";
 import { productService } from "@/services/product";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button, Form, Modal, InputNumber, Input, Select } from "antd";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 interface ModalProps {
@@ -24,8 +26,16 @@ export const ModalProduct: React.FC<ModalProps> = ({
   const { TextArea } = Input;
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
+  const [search, setSearch] = useState("");
 
   const { resetFields, setFieldsValue, validateFields } = form;
+
+  const { data } = useQuery(["categories", search], {
+    queryFn: () =>
+      categoryService.list({
+        query: search,
+      }),
+  });
 
   const createProduct = useMutation({
     mutationFn: (data: ProductsInputDTO) => productService.createProduct(data),
@@ -153,10 +163,20 @@ export const ModalProduct: React.FC<ModalProps> = ({
             rules={[{ required: true, message: "Campo Obrigatório!" }]}
           >
             <Select
-              size="large"
-              placeholder="Selecione uma categoria"
+              showSearch
               style={{ width: "100%" }}
-              options={categories.map((item) => ({
+              placeholder="Selecione uma categoria"
+              size="large"
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                (option?.label ?? "").includes(input)
+              }
+              filterSort={(optionA, optionB) =>
+                (optionA?.label ?? "")
+                  .toLowerCase()
+                  .localeCompare((optionB?.label ?? "").toLowerCase())
+              }
+              options={data?.map((item) => ({
                 value: item.id,
                 label: item.name,
               }))}

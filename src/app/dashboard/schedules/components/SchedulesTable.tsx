@@ -1,0 +1,196 @@
+"use client";
+
+import { Table, Button, Tag, Space, Select } from "antd";
+import styled from "styled-components";
+import { ColumnGroupType, ColumnType, ColumnsType } from "antd/es/table";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { categoryService } from "@/services/category";
+import { ScheduleOutputDTO } from "@/@types/schedules";
+import { ScheduleStatus } from "@/@types/scheduleStatus";
+import { useState } from "react";
+
+interface SchedulesTableProps {
+  schedules: ScheduleOutputDTO[];
+  onEdit: (category: ScheduleOutputDTO) => void;
+}
+
+export const SchedulesTable: React.FC<SchedulesTableProps> = ({
+  schedules,
+  onEdit,
+}) => {
+  const columns: ColumnsType<ScheduleOutputDTO> = [
+    {
+      title: "Cliente",
+      dataIndex: "client_id",
+      key: "client_id",
+      render: (client_id) => <h4>{client_id}</h4>,
+    },
+
+    {
+      title: "Horário/Inicio",
+      dataIndex: "start_time",
+      key: "start_time",
+      render: (start_time) => <span>{start_time}</span>,
+    },
+
+    {
+      title: "Horário/Fim",
+      dataIndex: "end_time",
+      key: "end_time",
+      render: (end_time) => <span>{end_time}</span>,
+    },
+
+    {
+      title: "Serviço",
+      dataIndex: "services",
+      key: "services",
+      render: (services) => <h4>{services}</h4>,
+    },
+
+    {
+      title: "Tempo/Estim",
+      dataIndex: "estimated_time",
+      key: "estimated_time",
+      render: (estimated_time) => <h4>{estimated_time}</h4>,
+    },
+
+    {
+      title: "Status",
+      dataIndex: "schedule_status",
+      key: "schedule_status",
+      render: (schedule_status) => {
+        return (
+          schedule_status && (
+            <StatusSelect
+              defaultValue={schedule_status}
+              customStatus={status}
+              onChange={(value: unknown) =>
+                handleChange(value as ScheduleStatus)
+              }
+              options={[
+                { value: ScheduleStatus.SCHEDULED, label: "Agendado" },
+                { value: ScheduleStatus.CONFIRMED, label: "Confirmado" },
+                {
+                  value: ScheduleStatus.AWAITING_SERVICE,
+                  label: "Aguardando Atendimento",
+                },
+                { value: ScheduleStatus.FINISHED, label: "Finalizado" },
+                { value: ScheduleStatus.CANCELED, label: "Cancelado" },
+              ]}
+            />
+          )
+        );
+      },
+      // render: (status) => {
+      //   return status === "active" ? (
+      //     <Tag color="#059101" key={status}>
+      //       ATIVO
+      //     </Tag>
+      //   ) : (
+      //     <Tag color="#bd0000" key={status}>
+      //       INATIVO
+      //     </Tag>
+      //   );
+      // },
+    },
+
+    {
+      title: "Ações",
+      key: "action",
+
+      render: ({ id, status }, record) => (
+        <Space size="middle">
+          <StatusButton
+            backgroundcolor="#C1820B"
+            type="primary"
+            onClick={() => onEdit(record)}
+          >
+            Editar
+          </StatusButton>
+          {/* <StatusButton
+            backgroundcolor={status === "active" ? "#F05761" : "#6CB66F"}
+            type="primary"
+            onClick={() =>
+              changeStatus.mutate({
+                id,
+                status: status === "active" ? "inactive" : "active",
+              })
+            }
+          >
+            {status === "active" ? "Inativar" : "Ativar"}
+          </StatusButton> */}
+        </Space>
+      ),
+    },
+  ];
+
+  const [status, setStatus] = useState(ScheduleStatus.CONFIRMED);
+  const handleChange = (status: ScheduleStatus) => {
+    setStatus(status);
+  };
+
+  const queryClient = useQueryClient();
+
+  const changeStatus = useMutation({
+    mutationFn: (params: any) =>
+      categoryService.changeStatus(params.id, params.status),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries(["schedules"]);
+    },
+  });
+
+  return (
+    <TableWrapper
+      pagination={false}
+      columns={columns as Array<ColumnType<object> | ColumnGroupType<object>>}
+      dataSource={schedules}
+      rowKey="id"
+    />
+  );
+};
+
+const StatusButton = styled(Button)`
+  background: ${(props) => props.backgroundcolor};
+`;
+
+const TableWrapper = styled(Table)`
+  border-radius: 8px;
+  overflow: auto;
+  min-width: 750px;
+  min-height: 529px;
+  filter: drop-shadow(0px 2px 8px rgba(0, 0, 0, 0.15));
+
+  thead tr th::before {
+    display: none;
+  }
+
+  .ant-table-cell {
+    width: 10%;
+  }
+`;
+
+const StatusSelect = styled(Select)`
+  width: 120px;
+  .ant-select-selection-item {
+    color: #fff;
+  }
+
+  .ant-select-selector {
+    background-color: ${(props) => {
+      switch (props.customStatus) {
+        case ScheduleStatus.SCHEDULED:
+          return "#e67e22";
+        case ScheduleStatus.CONFIRMED:
+          return "#3498db";
+        case ScheduleStatus.AWAITING_SERVICE:
+          return "#f1c40f";
+        case ScheduleStatus.FINISHED:
+          return "#2ecc71";
+        case ScheduleStatus.CANCELED:
+          return "#e74c3c";
+        default:
+          return "#000000";
+      }
+    }}!important;
+  }
+`;

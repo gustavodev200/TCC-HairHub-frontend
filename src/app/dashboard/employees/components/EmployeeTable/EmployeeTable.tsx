@@ -9,10 +9,8 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { UserOutlined, InfoCircleOutlined } from "@ant-design/icons";
-import { Employee, EmployeeInputDTO } from "@/@types/employee";
+import { Employee } from "@/@types/employee";
 import { employeeService } from "@/services/employee";
-import { formatCpf } from "@/helpers/utils/formatCpf";
-import { formatPhoneNumber } from "@/helpers/utils/formatPhoneNumber";
 import { AssignmentType } from "@/@types/role";
 import { TagColor } from "@/components/Tag";
 import { useProgressIndicator } from "@/stores/useProgressIndicator";
@@ -87,11 +85,11 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
       key: "status",
       render: (status) => {
         return status === "active" ? (
-          <Tag color="green" key={status}>
+          <Tag color="#059101" key={status}>
             ATIVO
           </Tag>
         ) : (
-          <Tag color="red" key={status}>
+          <Tag color="#bd0000" key={status}>
             INATIVO
           </Tag>
         );

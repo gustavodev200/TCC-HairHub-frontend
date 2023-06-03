@@ -10,6 +10,15 @@ import { CategoriesWithProducts } from "@/@types/categoriesWithProducts";
 
 const baseUrl = "/categories";
 
+async function list(
+  params?: PaginatedRequestParams
+): Promise<CategoryOutputDTO[]> {
+  return Api.get(`${baseUrl}/list`, {
+    params,
+    headers: { authHeader: true },
+  }).then((res) => res.data);
+}
+
 async function getPaginated(
   params?: PaginatedRequestParams
 ): Promise<PaginatedDataResponse<CategoryOutputDTO>> {
@@ -51,6 +60,7 @@ async function changeStatus(
 }
 
 export const categoryService = {
+  list,
   getPaginated,
   listProductsWithCategories,
   create,
