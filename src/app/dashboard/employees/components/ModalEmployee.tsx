@@ -134,6 +134,14 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
         dataToSend.address.cep = dataToSend.address.cep.replace(/\D/g, "");
 
         if (employeeToEdit) {
+          dataToSend.shifts = dataToSend.shifts.map(
+            (shift: any, index: number) => {
+              return {
+                ...shift,
+                id: employeeToEdit.shifts[index]?.id,
+              };
+            }
+          );
           editEmployee
             .mutateAsync({
               ...employeeToEdit,
@@ -152,7 +160,8 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
             .catch(() => {});
         }
       })
-      .catch(() => {
+      .catch((e) => {
+        console.log(e);
         toast.error(ErrorMessages.MSGE01);
       });
   };

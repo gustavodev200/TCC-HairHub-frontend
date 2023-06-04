@@ -17,7 +17,8 @@ export interface ShiftNotAvailableDays {
 }
 
 export interface ShiftFormDTO {
-  time_range: Dayjs[];
+  start_time: Dayjs;
+  end_time: Dayjs;
   available_days: number[];
   shifts: ShiftInputDTO[];
 }

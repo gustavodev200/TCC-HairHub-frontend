@@ -56,7 +56,7 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
         if (role === AssignmentType.EMPLOYEE) {
           return <TagColor tag="Barbeiro" color="green" />;
         } else if (role === AssignmentType.ADMIN) {
-          return <TagColor tag="Administrador(a)" color="blue" />;
+          return <TagColor tag="Gerente/Proprietário" color="blue" />;
         } else {
           return <TagColor tag="Atendente" color="red" />;
         }

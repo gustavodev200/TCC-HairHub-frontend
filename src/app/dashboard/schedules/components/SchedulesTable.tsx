@@ -20,13 +20,6 @@ export const SchedulesTable: React.FC<SchedulesTableProps> = ({
 }) => {
   const columns: ColumnsType<ScheduleOutputDTO> = [
     {
-      title: "Cliente",
-      dataIndex: "client_id",
-      key: "client_id",
-      render: (client_id) => <h4>{client_id}</h4>,
-    },
-
-    {
       title: "Horário/Inicio",
       dataIndex: "start_time",
       key: "start_time",
@@ -41,17 +34,24 @@ export const SchedulesTable: React.FC<SchedulesTableProps> = ({
     },
 
     {
+      title: "Cliente",
+      dataIndex: "client_id",
+      key: "client_id",
+      render: (client_id) => <span>{client_id}</span>,
+    },
+
+    {
       title: "Serviço",
       dataIndex: "services",
       key: "services",
-      render: (services) => <h4>{services}</h4>,
+      render: (services) => <span>{services}</span>,
     },
 
     {
       title: "Tempo/Estim",
       dataIndex: "estimated_time",
       key: "estimated_time",
-      render: (estimated_time) => <h4>{estimated_time}</h4>,
+      render: (estimated_time) => <span>{estimated_time}</span>,
     },
 
     {
@@ -163,14 +163,11 @@ const TableWrapper = styled(Table)`
   thead tr th::before {
     display: none;
   }
-
-  .ant-table-cell {
-    width: 10%;
-  }
 `;
 
 const StatusSelect = styled(Select)`
   width: 120px;
+
   .ant-select-selection-item {
     color: #fff;
   }
@@ -179,15 +176,15 @@ const StatusSelect = styled(Select)`
     background-color: ${(props) => {
       switch (props.customStatus) {
         case ScheduleStatus.SCHEDULED:
-          return "#e67e22";
+          return "#FF9029";
         case ScheduleStatus.CONFIRMED:
-          return "#3498db";
+          return "#53A5FF";
         case ScheduleStatus.AWAITING_SERVICE:
           return "#f1c40f";
         case ScheduleStatus.FINISHED:
-          return "#2ecc71";
+          return "#6CB66F";
         case ScheduleStatus.CANCELED:
-          return "#e74c3c";
+          return "#F05761";
         default:
           return "#000000";
       }

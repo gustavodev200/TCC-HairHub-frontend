@@ -43,43 +43,37 @@ export const EmployeeShiftsStep: React.FC<EmployeeShiftsStepProps> = ({
       size="middle"
       form={form}
       initialValues={{
-        time_range: [
-          dayjs(shiftsFromEmployee?.[0]?.start_time),
-          dayjs(shiftsFromEmployee?.[0]?.end_time),
-        ],
+        start_time: dayjs(shiftsFromEmployee?.[0]?.start_time),
+        end_time: dayjs(shiftsFromEmployee?.[0]?.end_time),
         available_days: shiftsFromEmployee?.[0]?.available_days,
-        shifts: shiftsFromEmployee?.slice(1) ?? [],
+        shifts:
+          shiftsFromEmployee?.slice(1).map((shift: any) => ({
+            start_time: dayjs(shift.start_time),
+            end_time: dayjs(shift.end_time),
+            available_days: shift.available_days,
+          })) ?? [],
       }}
-      onValuesChange={(changedValues, allValues) => {
-        const shifts = allValues.shifts;
-
-        if (shifts.length > 1) {
-          const previousShift = shifts[shifts.length - 2];
-          const currentShift = shifts[shifts.length - 1];
-
-          const previousAvailableDays = previousShift?.available_days;
-          const currentAvailableDays = currentShift?.available_days;
-
-          if (!currentAvailableDays || currentAvailableDays.length === 0) {
-            setFieldValue(
-              ["shifts", shifts.length - 1, "available_days"],
-              previousAvailableDays
-            );
-          }
-        }
-      }}
+      onValuesChange={(changedValues, allValues) => {}}
       onBlur={() => {
         const shifts = getFieldValue("shifts");
 
         const isValid =
           Object.values(
-            getFieldsValue(["time_range", "available_days", "shifts"])
+            getFieldsValue([
+              "start_time",
+              "end_time",
+              "available_days",
+              "shifts",
+            ])
           ).filter((value) => !value).length === 0 &&
-          !getFieldsError(["time_range", "available_days", "shifts"]).some(
-            (field) => field.errors.length > 0
-          ) &&
+          !getFieldsError([
+            "start_time",
+            "end_time",
+            "available_days",
+            "shifts",
+          ]).some((field) => field.errors?.length > 0) &&
           shifts.every(
-            (shift: ShiftOutputDTO) => shift.available_days.length > 0
+            (shift: ShiftOutputDTO) => shift?.available_days?.length > 0
           );
 
         onStepValidate(isValid);
@@ -88,76 +82,128 @@ export const EmployeeShiftsStep: React.FC<EmployeeShiftsStepProps> = ({
 
         employeeForm.setFieldValue("shifts", [
           {
-            start_time: valueFields.time_range[0].format(),
-            end_time: valueFields.time_range[1].format(),
-            available_days: valueFields.available_days,
+            start_time: valueFields?.start_time?.format(),
+            end_time: valueFields?.end_time?.format(),
+            available_days: valueFields?.available_days,
           },
-          ...valueFields.shifts.map((shift: any) => ({
-            start_time: shift.shift_time[0].format(),
-            end_time: shift.shift_time[1].format(),
-            available_days: shift.available_days,
+          ...valueFields.shifts?.map((shift: any) => ({
+            start_time: shift?.start_time?.format(),
+            end_time: shift?.end_time?.format(),
+            available_days: shift?.available_days,
           })),
         ]);
       }}
     >
-      <Form.Item
-        style={{ width: "100%" }}
-        label="1° Turno"
-        required
-        rules={[{ required: true, message: "" }]}
-        name={"time_range"}
-      >
-        <TimePicker.RangePicker format="HH:mm" style={{ width: "100%" }} />
+      <Form.Item required label="1° Turno">
+        <Space.Compact block>
+          <Form.Item
+            required
+            style={{ display: "inline-block", width: "50%" }}
+            name="start_time"
+            rules={[{ required: true, message: "" }]}
+          >
+            <TimePicker
+              format="HH:mm"
+              style={{ width: "100%" }}
+              placeholder="Início"
+            />
+          </Form.Item>
+
+          <Form.Item
+            required
+            name="end_time"
+            style={{ display: "inline-block", width: "50%" }}
+            rules={[{ required: true, message: "" }]}
+          >
+            <TimePicker
+              format="HH:mm"
+              style={{ width: "100%" }}
+              placeholder="Término"
+            />
+          </Form.Item>
+        </Space.Compact>
+
+        <Form.Item label="Quais são os dia disponíveis?" name="available_days">
+          <StyledCheckboxGroup
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            {daysOfWeek.map((day, index) => (
+              <CheckboxWeek value={index} key={index} day_of_week={day} />
+            ))}
+          </StyledCheckboxGroup>
+        </Form.Item>
       </Form.Item>
 
-      <Form.Item label="Quais são os dia disponíveis?" name="available_days">
-        <StyledCheckboxGroup
-          style={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          {daysOfWeek.map((day, index) => (
-            <CheckboxWeek value={index} key={index} day_of_week={day} />
-          ))}
-        </StyledCheckboxGroup>
-      </Form.Item>
       <Form.List name="shifts">
         {(fields, { add, remove }) => (
           <>
             {fields.map(({ key, name, ...restField }, index) => {
-              const previousDays =
-                index === 0
-                  ? getFieldValue("available_days")
-                  : getFieldValue(["shifts", index - 1, "available_days"]);
               return (
                 <div key={key}>
-                  <Space>
+                  <Form.Item label={`${index + 2}° Turno`}>
+                    <Space.Compact block>
+                      <Form.Item
+                        {...restField}
+                        name={[name, "start_time"]}
+                        style={{ width: "100%" }}
+                      >
+                        <TimePicker
+                          format="HH:mm"
+                          style={{ width: "100%" }}
+                          placeholder="Início"
+                        />
+                      </Form.Item>
+
+                      <Form.Item
+                        {...restField}
+                        name={[name, "end_time"]}
+                        style={{ width: "100%" }}
+                      >
+                        <TimePicker
+                          format="HH:mm"
+                          style={{ width: "100%" }}
+                          placeholder="Término"
+                        />
+                      </Form.Item>
+                      <MinusCircleOutlined
+                        style={{
+                          display: "inline-block",
+                          justifyItems: "center",
+
+                          cursor: "pointer",
+                          fontSize: "32px",
+                          marginLeft: "10px",
+                        }}
+                        onClick={() => {
+                          const employeeShifts: any[] =
+                            employeeForm.getFieldValue("shifts");
+                          remove(name);
+                          employeeShifts.splice(index, 1);
+                          employeeForm.setFieldValue("shifts", employeeShifts);
+                        }}
+                      />
+                    </Space.Compact>
+
                     <Form.Item
                       {...restField}
-                      name={[name, "shift_time"]}
-                      label={`${index + 2}° Turno`}
+                      name={[name, "available_days"]}
+                      label="Quais são os dias disponíveis?"
+                      style={{ width: "100%" }}
                     >
-                      <TimePicker.RangePicker format="HH:mm" />
+                      <StyledCheckboxGroup style={{ width: "100%" }}>
+                        {daysOfWeek.map((day, index) => (
+                          <CheckboxWeek
+                            value={index}
+                            key={index}
+                            day_of_week={day}
+                          />
+                        ))}
+                      </StyledCheckboxGroup>
                     </Form.Item>
-                    <MinusCircleOutlined onClick={() => remove(name)} />
-                  </Space>
-                  <Form.Item
-                    {...restField}
-                    name={[name, "available_days"]}
-                    label="Quais são os dias disponíveis?"
-                    initialValue={previousDays}
-                  >
-                    <StyledCheckboxGroup>
-                      {daysOfWeek.map((day, index) => (
-                        <CheckboxWeek
-                          value={index}
-                          key={index}
-                          day_of_week={day}
-                        />
-                      ))}
-                    </StyledCheckboxGroup>
                   </Form.Item>
                 </div>
               );
@@ -166,7 +212,28 @@ export const EmployeeShiftsStep: React.FC<EmployeeShiftsStepProps> = ({
               <Form.Item>
                 <Button
                   type="dashed"
-                  onClick={() => add()}
+                  onClick={() => {
+                    add();
+                    const shifts = getFieldValue("shifts");
+                    if (shifts.length > 1) {
+                      const previousShift = shifts[shifts.length - 2];
+                      const currentShift = shifts[shifts.length - 1];
+
+                      const previousAvailableDays =
+                        previousShift?.available_days;
+                      const currentAvailableDays = currentShift?.available_days;
+
+                      if (
+                        !currentAvailableDays ||
+                        currentAvailableDays.length === 0
+                      ) {
+                        setFieldValue(
+                          ["shifts", shifts.length - 1, "available_days"],
+                          previousAvailableDays
+                        );
+                      }
+                    }
+                  }}
                   block
                   icon={<PlusOutlined />}
                 >
