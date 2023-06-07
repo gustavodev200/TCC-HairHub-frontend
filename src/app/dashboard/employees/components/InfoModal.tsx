@@ -4,7 +4,9 @@ import { TagColor } from "@/components/Tag";
 import { formatCEP } from "@/helpers/utils/formatCep";
 import { formatCpf } from "@/helpers/utils/formatCpf";
 import { formatPhoneNumber } from "@/helpers/utils/formatPhoneNumber";
+import { getDayFromNumber } from "@/helpers/utils/getDayFromNumber";
 import { Modal } from "antd";
+import dayjs from "dayjs";
 import styled from "styled-components";
 
 interface ModalProps {
@@ -82,6 +84,31 @@ export const InfoModal = ({ open, onClose, employeeInfo }: ModalProps) => {
                   </span>
                 </AddressGap>
               </AddressContainer>
+
+              <AddressContainer>
+                <h4>Expedientes:</h4>
+
+                {employeeInfo.shifts.map((shift, index) => (
+                  <AddressGap key={shift.id}>
+                    <strong>Turno {index + 1}: </strong>
+                    <span>
+                      {dayjs(shift.start_time).format("HH:mm")} às
+                      <span> {dayjs(shift.end_time).format("HH:mm")}Horas</span>
+                    </span>
+
+                    <AvailableDaysGap>
+                      <strong>Dias disponíveis: </strong>
+                      <span>
+                        {shift.available_days.map((day, index) => (
+                          <AvailableDaysContent key={index}>
+                            {getDayFromNumber(day)}
+                          </AvailableDaysContent>
+                        ))}
+                      </span>
+                    </AvailableDaysGap>
+                  </AddressGap>
+                ))}
+              </AddressContainer>
             </AddressGap>
           </div>
         ) : (
@@ -98,4 +125,16 @@ const AddressContainer = styled.div`
 
 const AddressGap = styled.div`
   margin-top: 8px;
+`;
+
+const AvailableDaysGap = styled.div`
+  margin-top: 8px;
+`;
+
+const AvailableDaysContent = styled.span`
+  margin-right: 8px;
+  background-color: #669cff;
+  border-radius: 4px;
+  padding: 2px 5px;
+  color: #fff;
 `;

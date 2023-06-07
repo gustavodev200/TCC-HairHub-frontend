@@ -33,7 +33,7 @@ export const ClientTable: React.FC<ClientTableProps> = ({
 
   const columns: ColumnsType<Client> = [
     {
-      title: "Clientes",
+      title: "Nome",
       dataIndex: "name",
       key: "name",
       render: (name) => <h4>{name}</h4>,

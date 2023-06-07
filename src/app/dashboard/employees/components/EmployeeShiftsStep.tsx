@@ -244,7 +244,6 @@ export const EmployeeShiftsStep: React.FC<EmployeeShiftsStepProps> = ({
           </>
         )}
       </Form.List>
-
       <div style={{ display: "flex", alignItems: "end", gap: 8 }}></div>
     </Form>
   );

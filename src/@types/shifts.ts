@@ -1,5 +1,15 @@
 import { Dayjs } from "dayjs";
 
+export enum AvailableDays {
+  MONDAY = "Seg",
+  TUESDAY = "Ter",
+  WEDNESDAY = "Qua",
+  THURSDAY = "Qui",
+  FRIDAY = "Sex",
+  SATURDAY = "Sáb",
+  SUNDAY = "Dom",
+}
+
 export interface ShiftInputDTO {
   start_time: string;
   end_time: string;
