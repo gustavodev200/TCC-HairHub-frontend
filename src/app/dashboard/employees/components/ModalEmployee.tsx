@@ -57,7 +57,15 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
         (data: any) => {
           const newArrayOfData = [newItem, ...data.data];
 
-          if (data.data.length === 10) newArrayOfData.pop();
+          if (data.data.length === 10) {
+            newArrayOfData.pop();
+
+            return {
+              ...data,
+              totalPages: data.totalPages + 1,
+              data: newArrayOfData,
+            };
+          }
 
           return { ...data, data: newArrayOfData };
         }
@@ -138,6 +146,7 @@ export const EmployeeDialogForm: React.FC<EmployeeDialogFormProps> = ({
             (shift: any, index: number) => {
               return {
                 ...shift,
+                order: index,
                 id: employeeToEdit.shifts[index]?.id,
               };
             }

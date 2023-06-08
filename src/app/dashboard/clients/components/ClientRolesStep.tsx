@@ -53,7 +53,7 @@ export const ClientRolesStep: React.FC<ClientRolesStepProps> = ({
           size="large"
           style={{ width: "100%" }}
           options={[
-            { value: AssignmentType.ADMIN, label: "Gerente/Proprietário" },
+            { value: AssignmentType.ADMIN, label: "Proprietário" },
             { value: AssignmentType.EMPLOYEE, label: "Barbairo(a)" },
             { value: AssignmentType.ATTENDANT, label: "Atendente" },
             { value: AssignmentType.CLIENT, label: "Cliente" },

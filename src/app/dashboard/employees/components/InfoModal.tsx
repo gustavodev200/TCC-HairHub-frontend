@@ -54,7 +54,7 @@ export const InfoModal = ({ open, onClose, employeeInfo }: ModalProps) => {
                 )}
 
                 {employeeInfo.role === AssignmentType.ADMIN && (
-                  <TagColor tag="Gerente/Proprietário" color="blue" />
+                  <TagColor tag="Proprietário" color="blue" />
                 )}
 
                 {employeeInfo.role === AssignmentType.ATTENDANT && (
@@ -93,7 +93,10 @@ export const InfoModal = ({ open, onClose, employeeInfo }: ModalProps) => {
                     <strong>Turno {index + 1}: </strong>
                     <span>
                       {dayjs(shift.start_time).format("HH:mm")} às
-                      <span> {dayjs(shift.end_time).format("HH:mm")}Horas</span>
+                      <span>
+                        {" "}
+                        {dayjs(shift.end_time).format("HH:mm")} Horas
+                      </span>
                     </span>
 
                     <AvailableDaysGap>
