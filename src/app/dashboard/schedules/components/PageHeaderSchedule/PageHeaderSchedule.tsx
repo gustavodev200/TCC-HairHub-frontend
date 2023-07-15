@@ -123,6 +123,14 @@ const HeaderContainer = styled.div`
     color: #16171b;
     font-size: 2rem;
   }
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    align-items: flex-start;
+    h3 {
+      margin-bottom: 1rem;
+    }
+  }
 `;
 
 const HeaderActions = styled.div`
@@ -135,6 +143,11 @@ const HeaderActions = styled.div`
       font-size: 0.9rem;
     }
   }
+
+  @media (max-width: 568px) {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 `;
 
 const HeaderTitle = styled.div`
@@ -145,6 +158,12 @@ const HeaderTitle = styled.div`
 const SelectContainer = styled(Select)`
   width: 15rem;
   margin: 0 1.5rem;
+
+  @media (max-width: 568px) {
+    margin: 0;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
 `;
 
 const ButtonContainer = styled(Button)`

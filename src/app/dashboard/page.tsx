@@ -1,7 +1,9 @@
-export default function DashboardLayout() {
+import HomePageContent from "@/components/HomePageContent";
+
+export default function DashboardPage() {
   return (
     <>
-      <h1>Home</h1>
+      <h1>Home Page</h1>
     </>
   );
 }

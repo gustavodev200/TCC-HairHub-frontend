@@ -54,7 +54,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           onChange={(e) => debouncedSearch(e.target.value)}
         />
 
-        <div>
+        <SelectWrapper>
           <SelectContainer
             size="large"
             defaultValue="todos"
@@ -66,16 +66,16 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
               { value: GenericStatus.inactive, label: "Inativos" },
             ]}
           />
-        </div>
+        </SelectWrapper>
 
-        <div>
+        <ButtonWrapper>
           <ButtonContainer
             type="primary"
             icon={<PlusOutlined />}
             size="large"
             onClick={() => handleOpenModal()}
           />
-        </div>
+        </ButtonWrapper>
       </HeaderActions>
     </HeaderContainer>
   );
@@ -91,6 +91,14 @@ const HeaderContainer = styled.div`
     color: #16171b;
     font-size: 2rem;
   }
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    align-items: flex-start;
+    h3 {
+      margin-bottom: 1rem;
+    }
+  }
 `;
 
 const HeaderActions = styled.div`
@@ -103,6 +111,12 @@ const HeaderActions = styled.div`
       font-size: 0.9rem;
     }
   }
+
+  @media (max-width: 568px) {
+    width: 100%;
+    align-items: flex-start;
+    flex-direction: column;
+  }
 `;
 
 const HeaderTitle = styled.div`
@@ -113,8 +127,31 @@ const HeaderTitle = styled.div`
 const SelectContainer = styled(Select)`
   width: 8rem;
   margin: 0 1.5rem;
+
+  @media (max-width: 568px) {
+    width: 100%;
+    margin: 0;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+`;
+
+const SelectWrapper = styled.div`
+  @media (max-width: 568px) {
+    width: 100%;
+  }
 `;
 
 const ButtonContainer = styled(Button)`
   background-color: #6cb66f;
+
+  @media (max-width: 568px) {
+    min-width: 100%;
+  }
+`;
+
+const ButtonWrapper = styled.div`
+  @media (max-width: 568px) {
+    width: 100%;
+  }
 `;

@@ -156,12 +156,14 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
   };
 
   return (
-    <TableWrapper
-      pagination={false}
-      columns={columns as Array<ColumnType<object> | ColumnGroupType<object>>}
-      dataSource={employees}
-      rowKey="id"
-    />
+    <div style={{ overflow: "auto" }}>
+      <TableWrapper
+        pagination={false}
+        columns={columns as Array<ColumnType<object> | ColumnGroupType<object>>}
+        dataSource={employees}
+        rowKey="id"
+      />
+    </div>
   );
 };
 
@@ -170,9 +172,9 @@ const StatusButton = styled(Button)`
 `;
 
 const TableWrapper = styled(Table)`
+  width: 100%;
   border-radius: 8px;
-  overflow: auto;
-  min-width: 750px;
+  min-width: 900px;
   min-height: 529px;
   filter: drop-shadow(0px 2px 8px rgba(0, 0, 0, 0.15));
 

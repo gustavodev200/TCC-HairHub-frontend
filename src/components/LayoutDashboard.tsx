@@ -78,15 +78,17 @@ const LayoutDashboard = ({ children }: { children: ReactNode }) => {
       </SideBarWrapper>
       <Layout className="site-layout">
         <HeaderWrapper collapsed={collapsed} setCollapsed={setCollapsed} />
-        <Content
+        <ContentContainer
           style={{
+            width: "100%",
             height: "calc(100vh - 64px)",
             overflowY: "auto",
             padding: "32px",
+            overflowX: "hidden",
           }}
         >
           {children}
-        </Content>
+        </ContentContainer>
       </Layout>
     </Layout>
   );
@@ -104,6 +106,10 @@ const SideBarWrapper = styled(Sider)`
       background: #242731;
     }
   }
+
+  @media (max-width: 768px) {
+    display: ${({ collapsed }) => (collapsed ? "none" : "block")};
+  }
 `;
 
 const LogoWrapper = styled.div`
@@ -114,5 +120,11 @@ const LogoWrapper = styled.div`
 
   img {
     margin: 10px 0 30px 0;
+  }
+`;
+
+const ContentContainer = styled(Content)`
+  @media (max-width: 768px) {
+    padding: 16px 8px !important;
   }
 `;
