@@ -11,10 +11,12 @@ import {
   MenuOutlined,
   HeartOutlined,
 } from "@ant-design/icons";
+import { useRouter } from "next/navigation";
 
 const LayoutForClients = ({ children }: { children: ReactNode }) => {
   const [visible, setVisible] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const router = useRouter();
 
   const showDrawer = () => {
     setVisible(true);
@@ -43,24 +45,44 @@ const LayoutForClients = ({ children }: { children: ReactNode }) => {
             <Menu
               style={{
                 width: "100%",
-                background: "#16171b",
+                background: "#000",
                 color: "white",
               }}
               mode="horizontal"
               defaultSelectedKeys={["1"]}
             >
-              <Menu.Item key="1" icon={<HomeOutlined />}>
+              <Menu.Item
+                key="1"
+                icon={<HomeOutlined />}
+                onClick={() => router.push("/client/home")}
+              >
                 Home
               </Menu.Item>
-              <Menu.Item key="2" icon={<ScheduleOutlined />}>
+
+              <Menu.Item
+                key="2"
+                icon={<ScheduleOutlined />}
+                onClick={() => router.push("/client/schedules")}
+              >
                 Agendamentos
               </Menu.Item>
-              <Menu.Item key="3" icon={<HeartOutlined />}>
+
+              <Menu.Item
+                key="3"
+                icon={<HeartOutlined />}
+                onClick={() => router.push("/client/favorites")}
+              >
                 Favoritos
               </Menu.Item>
-              <Menu.Item key="4" icon={<SettingOutlined />}>
+
+              <Menu.Item
+                key="4"
+                icon={<SettingOutlined />}
+                onClick={() => router.push("/client/profile")}
+              >
                 Meu Perfil
               </Menu.Item>
+
               <Menu.Item key="5">
                 <Button>Sair</Button>
               </Menu.Item>
@@ -81,17 +103,36 @@ const LayoutForClients = ({ children }: { children: ReactNode }) => {
           visible={visible}
         >
           <Menu mode="vertical" defaultSelectedKeys={["1"]}>
-            <Menu.Item key="1" icon={<HomeOutlined />}>
+            <Menu.Item
+              key="1"
+              icon={<HomeOutlined />}
+              onClick={() => router.push("/client/home")}
+            >
               Home
             </Menu.Item>
-            <Menu.Item key="2" icon={<ScheduleOutlined />}>
+
+            <Menu.Item
+              key="2"
+              icon={<ScheduleOutlined />}
+              onClick={() => router.push("/client/schedules")}
+            >
               Agendamentos
             </Menu.Item>
-            <Menu.Item key="3" icon={<HeartOutlined />}>
+
+            <Menu.Item
+              key="3"
+              icon={<HeartOutlined />}
+              onClick={() => router.push("/client/favorites")}
+            >
               Favoritos
             </Menu.Item>
-            <Menu.Item key="4" icon={<SettingOutlined />}>
-              Meu Perfi
+
+            <Menu.Item
+              key="4"
+              icon={<SettingOutlined />}
+              onClick={() => router.push("/client/profile")}
+            >
+              Meu Perfil
             </Menu.Item>
             <Menu.Item key="5">
               <Button type="primary">Sair</Button>
@@ -99,7 +140,7 @@ const LayoutForClients = ({ children }: { children: ReactNode }) => {
           </Menu>
         </Drawer>
       </HeaderWrapper>
-      <Content>{children}</Content>
+      <ContentWrapper>{children}</ContentWrapper>
     </Layout>
   );
 };
@@ -107,12 +148,22 @@ const LayoutForClients = ({ children }: { children: ReactNode }) => {
 export default LayoutForClients;
 
 const HeaderWrapper = styled(Header)`
+  position: fixed;
   width: 100%;
-  background: #16171b;
+  background: #000;
+  -webkit-box-shadow: 0px 10px 6px -3px rgba(33, 33, 33, 0.32);
+  -moz-box-shadow: 0px 10px 6px -3px rgba(33, 33, 33, 0.32);
+  box-shadow: 0px 10px 6px -3px rgba(33, 33, 33, 0.32);
+  padding: 0 100px;
+  z-index: 1;
 
   .ant-menu-light.ant-menu-horizontal > .ant-menu-item-active {
     background-color: #c1820b;
     color: #16171b;
+  }
+
+  .ant-menu-light.ant-menu-horizontal > .ant-menu-item-active:nth-child(5) {
+    background-color: transparent;
   }
 
   .ant-menu-light.ant-menu-horizontal > .ant-menu-item-active::after {
@@ -123,15 +174,32 @@ const HeaderWrapper = styled(Header)`
     background-color: #fff;
   }
 
+  .ant-menu-light.ant-menu-horizontal > .ant-menu-item-selected:nth-child(5) {
+    background-color: transparent;
+  }
+
   .ant-menu-light.ant-menu-horizontal > .ant-menu-item-selected::after {
     display: none;
   }
 
   ul {
-    width: 100%;
     display: flex;
     align-items: center;
     justify-content: flex-end;
+  }
+
+  @media (max-width: 900px) {
+    padding: 0 32px;
+  }
+
+  @media (max-width: 400px) {
+    padding: 0 8px;
+  }
+
+  .ant-btn-primary {
+    @media (max-width: 420px) {
+      margin-left: -30px;
+    }
   }
 `;
 
@@ -139,4 +207,8 @@ const LogoWrapper = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
+`;
+
+const ContentWrapper = styled(Content)`
+  background: #16171b;
 `;

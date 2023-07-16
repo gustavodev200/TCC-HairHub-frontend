@@ -1,4 +1,4 @@
-export default function Page() {
+export default function Favorites() {
   return (
     <>
       <h1
@@ -9,7 +9,7 @@ export default function Page() {
           background: "#fff",
         }}
       >
-        Client Page
+        Favorites Page Client
       </h1>
     </>
   );

@@ -1,4 +1,4 @@
-export default function Page() {
+export default function Schedules() {
   return (
     <>
       <h1
@@ -9,7 +9,7 @@ export default function Page() {
           background: "#fff",
         }}
       >
-        Client Page
+        Schedules Page Client
       </h1>
     </>
   );
