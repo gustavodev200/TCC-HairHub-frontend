@@ -31,6 +31,12 @@ export const SelectedServiceContainer = styled.div`
   }
 `;
 
+export const BarberSelectedConatainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+`;
+
 export const GridContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);

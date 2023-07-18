@@ -6,9 +6,9 @@ export const Container = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  background-color: #242731;
+  background-color: ${({ backgroudSelected }) => backgroudSelected};
   border-radius: 10px;
-  padding: 20px;
+  padding: 10px 20px;
   margin-bottom: 20px;
 
   @media (max-width: 400px) {
@@ -35,16 +35,6 @@ export const InfoServiceContainer = styled.div`
     font-size: 18px;
   }
 
-  span:nth-child(2) {
-    color: #9a9ea3;
-    font-size: 12px;
-  }
-
-  span:nth-child(3) {
-    color: #c1820b;
-    font-size: 16px;
-  }
-
   @media (max-width: 400px) {
     h4 {
       font-size: 14px;
@@ -62,13 +52,20 @@ export const ButtonContainer = styled.div`
 `;
 
 export const ButtonContent = styled(Button)`
-  background-color: #fff;
-  color: #16171b;
-  font-size: 14px;
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  color: #fff;
+  font-size: 32px;
   font-weight: bold;
   border: none;
 
   @media (max-width: 400px) {
     font-size: 12px;
   }
+`;
+
+export const NoteWrapper = styled.span`
+  color: #fff;
+  font-size: 12px;
 `;

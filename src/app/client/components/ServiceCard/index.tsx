@@ -3,8 +3,6 @@
 import { Image } from "antd";
 import * as C from "./styles";
 import { ClockCircleOutlined } from "@ant-design/icons";
-import { useState } from "react";
-import styled from "styled-components";
 
 export const ServiceCard = () => {
   return (

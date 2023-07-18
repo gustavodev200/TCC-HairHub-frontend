@@ -1,5 +1,6 @@
 "use client";
 
+import { BarberCard } from "../components/BarberCard";
 import ImageSlider from "../components/ImageSlider";
 import { ServiceCard } from "../components/ServiceCard";
 import * as C from "./styles";
@@ -16,6 +17,11 @@ export default function Home() {
         <C.SelectedServiceContainer>
           <div>
             <h2>Selecione o profissional:</h2>
+            <C.BarberSelectedConatainer>
+              <BarberCard backgroudSelected="#fff" />
+              <BarberCard backgroudSelected="#242731" />
+              <BarberCard backgroudSelected="#242731" />
+            </C.BarberSelectedConatainer>
           </div>
 
           <div>
