@@ -5,14 +5,24 @@ export const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
+  min-width: 30%;
   background-color: ${({ backgroudSelected }) => backgroudSelected};
   border-radius: 10px;
   padding: 10px 20px;
   margin-bottom: 20px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${({ backgroudSelectedHover }) => backgroudSelectedHover};
+    color: ${({ BarberSelectedColorHover }) => BarberSelectedColorHover};
+  }
 
   @media (max-width: 400px) {
     padding: 10px;
+  }
+
+  @media (max-width: 1180px) {
+    min-width: 100%;
   }
 `;
 
@@ -31,7 +41,6 @@ export const InfoServiceContainer = styled.div`
   justify-content: space-around;
 
   h4 {
-    color: #fff;
     font-size: 18px;
   }
 
@@ -45,6 +54,10 @@ export const InfoServiceContainer = styled.div`
     }
   }
 `;
+export const BarberName = styled.h4`
+  color: ${({ BarberSelectedColor }) =>
+    BarberSelectedColor ? "#fff" : "#16171b"};
+`;
 
 export const ButtonContainer = styled.div`
   display: flex;
@@ -55,7 +68,8 @@ export const ButtonContent = styled(Button)`
   display: flex;
   align-items: center;
   background-color: transparent;
-  color: #fff;
+  color: ${({ BarberSelectedColor }) =>
+    BarberSelectedColor === "#16171b" ? "#fff" : "#16171b"};
   font-size: 32px;
   font-weight: bold;
   border: none;
@@ -66,6 +80,7 @@ export const ButtonContent = styled(Button)`
 `;
 
 export const NoteWrapper = styled.span`
-  color: #fff;
+  color: ${({ BarberSelectedColor }) =>
+    BarberSelectedColor === "#fff" ? "#fff" : "#16171b"};
   font-size: 12px;
 `;

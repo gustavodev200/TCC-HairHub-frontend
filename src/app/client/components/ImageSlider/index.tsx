@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React from "react";
 // Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
+import styled from "styled-components";
 
 // Import Swiper styles
 import "swiper/css";
@@ -32,32 +33,32 @@ export default function ImageSlider() {
         className="mySwiper"
       >
         <SwiperSlide>
-          <img
-            src="https://images8.alphacoders.com/468/thumb-1920-468739.jpg"
+          <ImageSwiper
+            src="https://heygoldie.com/blog/wp-content/uploads/2021/12/barber-shop-decor-ideas.jpg"
             alt="Slide 1"
           />
         </SwiperSlide>
         <SwiperSlide>
           <img
-            src="https://c.wallhere.com/photos/9f/ae/Stable_Diffusion_4K_AI_art_lion_digital_art_illustration_animals-2215638.jpg!d"
+            src="https://dudubarber.com.br/wp-content/uploads/2023/02/vintage-chairs-in-barbershop.jpg"
             alt="Slide 1"
           />
         </SwiperSlide>
         <SwiperSlide>
           <img
-            src="https://1.bp.blogspot.com/-HVu3xRoGaCw/VxvsFiKglUI/AAAAAAABN8E/TYYqdTcndNUZwGF6Y3Q_oADjMEaogqUOgCLcB/s1600/460327-uhd-wallpaper-HD-free-wallpapers-backgrounds-images-FHD-4k-download-2014-2015-2016.jpg"
+            src="https://images.squarespace-cdn.com/content/v1/5ae7a6e2e2ccd1343b0b1878/1647887765067-YYK19UXH3LH6OZFJ8Y5I/DSC08193.jpg?format=2500w"
             alt="Slide 1"
           />
         </SwiperSlide>
         <SwiperSlide>
           <img
-            src="https://img.freepik.com/fotos-premium/papel-de-parede-da-natureza-papel-de-parede-bonito-da-natureza-papeis-de-parede-da-natureza-4k-papel-de-parede-da-natureza-hd-natureza-verde_722194-174.jpg?w=2000"
+            src="https://www.shutterstock.com/shutterstock/photos/2309847913/display_1500/stock-photo-portrait-of-smiling-bearded-caucasian-male-hairdresser-with-hair-bun-in-black-apron-at-hair-salon-2309847913.jpg"
             alt="Slide 1"
           />
         </SwiperSlide>
         <SwiperSlide>
           <img
-            src="https://img.freepik.com/fotos-premium/paisagem-do-outono-com-lago-e-montanhas-ao-fundo-lago-nas-montanhas-generativas-ai_627050-719.jpg?w=2000"
+            src="https://www.wineenthusiast.com/wp-content/uploads/2022/09/HERO_Barbershop_Cuts_and_Cocktails_Credit_David_J_Crewe_1920x1280.jpg"
             alt="Slide 1"
           />
         </SwiperSlide>
@@ -65,3 +66,9 @@ export default function ImageSlider() {
     </>
   );
 }
+
+export const ImageSwiper = styled.img`
+  display: flex;
+  background-color: #1f1f1f;
+  z-index: 1;
+`;

@@ -25,6 +25,7 @@ export const SliderImageContainer = styled.div`
 `;
 
 export const SelectedServiceContainer = styled.div`
+  width: 100%;
   h2 {
     margin: 20px 0;
     color: #fff;
@@ -32,9 +33,28 @@ export const SelectedServiceContainer = styled.div`
 `;
 
 export const BarberSelectedConatainer = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: row;
   gap: 20px;
+  overflow-x: auto;
+
+  &::-webkit-scrollbar {
+    width: 12px;
+    height: 10px;
+    cursor: pointer;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #242731;
+    border-radius: 20px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #9a9ea3;
+    border-radius: 20px;
+    cursor: pointer;
+  }
 `;
 
 export const GridContainer = styled.div`

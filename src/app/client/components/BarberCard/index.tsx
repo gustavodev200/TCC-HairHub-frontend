@@ -7,11 +7,22 @@ import { Rate } from "antd";
 
 interface backgroudSelectedProps {
   backgroudSelected: string;
+  BarberSelectedColor: string;
+  backgroudSelectedHover: string;
+  BarberSelectedColorHover: string;
 }
 
-export const BarberCard = ({ backgroudSelected }: backgroudSelectedProps) => {
+export const BarberCard = ({
+  backgroudSelected,
+  BarberSelectedColor,
+  backgroudSelectedHover,
+  BarberSelectedColorHover,
+}: backgroudSelectedProps) => {
   return (
-    <C.Container backgroudSelected={backgroudSelected}>
+    <C.Container
+      backgroudSelected={backgroudSelected}
+      backgroudSelectedHover={backgroudSelectedHover}
+    >
       <C.ContainerOne>
         <C.ImageContent>
           <Image
@@ -26,16 +37,29 @@ export const BarberCard = ({ backgroudSelected }: backgroudSelectedProps) => {
         </C.ImageContent>
 
         <C.InfoServiceContainer>
-          <h4>Rodrigo do corte</h4>
+          <C.BarberName
+            BarberSelectedColor={BarberSelectedColor}
+            BarberSelectedColorHover={BarberSelectedColorHover}
+          >
+            Rodrigo do corte
+          </C.BarberName>
           <div>
-            <Rate />
-            <C.NoteWrapper>4.5</C.NoteWrapper>
+            <Rate disabled allowHalf defaultValue={4.5} />
+            <C.NoteWrapper
+              BarberSelectedColor={BarberSelectedColor}
+              BarberSelectedColorHover={BarberSelectedColorHover}
+            >
+              4.5
+            </C.NoteWrapper>
           </div>
         </C.InfoServiceContainer>
       </C.ContainerOne>
 
       <C.ButtonContainer>
-        <C.ButtonContent>
+        <C.ButtonContent
+          BarberSelectedColor={BarberSelectedColor}
+          BarberSelectedColorHover={BarberSelectedColorHover}
+        >
           <HeartOutlined />
         </C.ButtonContent>
       </C.ButtonContainer>

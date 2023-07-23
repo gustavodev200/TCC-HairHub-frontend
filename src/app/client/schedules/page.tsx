@@ -1,16 +1,20 @@
+"use client";
+
+import { MySchedulesCard } from "../components/MySchedulesCard";
+import * as C from "./styles";
+
 export default function Schedules() {
   return (
-    <>
-      <h1
-        style={{
-          textAlign: "center",
-          height: "90vh",
-          width: "100%",
-          background: "#fff",
-        }}
-      >
-        Schedules Page Client
-      </h1>
-    </>
+    <C.Container>
+      <C.Content>
+        <h2>Meus Agendamentos</h2>
+        <C.MySchedulesConatainer>
+          <MySchedulesCard />
+          <MySchedulesCard />
+          <MySchedulesCard />
+          <MySchedulesCard />
+        </C.MySchedulesConatainer>
+      </C.Content>
+    </C.Container>
   );
 }

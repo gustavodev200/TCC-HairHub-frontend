@@ -18,9 +18,36 @@ export default function Home() {
           <div>
             <h2>Selecione o profissional:</h2>
             <C.BarberSelectedConatainer>
-              <BarberCard backgroudSelected="#fff" />
-              <BarberCard backgroudSelected="#242731" />
-              <BarberCard backgroudSelected="#242731" />
+              <BarberCard
+                backgroudSelected="#ffffff"
+                BarberSelectedColor="#242731"
+                backgroudSelectedHover="#242731"
+                BarberSelectedColorHover="#FFF"
+              />
+              <BarberCard
+                backgroudSelected="#242731"
+                BarberSelectedColor="#FFF"
+                backgroudSelectedHover="#FFF"
+                BarberSelectedColorHover="#242731"
+              />
+              <BarberCard
+                backgroudSelected="#242731"
+                BarberSelectedColor="#FFF"
+                backgroudSelectedHover="#FFF"
+                BarberSelectedColorHover="#242731"
+              />
+              <BarberCard
+                backgroudSelected="#242731"
+                BarberSelectedColor="#FFF"
+                backgroudSelectedHover="#FFF"
+                BarberSelectedColorHover="#242731"
+              />
+              <BarberCard
+                backgroudSelected="#242731"
+                BarberSelectedColor="#FFF"
+                backgroudSelectedHover="#FFF"
+                BarberSelectedColorHover="#242731"
+              />
             </C.BarberSelectedConatainer>
           </div>
 
