@@ -17,6 +17,12 @@ export const Container = styled.div`
   }
 `;
 
+export const Title = styled.h2`
+  color: #fff;
+  font-size: 24px;
+  margin: 20px 0;
+`;
+
 export const SliderImageContainer = styled.div`
   h2 {
     margin-bottom: 20px;

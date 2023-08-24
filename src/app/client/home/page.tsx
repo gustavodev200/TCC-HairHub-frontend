@@ -10,7 +10,7 @@ export default function Home() {
     <>
       <C.Container>
         <C.SliderImageContainer>
-          <h2>Novidades e Destaques:</h2>
+          <C.Title>Novidades e Destaques:</C.Title>
           <ImageSlider />
         </C.SliderImageContainer>
 
@@ -18,7 +18,7 @@ export default function Home() {
           <div>
             <h2>Selecione o profissional:</h2>
             <C.BarberSelectedConatainer>
-              <BarberCard
+              {/* <BarberCard
                 backgroudSelected="#ffffff"
                 BarberSelectedColor="#242731"
                 backgroudSelectedHover="#242731"
@@ -41,7 +41,7 @@ export default function Home() {
                 BarberSelectedColor="#FFF"
                 backgroudSelectedHover="#FFF"
                 BarberSelectedColorHover="#242731"
-              />
+              /> */}
               <BarberCard
                 backgroudSelected="#242731"
                 BarberSelectedColor="#FFF"

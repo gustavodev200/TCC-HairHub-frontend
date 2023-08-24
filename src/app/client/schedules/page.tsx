@@ -7,7 +7,7 @@ export default function Schedules() {
   return (
     <C.Container>
       <C.Content>
-        <h2>Meus Agendamentos</h2>
+        <C.Title>Meus Agendamentos</C.Title>
         <C.MySchedulesConatainer>
           <MySchedulesCard />
           <MySchedulesCard />

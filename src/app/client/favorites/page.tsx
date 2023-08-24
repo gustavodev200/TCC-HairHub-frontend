@@ -1,16 +1,17 @@
+"use client";
+
+import FavoriteCard from "../components/FavoriteCard";
+import * as C from "./styles";
+
 export default function Favorites() {
   return (
-    <>
-      <h1
-        style={{
-          textAlign: "center",
-          height: "90vh",
-          width: "100%",
-          background: "#fff",
-        }}
-      >
-        Favorites Page Client
-      </h1>
-    </>
+    <C.Container>
+      <C.Title>Barbeiros Favoritos</C.Title>
+      <C.Content>
+        <FavoriteCard />
+        <FavoriteCard />
+        <FavoriteCard />
+      </C.Content>
+    </C.Container>
   );
 }

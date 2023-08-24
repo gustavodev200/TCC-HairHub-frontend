@@ -24,6 +24,12 @@ export const Content = styled.div`
   }
 `;
 
+export const Title = styled.h2`
+  color: #fff;
+  font-size: 24px;
+  margin: 20px 0;
+`;
+
 export const MySchedulesConatainer = styled.div`
   width: 100%;
   display: grid;
