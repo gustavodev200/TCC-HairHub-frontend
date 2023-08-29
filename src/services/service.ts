@@ -9,6 +9,12 @@ import { SuccessMessages } from "@/@types/messages";
 
 const baseUrl = "/services";
 
+async function getServicesOnly(): Promise<IService[]> {
+  return Api.get(`${baseUrl}/list`, {
+    headers: { authHeader: true },
+  }).then((res) => res.data);
+}
+
 async function getPaginated(
   params?: PaginatedRequestParams
 ): Promise<PaginatedDataResponse<IService>> {
@@ -53,6 +59,7 @@ async function editService(data: FormData): Promise<IService> {
 }
 
 export const serviceApi = {
+  getServicesOnly,
   getPaginated,
   changeStatus,
   createService,

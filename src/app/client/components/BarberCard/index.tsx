@@ -4,25 +4,11 @@ import { Image } from "antd";
 import * as C from "./styles";
 import { HeartOutlined } from "@ant-design/icons";
 import { Rate } from "antd";
+import { useState } from "react";
 
-interface backgroudSelectedProps {
-  backgroudSelected: string;
-  BarberSelectedColor: string;
-  backgroudSelectedHover: string;
-  BarberSelectedColorHover: string;
-}
-
-export const BarberCard = ({
-  backgroudSelected,
-  BarberSelectedColor,
-  backgroudSelectedHover,
-  BarberSelectedColorHover,
-}: backgroudSelectedProps) => {
+export const BarberCard = () => {
   return (
-    <C.Container
-      backgroudSelected={backgroudSelected}
-      backgroudSelectedHover={backgroudSelectedHover}
-    >
+    <C.Container>
       <C.ContainerOne>
         <C.ImageContent>
           <Image
@@ -37,29 +23,16 @@ export const BarberCard = ({
         </C.ImageContent>
 
         <C.InfoServiceContainer>
-          <C.BarberName
-            BarberSelectedColor={BarberSelectedColor}
-            BarberSelectedColorHover={BarberSelectedColorHover}
-          >
-            Rodrigo do corte
-          </C.BarberName>
+          <C.BarberName>Rodrigo do corte</C.BarberName>
           <div>
             <Rate disabled allowHalf defaultValue={4.5} />
-            <C.NoteWrapper
-              BarberSelectedColor={BarberSelectedColor}
-              BarberSelectedColorHover={BarberSelectedColorHover}
-            >
-              4.5
-            </C.NoteWrapper>
+            <C.NoteWrapper>4.5</C.NoteWrapper>
           </div>
         </C.InfoServiceContainer>
       </C.ContainerOne>
 
       <C.ButtonContainer>
-        <C.ButtonContent
-          BarberSelectedColor={BarberSelectedColor}
-          BarberSelectedColorHover={BarberSelectedColorHover}
-        >
+        <C.ButtonContent>
           <HeartOutlined />
         </C.ButtonContent>
       </C.ButtonContainer>
