@@ -62,6 +62,13 @@ export default function ImageSlider() {
             alt="Slide 1"
           />
         </SwiperSlide>
+
+        <SwiperSlide>
+          <img
+            src="https://mercafefaststore.vtexassets.com/assets/vtex.file-manager-graphql/images/1c3efb13-7168-4371-95e2-9be1390bef4b___b4fe059689c4e7cd10e18e39aa88df9d.jpg"
+            alt="Slide 1"
+          />
+        </SwiperSlide>
       </Swiper>
     </>
   );
