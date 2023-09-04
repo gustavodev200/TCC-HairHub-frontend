@@ -84,34 +84,37 @@ export const InfoModal = ({ open, onClose, employeeInfo }: ModalProps) => {
                   </span>
                 </AddressGap>
               </AddressContainer>
+              {employeeInfo.shifts.length > 0 && (
+                <AddressContainer>
+                  <h4>Expedientes:</h4>
 
-              <AddressContainer>
-                <h4>Expedientes:</h4>
-
-                {employeeInfo.shifts.map((shift, index) => (
-                  <AddressGap key={shift.id}>
-                    <strong>Turno {index + 1}: </strong>
-                    <span>
-                      {dayjs(shift.start_time).format("HH:mm")} às
+                  {employeeInfo.shifts.map((shift, index) => (
+                    <AddressGap key={shift.id}>
+                      <strong>Turno {index + 1}: </strong>
                       <span>
-                        {" "}
-                        {dayjs(shift.end_time).format("HH:mm")} Horas
+                        {dayjs(shift.start_time).format("HH:mm")} às
+                        <span>
+                          {" "}
+                          {dayjs(shift.end_time).format("HH:mm")} Horas
+                        </span>
                       </span>
-                    </span>
 
-                    <AvailableDaysGap>
-                      <strong>Dias disponíveis: </strong>
-                      <span>
-                        {shift.available_days.map((day, index) => (
-                          <AvailableDaysContent key={index}>
-                            {getDayFromNumber(day)}
-                          </AvailableDaysContent>
-                        ))}
-                      </span>
-                    </AvailableDaysGap>
-                  </AddressGap>
-                ))}
-              </AddressContainer>
+                      <AvailableDaysGap>
+                        <strong>Dias disponíveis: </strong>
+                        <span>
+                          {shift.available_days.map((day, index) => (
+                            <>
+                              <AvailableDaysContent key={index}>
+                                {getDayFromNumber(day)}
+                              </AvailableDaysContent>
+                            </>
+                          ))}
+                        </span>
+                      </AvailableDaysGap>
+                    </AddressGap>
+                  ))}
+                </AddressContainer>
+              )}
             </AddressGap>
           </div>
         ) : (

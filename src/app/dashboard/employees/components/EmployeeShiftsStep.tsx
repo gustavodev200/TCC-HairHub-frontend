@@ -6,7 +6,7 @@ import { Form, FormInstance, TimePicker, Checkbox, Button, Space } from "antd";
 import styled from "styled-components";
 import { CheckboxWeek } from "./CheckboxWeek";
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 interface EmployeeShiftsStepProps {
   employeeForm: FormInstance<Employee>;
@@ -33,7 +33,41 @@ export const EmployeeShiftsStep: React.FC<EmployeeShiftsStepProps> = ({
   const [form] = Form.useForm<ShiftFormDTO>();
 
   const { getFieldsValue, getFieldsError, setFieldValue, getFieldValue } = form;
-  const daysOfWeek = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+  const daysOfWeek = [
+    {
+      label: "Seg",
+      value: 1,
+    },
+    {
+      label: "Ter",
+      value: 2,
+    },
+
+    {
+      label: "Qua",
+      value: 3,
+    },
+
+    {
+      label: "Qui",
+      value: 4,
+    },
+
+    {
+      label: "Sex",
+      value: 5,
+    },
+
+    {
+      label: "Sab",
+      value: 6,
+    },
+
+    {
+      label: "Dom",
+      value: 0,
+    },
+  ];
 
   const shiftsFromEmployee = employeeForm.getFieldValue("shifts");
 
@@ -132,7 +166,11 @@ export const EmployeeShiftsStep: React.FC<EmployeeShiftsStepProps> = ({
             }}
           >
             {daysOfWeek.map((day, index) => (
-              <CheckboxWeek value={index} key={index} day_of_week={day} />
+              <CheckboxWeek
+                value={daysOfWeek[index].value}
+                key={index}
+                day_of_week={daysOfWeek[index].label}
+              />
             ))}
           </StyledCheckboxGroup>
         </Form.Item>
@@ -197,9 +235,9 @@ export const EmployeeShiftsStep: React.FC<EmployeeShiftsStepProps> = ({
                       <StyledCheckboxGroup style={{ width: "100%" }}>
                         {daysOfWeek.map((day, index) => (
                           <CheckboxWeek
-                            value={index}
+                            value={daysOfWeek[index].value}
                             key={index}
-                            day_of_week={day}
+                            day_of_week={daysOfWeek[index].label}
                           />
                         ))}
                       </StyledCheckboxGroup>

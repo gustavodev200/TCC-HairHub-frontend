@@ -1,3 +1,4 @@
+import { Spin } from "antd";
 import styled from "styled-components";
 
 export const Container = styled.div`
@@ -78,5 +79,11 @@ export const GridContainer = styled.div`
 
   @media (max-width: 720px) {
     grid-template-columns: repeat(1, 1fr);
+  }
+`;
+
+export const SpinColor = styled(Spin)`
+  .ant-spin-dot-item {
+    background-color: #ccc !important;
   }
 `;
