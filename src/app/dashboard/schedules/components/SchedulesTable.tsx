@@ -8,6 +8,7 @@ import { categoryService } from "@/services/category";
 import { ScheduleOutputDTO } from "@/@types/schedules";
 import { ScheduleStatus } from "@/@types/scheduleStatus";
 import { useState } from "react";
+import dayjs from "dayjs";
 
 interface SchedulesTableProps {
   schedules: ScheduleOutputDTO[];
@@ -20,38 +21,36 @@ export const SchedulesTable: React.FC<SchedulesTableProps> = ({
 }) => {
   const columns: ColumnsType<ScheduleOutputDTO> = [
     {
-      title: "Horário/Inicio",
-      dataIndex: "start_time",
-      key: "start_time",
-      render: (start_time) => <span>{start_time}</span>,
-    },
-
-    {
-      title: "Horário/Fim",
-      dataIndex: "end_time",
-      key: "end_time",
-      render: (end_time) => <span>{end_time}</span>,
+      title: "Agendado para",
+      key: "schedule_date",
+      render: (_, record) => (
+        <span>{`${dayjs(record.start_date_time).format("DD/MM/YY")} - ${dayjs(
+          record.start_date_time
+        ).format("HH:mm")} às ${dayjs(record.end_date_time).format(
+          "HH:mm"
+        )}`}</span>
+      ),
     },
 
     {
       title: "Cliente",
-      dataIndex: "client_id",
-      key: "client_id",
-      render: (client_id) => <span>{client_id}</span>,
+      dataIndex: "client",
+      key: "client",
+      render: (client) => <span>{client.name}</span>,
     },
 
     {
-      title: "Serviço",
+      title: "Serviços",
       dataIndex: "services",
       key: "services",
-      render: (services) => <span>{services}</span>,
+      render: (services) => <span>{services.length}</span>,
     },
 
     {
-      title: "Tempo/Estim",
-      dataIndex: "estimated_time",
-      key: "estimated_time",
-      render: (estimated_time) => <span>{estimated_time}</span>,
+      title: "Barbeiro",
+      dataIndex: "employee",
+      key: "employee",
+      render: (employee) => <span>{employee.name}</span>,
     },
 
     {
@@ -63,12 +62,9 @@ export const SchedulesTable: React.FC<SchedulesTableProps> = ({
           schedule_status && (
             <StatusSelect
               defaultValue={schedule_status}
-              customStatus={status}
-              onChange={(value: unknown) =>
-                handleChange(value as ScheduleStatus)
-              }
+              customStatus={schedule_status}
               options={[
-                { value: ScheduleStatus.SCHEDULED, label: "Agendado" },
+                { value: schedule_status, label: "Agendado" },
                 { value: ScheduleStatus.CONFIRMED, label: "Confirmado" },
                 {
                   value: ScheduleStatus.AWAITING_SERVICE,
@@ -124,18 +120,13 @@ export const SchedulesTable: React.FC<SchedulesTableProps> = ({
     },
   ];
 
-  const [status, setStatus] = useState(ScheduleStatus.CONFIRMED);
-  const handleChange = (status: ScheduleStatus) => {
-    setStatus(status);
-  };
-
   const queryClient = useQueryClient();
 
   const changeStatus = useMutation({
     mutationFn: (params: any) =>
       categoryService.changeStatus(params.id, params.status),
     onSuccess: (data) => {
-      queryClient.invalidateQueries(["schedules"]);
+      queryClient.invalidateQueries(["schedulings"]);
     },
   });
 

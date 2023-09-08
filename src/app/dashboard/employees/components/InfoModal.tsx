@@ -90,7 +90,7 @@ export const InfoModal = ({ open, onClose, employeeInfo }: ModalProps) => {
 
                   {employeeInfo.shifts.map((shift, index) => (
                     <AddressGap key={shift.id}>
-                      <strong>Turno {index + 1}: </strong>
+                      <strong>Agenda {index + 1}: </strong>
                       <span>
                         {dayjs(shift.start_time).format("HH:mm")} às
                         <span>

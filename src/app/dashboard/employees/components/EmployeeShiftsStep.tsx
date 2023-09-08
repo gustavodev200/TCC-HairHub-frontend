@@ -128,7 +128,7 @@ export const EmployeeShiftsStep: React.FC<EmployeeShiftsStepProps> = ({
         ]);
       }}
     >
-      <Form.Item required label="1° Turno">
+      <Form.Item required label="Agenda 1">
         <Space.Compact block>
           <Form.Item
             required
@@ -182,7 +182,7 @@ export const EmployeeShiftsStep: React.FC<EmployeeShiftsStepProps> = ({
             {fields.map(({ key, name, ...restField }, index) => {
               return (
                 <div key={key}>
-                  <Form.Item label={`${index + 2}° Turno`}>
+                  <Form.Item label={`Agenda ${index + 2}`}>
                     <Space.Compact block>
                       <Form.Item
                         {...restField}
@@ -275,7 +275,7 @@ export const EmployeeShiftsStep: React.FC<EmployeeShiftsStepProps> = ({
                   block
                   icon={<PlusOutlined />}
                 >
-                  Adicionar Turno
+                  Adicionar Agenda
                 </Button>
               </Form.Item>
             )}

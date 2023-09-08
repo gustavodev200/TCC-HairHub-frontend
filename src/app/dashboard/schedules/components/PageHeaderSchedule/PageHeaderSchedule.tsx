@@ -9,11 +9,13 @@ import debounce from "lodash.debounce";
 import { DatePicker, Space } from "antd";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
+import { ScheduleStatus } from "@/@types/scheduleStatus";
+import { disableDateByDayOfWeek } from "@/helpers/utils/disableDateByDayOfWeek";
 
 interface PageHeaderProps {
   pageTitle: string;
-  statusFilter: GenericStatus | "all";
-  onChangeStatusFilter: (status: GenericStatus | "all") => void;
+  statusFilter: ScheduleStatus | "all";
+  onChangeStatusFilter: (status: ScheduleStatus | "all") => void;
   onChangeSearch: (search: string) => void;
   handleOpenModal: () => void;
 }
@@ -75,6 +77,8 @@ export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
     setOpen(false);
   };
 
+  const disabledDates = [1, 3, 5];
+
   return (
     <HeaderContainer>
       <HeaderTitle>
@@ -83,7 +87,14 @@ export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
 
       <HeaderActions>
         <Space direction="vertical" size={12}>
-          <DatePicker onChange={onChange} format="DD/MM/YYYY" size="large" />
+          <DatePicker
+            disabledDate={(current) =>
+              disableDateByDayOfWeek(current, disabledDates, true)
+            }
+            onChange={onChange}
+            format="DD/MM/YYYY"
+            size="large"
+          />
         </Space>
 
         <div>
@@ -91,7 +102,7 @@ export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
             size="large"
             defaultValue="Selecione um barbeiro"
             value={1}
-            onChange={(value) => onChangeStatusFilter(value as GenericStatus)}
+            onChange={(value) => onChangeStatusFilter(value as ScheduleStatus)}
             options={[
               { value: 1, label: "Carlin Corte" },
               { value: 2, label: "Gustavo Cardoso" },
