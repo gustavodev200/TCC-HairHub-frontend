@@ -4,10 +4,16 @@ import {
   PaginatedDataResponse,
   PaginatedRequestParams,
 } from "@/@types/paginatedData";
-import { Employee } from "@/@types/employee";
+import { Employee, EmployeeOutputDTO } from "@/@types/employee";
 import { GenericStatus } from "@/@types/genericStatus";
 
 const baseUrl = "/employees";
+
+async function getOnlyBarbers(): Promise<EmployeeOutputDTO[]> {
+  return Api.get(`${baseUrl}/barbers`, { headers: { authHeader: true } }).then(
+    (res) => res.data.data
+  );
+}
 
 async function getPaginated(
   params?: PaginatedRequestParams
@@ -51,6 +57,7 @@ async function resetPassword(id: string): Promise<Employee> {
 }
 
 export const employeeService = {
+  getOnlyBarbers,
   getPaginated,
   create,
   update,

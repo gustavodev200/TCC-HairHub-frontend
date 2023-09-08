@@ -1,4 +1,4 @@
-import { AddressInputDTO } from "./address";
+import { AddressDTO, AddressInputDTO } from "./address";
 import { GenericStatus } from "./genericStatus";
 import { AssignmentType } from "./role";
 import { ShiftInputDTO, ShiftOutputDTO } from "./shifts";
@@ -17,4 +17,21 @@ export interface EmployeeInputDTO {
 export interface Employee extends EmployeeInputDTO {
   id?: string;
   status: GenericStatus;
+}
+
+export interface EmployeeOutputDTO {
+  id: string;
+  name: string;
+  image?: string;
+  cpf: string;
+  dataNasc: string;
+  phone: string;
+  email: string;
+  status: GenericStatus;
+  role: AssignmentType;
+  address: AddressDTO;
+  shifts: ShiftInputDTO[];
+  adress_id: string;
+  created_at: Date;
+  updated_at: Date;
 }

@@ -1,16 +1,19 @@
 "use client";
 
 import styled from "styled-components";
-import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
-import { Input, Select, Button } from "antd";
-import { useCallback, useState } from "react";
-import { GenericStatus } from "@/@types/genericStatus";
+import { PlusOutlined } from "@ant-design/icons";
+import { Select, Button } from "antd";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import debounce from "lodash.debounce";
 import { DatePicker, Space } from "antd";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import { ScheduleStatus } from "@/@types/scheduleStatus";
 import { disableDateByDayOfWeek } from "@/helpers/utils/disableDateByDayOfWeek";
+import { ScheduleOutputDTO } from "@/@types/schedules";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { employeeService } from "@/services/employee";
+import { Employee, EmployeeOutputDTO } from "@/@types/employee";
 
 interface PageHeaderProps {
   pageTitle: string;
@@ -18,66 +21,66 @@ interface PageHeaderProps {
   onChangeStatusFilter: (status: ScheduleStatus | "all") => void;
   onChangeSearch: (search: string) => void;
   handleOpenModal: () => void;
+  schedules: ScheduleOutputDTO[];
 }
-
-const onRangeChange = (
-  dates: null | (Dayjs | null)[],
-  dateStrings: string[]
-) => {
-  if (dates) {
-    console.log("De: ", dates[0], ", Para: ", dates[1]);
-    console.log("De: ", dateStrings[0], ", Para: ", dateStrings[1]);
-  } else {
-    console.log("Limpar");
-  }
-};
-
-const rangePresets: {
-  label: string;
-  value: [Dayjs, Dayjs];
-}[] = [
-  { label: "Last 7 Days", value: [dayjs().add(-7, "d"), dayjs()] },
-  { label: "Last 14 Days", value: [dayjs().add(-14, "d"), dayjs()] },
-  { label: "Last 30 Days", value: [dayjs().add(-30, "d"), dayjs()] },
-  { label: "Last 90 Days", value: [dayjs().add(-90, "d"), dayjs()] },
-];
 
 export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
   pageTitle,
+  schedules,
   statusFilter,
   onChangeStatusFilter,
   onChangeSearch,
   handleOpenModal,
 }) => {
-  const debouncedSearch = useCallback(
-    debounce((value: string) => {
-      if (value === "" || value.length >= 3) {
-        onChangeSearch(value);
-      }
-    }, 500),
-    []
-  );
-  const [open, setOpen] = useState(false);
+  const queryClient = useQueryClient();
+
+  const { data, isLoading } = useQuery(["employees"], {
+    queryFn: () => employeeService.getOnlyBarbers(),
+
+    // onSuccess: (data) => {
+    //   queryClient.invalidateQueries(["employees"]);
+    // },
+  });
 
   const { RangePicker } = DatePicker;
 
-  const onChange = (value: Dayjs | null, dateString: string) => {
-    if (value) {
-      console.log("Date: ", value);
+  const [selected, setSelected] = useState("");
+  const [enableField, setEnableField] = useState(false);
+  const [dayOfWeek, setDayOfWeek] = useState<number[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
+
+  const handleSelectChange = (selectedValue: string) => {
+    setSelected(selectedValue);
+    // Encontre o barbeiro selecionado
+    const selectedBarber = data?.find((item) => item.name === selectedValue);
+
+    // Verifique se o barbeiro foi encontrado
+    if (selectedBarber) {
+      // Acesse os available_days do barbeiro selecionado
+      const availableDays = selectedBarber.shifts.flatMap((shift) =>
+        shift.available_days.map((day) => day)
+      );
+
+      // Atualize o estado com os available_days
+      setDayOfWeek(availableDays);
+      setEnableField(true);
     } else {
-      console.log("Clear");
+      // Caso o barbeiro não seja encontrado, defina dayOfWeek como vazio
+
+      setDayOfWeek([]);
+      setEnableField(false);
     }
+    setSelectedDate(null);
   };
 
-  const showModal = () => {
-    setOpen(true);
+  const handleChangeDatePicker = (value: Dayjs | null, dateString: string) => {
+    setSelectedDate(value);
   };
 
-  const handleCancel = () => {
-    setOpen(false);
-  };
-
-  const disabledDates = [1, 3, 5];
+  useEffect(() => {
+    handleSelectChange(selected);
+    handleChangeDatePicker(selectedDate, selected);
+  }, [data, selected, selectedDate]);
 
   return (
     <HeaderContainer>
@@ -89,25 +92,31 @@ export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
         <Space direction="vertical" size={12}>
           <DatePicker
             disabledDate={(current) =>
-              disableDateByDayOfWeek(current, disabledDates, true)
+              disableDateByDayOfWeek(current, dayOfWeek, true)
             }
-            onChange={onChange}
+            onChange={handleChangeDatePicker}
             format="DD/MM/YYYY"
             size="large"
+            disabled={!enableField}
+            value={selectedDate}
           />
         </Space>
 
         <div>
           <SelectContainer
+            showSearch
             size="large"
-            defaultValue="Selecione um barbeiro"
-            value={1}
-            onChange={(value) => onChangeStatusFilter(value as ScheduleStatus)}
-            options={[
-              { value: 1, label: "Carlin Corte" },
-              { value: 2, label: "Gustavo Cardoso" },
-              { value: 3, label: "Josiel" },
-            ]}
+            placeholder="Selecione um barbeiro"
+            // defaultValue="Selecione um barbeiro"
+            optionFilterProp="label"
+            filterOption={(input: string, option: any) =>
+              option.label.toLowerCase().includes(input.toLowerCase())
+            }
+            onChange={(value) => handleSelectChange(value as string)}
+            options={data?.map((item) => ({
+              value: item.name,
+              label: item.name,
+            }))}
           />
         </div>
 

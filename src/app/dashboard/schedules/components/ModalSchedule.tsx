@@ -183,16 +183,6 @@ export const ModalSchedule: React.FC<ModalProps> = ({
             />
           </Form.Item>
 
-          <Form.Item required label="Tempo estimado do serviço" name="time">
-            <InputNumber
-              min={1}
-              max={999}
-              addonAfter="Min"
-              placeholder="Tempo"
-              style={{ width: "100%" }}
-            />
-          </Form.Item>
-
           <Space.Compact block>
             <Form.Item
               label="Horário/Início"
