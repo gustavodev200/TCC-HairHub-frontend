@@ -13,7 +13,6 @@ import { disableDateByDayOfWeek } from "@/helpers/utils/disableDateByDayOfWeek";
 import { ScheduleOutputDTO } from "@/@types/schedules";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { employeeService } from "@/services/employee";
-import { Employee, EmployeeOutputDTO } from "@/@types/employee";
 
 interface PageHeaderProps {
   pageTitle: string;
@@ -32,21 +31,13 @@ export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
   onChangeSearch,
   handleOpenModal,
 }) => {
-  const queryClient = useQueryClient();
-
   const { data, isLoading } = useQuery(["employees"], {
     queryFn: () => employeeService.getOnlyBarbers(),
-
-    // onSuccess: (data) => {
-    //   queryClient.invalidateQueries(["employees"]);
-    // },
   });
 
   const { RangePicker } = DatePicker;
 
   const [selected, setSelected] = useState("");
-  const [enableField, setEnableField] = useState(false);
-  const [enableFieldCreate, setEnableFieldCreate] = useState(false);
   const [dayOfWeek, setDayOfWeek] = useState<number[]>([]);
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
 
@@ -64,23 +55,16 @@ export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
 
       // Atualize o estado com os available_days
       setDayOfWeek(availableDays);
-      setEnableField(true);
     } else {
       // Caso o barbeiro não seja encontrado, defina dayOfWeek como vazio
 
       setDayOfWeek([]);
-      setEnableField(false);
     }
     setSelectedDate(null);
   };
 
   const handleChangeDatePicker = (value: Dayjs | null, dateString: string) => {
-    if (value !== null) {
-      setSelectedDate(value);
-      setEnableFieldCreate(true);
-    } else {
-      setEnableFieldCreate(false);
-    }
+    setSelectedDate(value);
   };
 
   useEffect(() => {
@@ -103,7 +87,6 @@ export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
             onChange={handleChangeDatePicker}
             format="DD/MM/YYYY"
             size="large"
-            disabled={!enableField}
             value={selectedDate}
           />
         </Space>
@@ -131,7 +114,6 @@ export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
             type="primary"
             icon={<PlusOutlined />}
             size="large"
-            disabled={!enableFieldCreate}
             onClick={() => handleOpenModal()}
           />
         </div>

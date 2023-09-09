@@ -4,15 +4,21 @@ import {
   PaginatedDataResponse,
   PaginatedRequestParams,
 } from "@/@types/paginatedData";
-import { Employee, EmployeeOutputDTO } from "@/@types/employee";
+import { Employee, EmployeeOutputWithSchedulesDTO } from "@/@types/employee";
 import { GenericStatus } from "@/@types/genericStatus";
 
 const baseUrl = "/employees";
 
-async function getOnlyBarbers(): Promise<EmployeeOutputDTO[]> {
-  return Api.get(`${baseUrl}/barbers`, { headers: { authHeader: true } }).then(
-    (res) => res.data.data
-  );
+async function getOnlyBarbers(): Promise<EmployeeOutputWithSchedulesDTO[]> {
+  return Api.get(`${baseUrl}/barbers-with-schedule`, {
+    headers: { authHeader: true },
+  }).then((res) => res.data);
+}
+
+async function getAllBarbers(): Promise<EmployeeOutputWithSchedulesDTO[]> {
+  return Api.get(`${baseUrl}/all-barbers`, {
+    headers: { authHeader: true },
+  }).then((res) => res.data);
 }
 
 async function getPaginated(
@@ -58,6 +64,7 @@ async function resetPassword(id: string): Promise<Employee> {
 
 export const employeeService = {
   getOnlyBarbers,
+  getAllBarbers,
   getPaginated,
   create,
   update,

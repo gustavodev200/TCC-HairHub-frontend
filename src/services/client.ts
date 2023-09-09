@@ -17,6 +17,12 @@ async function getPaginated(
   );
 }
 
+async function getAllClients(): Promise<Client[]> {
+  return Api.get(`${baseUrl}/all`, {
+    headers: { authHeader: true },
+  }).then((res) => res.data);
+}
+
 async function create(data: Client): Promise<Client> {
   return Api.post(baseUrl, data, {
     headers: { authHeader: true, "success-message": SuccessMessages.MSGS01 },
@@ -56,4 +62,5 @@ export const clientService = {
   update,
   changeStatus,
   resetPassword,
+  getAllClients,
 };

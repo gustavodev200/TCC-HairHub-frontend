@@ -1,9 +1,14 @@
-import { ScheduleOutputDTO } from "@/@types/schedules";
+import {
+  ScheduleInputDTO,
+  ScheduleOutputDTO,
+  SchedulesUpdateParamsDTO,
+} from "@/@types/schedules";
 import {
   PaginatedDataResponseSchedule,
   PaginatedRequestParamsSchedule,
 } from "@/@types/paginatedData";
 import Api from "./api";
+import { SuccessMessages } from "@/@types/messages";
 
 const baseUrl = "/schedulings";
 
@@ -15,17 +20,19 @@ async function getPaginated(
   );
 }
 
-// async function create(data: Employee): Promise<Employee> {
-//     return Api.post(baseUrl, data, {
-//       headers: { authHeader: true, "success-message": SuccessMessages.MSGS01 },
-//     }).then((res) => res.data);
-//   }
+async function create(data: ScheduleInputDTO): Promise<ScheduleOutputDTO> {
+  return Api.post(baseUrl, data, {
+    headers: { authHeader: true, "success-message": SuccessMessages.MSGS01 },
+  }).then((res) => res.data);
+}
 
-//   async function update(data: Employee): Promise<Employee> {
-//     return Api.put(`${baseUrl}/${data.id}`, data, {
-//       headers: { authHeader: true, "success-message": SuccessMessages.MSGS02 },
-//     }).then((res) => res.data);
-//   }
+async function update(
+  data: SchedulesUpdateParamsDTO
+): Promise<ScheduleOutputDTO> {
+  return Api.put(`${baseUrl}/${data.id}`, data, {
+    headers: { authHeader: true, "success-message": SuccessMessages.MSGS02 },
+  }).then((res) => res.data);
+}
 
 //   async function changeStatus(
 //     id: string,
@@ -40,7 +47,7 @@ async function getPaginated(
 
 export const scheduleService = {
   getPaginated,
-  // create,
-  // update,
+  create,
+  update,
   // changeStatus,
 };

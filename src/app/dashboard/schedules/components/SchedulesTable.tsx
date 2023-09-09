@@ -43,7 +43,9 @@ export const SchedulesTable: React.FC<SchedulesTableProps> = ({
       title: "Serviços",
       dataIndex: "services",
       key: "services",
-      render: (services) => <span>{services.length}</span>,
+      render: (_, record) => (
+        <span>{record.services.map((service) => service.length)}</span>
+      ),
     },
 
     {

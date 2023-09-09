@@ -1,21 +1,36 @@
 "use client";
 
-import { CategoryInputDTO, CategoryOutputDTO } from "@/@types/category";
-import { ScheduleOutputDTO } from "@/@types/schedules";
-import { categoryService } from "@/services/category";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  ScheduleOutputDTO,
+  SchedulesUpdateParamsDTO,
+} from "@/@types/schedules";
+import { disableDateByDayOfWeek } from "@/helpers/utils/disableDateByDayOfWeek";
+
+import { clientService } from "@/services/client";
+import { employeeService } from "@/services/employee";
+import { scheduleService } from "@/services/schedule";
+import { serviceApi } from "@/services/service";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Button,
   Form,
   Modal,
   Select,
-  InputNumber,
+  DatePicker,
   TimePicker,
   Space,
   SelectProps,
 } from "antd";
-import { useEffect } from "react";
+import dayjs, { Dayjs } from "dayjs";
+import { useEffect, useState } from "react";
+
 import styled from "styled-components";
+import isBetween from "dayjs/plugin/isBetween";
+import {
+  DisabledTimes,
+  disableTimeByShift,
+} from "@/helpers/utils/disableTimeByShift";
+dayjs.extend(isBetween);
 
 interface ModalProps {
   scheduleToEdit?: ScheduleOutputDTO;
@@ -23,32 +38,61 @@ interface ModalProps {
   onClose: () => void;
 }
 
+interface Shift {
+  start_time: string;
+  end_time: string;
+}
+
 export const ModalSchedule: React.FC<ModalProps> = ({
   scheduleToEdit,
   open,
   onClose,
 }) => {
+  const [selected, setSelected] = useState("");
+  const [timeByShift, setTimeByShift] = useState<Shift[]>([]);
+  const [disabledTimes, setDisabledTimes] = useState<DisabledTimes>({});
+  const [dayOfWeek, setDayOfWeek] = useState<number[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
 
   const { resetFields, setFieldsValue, validateFields } = form;
 
-  const createCategory = useMutation({
-    mutationFn: (data: CategoryInputDTO) => categoryService.create(data),
+  const { data, isLoading } = useQuery(["employees"], {
+    queryFn: () => employeeService.getAllBarbers(),
+  });
+
+  const { data: dataClients, isLoading: isLoadingClients } = useQuery(
+    ["clients"],
+    {
+      queryFn: () => clientService.getAllClients(),
+    }
+  );
+
+  const { data: dataServices, isLoading: isLoadingServices } = useQuery(
+    ["services"],
+    {
+      queryFn: () => serviceApi.getServicesOnly(),
+    }
+  );
+
+  const createSchedule = useMutation({
+    mutationFn: (data: ScheduleOutputDTO) => scheduleService.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries(["categories"]);
+      queryClient.invalidateQueries(["schedulings"]);
     },
   });
 
-  const editCategory = useMutation({
-    mutationFn: (data: CategoryOutputDTO) => categoryService.update(data),
+  const editSchedule = useMutation({
+    mutationFn: (data: SchedulesUpdateParamsDTO) =>
+      scheduleService.update(data),
     onSuccess: () => {
-      queryClient.invalidateQueries(["categories"]);
+      queryClient.invalidateQueries(["schedulings"]);
     },
   });
 
   const handleCancel = () => {
-    if (createCategory.isLoading || editCategory.isLoading) {
+    if (createSchedule.isLoading || editSchedule.isLoading) {
       return;
     }
 
@@ -60,7 +104,7 @@ export const ModalSchedule: React.FC<ModalProps> = ({
     validateFields()
       .then((data) => {
         if (scheduleToEdit) {
-          editCategory
+          editSchedule
             .mutateAsync({
               ...scheduleToEdit,
               ...data,
@@ -70,7 +114,7 @@ export const ModalSchedule: React.FC<ModalProps> = ({
             })
             .catch(() => {});
         } else {
-          createCategory
+          createSchedule
             .mutateAsync(data)
             .then(() => {
               handleCancel();
@@ -81,6 +125,36 @@ export const ModalSchedule: React.FC<ModalProps> = ({
       .catch(() => {});
   };
 
+  const handleSelectChange = (selectedValue: string) => {
+    setSelected(selectedValue);
+    // Encontre o barbeiro selecionado
+    const selectedBarber = data?.find((item) => item.name === selectedValue);
+
+    // Verifique se o barbeiro foi encontrado
+    if (selectedBarber) {
+      // Acesse os available_days do barbeiro selecionado
+      const availableDays = selectedBarber.shifts.flatMap((shift) =>
+        shift.available_days.map((day) => day)
+      );
+
+      // Encontre o objeto de turno que corresponde à data selecionada
+
+      // Atualize o estado com os available_days
+      setDayOfWeek(availableDays);
+      setTimeByShift(selectedBarber.shifts);
+
+      setSelectedDate(dayjs());
+
+      setDisabledTimes(disableTimeByShift(selectedBarber.shifts, dayjs()));
+    } else {
+      // Caso o barbeiro não seja encontrado, defina dayOfWeek como vazio
+
+      setDayOfWeek([]);
+      setTimeByShift([]);
+    }
+    setSelectedDate(null);
+  };
+
   // useEffect(() => {
   //   if (scheduleToEdit) {
   //     setFieldsValue({
@@ -88,15 +162,6 @@ export const ModalSchedule: React.FC<ModalProps> = ({
   //     });
   //   }
   // }, [scheduleToEdit, setFieldsValue]);
-
-  const options: SelectProps["options"] = [];
-
-  for (let i = 10; i < 10; i++) {
-    options.push({
-      value: i.toString(10) + i,
-      label: i.toString(10) + i,
-    });
-  }
 
   const handleChange = (value: string) => {
     console.log(`selected ${value}`);
@@ -122,7 +187,7 @@ export const ModalSchedule: React.FC<ModalProps> = ({
           key="save"
           type="primary"
           backgroundcolor="#6cb66f"
-          loading={createCategory.isLoading || editCategory.isLoading}
+          loading={createSchedule.isLoading || editSchedule.isLoading}
           onClick={handleSubmit}
         >
           Salvar
@@ -133,21 +198,51 @@ export const ModalSchedule: React.FC<ModalProps> = ({
         <Form
           layout="vertical"
           size="middle"
-          disabled={createCategory.isLoading || editCategory.isLoading}
+          disabled={createSchedule.isLoading || editSchedule.isLoading}
           form={form}
           initialValues={{
             name: "",
           }}
         >
-          <InfoContent>
-            <h4>Barbeiro:</h4>
-            <span>José do Corte</span>
-          </InfoContent>
+          <Form.Item
+            required
+            label="Barbeiro"
+            name="employee_id"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Campo Obrigatório!" }]}
+          >
+            <Select
+              placeholder="Selecione um barbeiro"
+              // defaultValue="Selecione um barbeiro"
+              optionFilterProp="label"
+              filterOption={(input: string, option: any) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
+              onChange={(value) => handleSelectChange(value as string)}
+              options={data?.map((item) => ({
+                value: item.name,
+                label: item.name,
+              }))}
+            />
+          </Form.Item>
 
-          <InfoContent>
-            <h4>Data/Agendamento:</h4>
-            <span>10/10/2022</span>
-          </InfoContent>
+          <Form.Item
+            required
+            label="Data/Agendamento"
+            name="start_date_time"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Campo Obrigatório!" }]}
+          >
+            <DatePicker
+              style={{ width: "100%" }}
+              disabledDate={(current) =>
+                disableDateByDayOfWeek(current, dayOfWeek, true)
+              }
+              // onChange={handleChangeDatePicker}
+              format="DD/MM/YYYY"
+              value={selectedDate}
+            />
+          </Form.Item>
 
           <Form.Item
             required
@@ -157,13 +252,17 @@ export const ModalSchedule: React.FC<ModalProps> = ({
             rules={[{ required: true, message: "Campo Obrigatório!" }]}
           >
             <Select
-              defaultValue="Gustavo Lage"
-              // onChange={handleChange}
-              options={[
-                { value: "gustavo", label: "Gustavo Lage" },
-                { value: "roberto", label: "Roberto Silva" },
-                { value: "caio", label: "Caio Souza" },
-              ]}
+              placeholder="Selecione um barbeiro"
+              // defaultValue="Selecione um barbeiro"
+              optionFilterProp="label"
+              filterOption={(input: string, option: any) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
+              onChange={(value) => handleSelectChange(value as string)}
+              options={dataClients?.map((item) => ({
+                value: item.name,
+                label: item.name,
+              }))}
             />
           </Form.Item>
 
@@ -178,8 +277,15 @@ export const ModalSchedule: React.FC<ModalProps> = ({
               mode="tags"
               style={{ width: "100%" }}
               placeholder="Selecione serviços"
-              onChange={handleChange}
-              options={options}
+              optionFilterProp="label"
+              filterOption={(input: string, option: any) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
+              onChange={(value) => handleSelectChange(value as string)}
+              options={dataServices?.map((item) => ({
+                value: item.name,
+                label: item.name,
+              }))}
             />
           </Form.Item>
 
@@ -195,6 +301,10 @@ export const ModalSchedule: React.FC<ModalProps> = ({
                 format="HH:mm"
                 style={{ width: "100%" }}
                 placeholder="Início"
+                disabledHours={() => disabledTimes.disabledHours?.()}
+                disabledMinutes={(hour) =>
+                  disabledTimes.disabledMinutes?.(hour)
+                }
               />
             </Form.Item>
 
