@@ -68,6 +68,7 @@ const Page: React.FC = () => {
         onChangeSearch={(value) => value}
         onChangeStatusFilter={(value) => value}
         handleOpenModal={handleOpenModalSchedule}
+        schedules={data?.data ?? []}
       />
 
       <SchedulesTable

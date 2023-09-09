@@ -202,6 +202,9 @@ export const EmployeeShiftsStep: React.FC<EmployeeShiftsStepProps> = ({
                         style={{ width: "100%" }}
                       >
                         <TimePicker
+                          disabledTime={(current) => {
+                            return {};
+                          }}
                           format="HH:mm"
                           style={{ width: "100%" }}
                           placeholder="Término"

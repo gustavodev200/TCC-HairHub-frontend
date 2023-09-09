@@ -46,6 +46,7 @@ export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
 
   const [selected, setSelected] = useState("");
   const [enableField, setEnableField] = useState(false);
+  const [enableFieldCreate, setEnableFieldCreate] = useState(false);
   const [dayOfWeek, setDayOfWeek] = useState<number[]>([]);
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
 
@@ -74,7 +75,12 @@ export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
   };
 
   const handleChangeDatePicker = (value: Dayjs | null, dateString: string) => {
-    setSelectedDate(value);
+    if (value !== null) {
+      setSelectedDate(value);
+      setEnableFieldCreate(true);
+    } else {
+      setEnableFieldCreate(false);
+    }
   };
 
   useEffect(() => {
@@ -125,6 +131,7 @@ export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
             type="primary"
             icon={<PlusOutlined />}
             size="large"
+            disabled={!enableFieldCreate}
             onClick={() => handleOpenModal()}
           />
         </div>
