@@ -9,6 +9,7 @@ import { ScheduleOutputDTO } from "@/@types/schedules";
 import { ScheduleStatus } from "@/@types/scheduleStatus";
 import { useState } from "react";
 import dayjs from "dayjs";
+import { TagColor } from "@/components/Tag";
 
 interface SchedulesTableProps {
   schedules: ScheduleOutputDTO[];
@@ -44,7 +45,18 @@ export const SchedulesTable: React.FC<SchedulesTableProps> = ({
       dataIndex: "services",
       key: "services",
       render: (_, record) => (
-        <span>{record.services.map((service) => service.length)}</span>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 8,
+            alignItems: "flex-start",
+          }}
+        >
+          {record.services.map((service) => (
+            <TagColor tag={service.name} color="blue" key={service.id} />
+          ))}
+        </div>
       ),
     },
 

@@ -1,11 +1,26 @@
 import { ScheduleStatus } from "./scheduleStatus";
 
+export interface ScheduleServiceDTO {
+  id: string;
+  name: string;
+}
+
+export interface ScheduleEmployeeDTO {
+  id: string;
+  name: string;
+}
+
+export interface ScheduleClientDTO {
+  id: string;
+  name: string;
+}
+
 export interface ScheduleInputDTO {
   start_date_time: string;
   end_date_time: string;
-  services: string[];
-  client: string;
-  employee: string;
+  services: ScheduleServiceDTO[];
+  client: ScheduleClientDTO;
+  employee: ScheduleEmployeeDTO;
 }
 
 export interface ScheduleOutputDTO extends ScheduleInputDTO {
@@ -20,8 +35,8 @@ export interface SchedulesUpdateParamsDTO {
   id?: string;
   start_date_time?: string;
   end_date_time?: string;
-  services?: string[];
-  client?: string;
-  employee?: string;
+  services?: ScheduleServiceDTO[];
+  client?: ScheduleClientDTO;
+  employee?: ScheduleEmployeeDTO;
   schedule_status?: ScheduleStatus;
 }

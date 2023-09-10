@@ -38,25 +38,27 @@ interface ModalProps {
   onClose: () => void;
 }
 
-interface Shift {
-  start_time: string;
-  end_time: string;
-}
-
 export const ModalSchedule: React.FC<ModalProps> = ({
   scheduleToEdit,
   open,
   onClose,
 }) => {
   const [selected, setSelected] = useState("");
-  const [timeByShift, setTimeByShift] = useState<Shift[]>([]);
-  const [disabledTimes, setDisabledTimes] = useState<DisabledTimes>({});
   const [dayOfWeek, setDayOfWeek] = useState<number[]>([]);
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
 
-  const { resetFields, setFieldsValue, validateFields } = form;
+  const { resetFields, setFieldsValue, validateFields, setFieldValue } = form;
+  const serviceWatch = Form.useWatch("services", {
+    form,
+    preserve: true,
+  });
+
+  const startDateTimeWatch = Form.useWatch("start_date_time", {
+    form,
+    preserve: true,
+  });
 
   const { data, isLoading } = useQuery(["employees"], {
     queryFn: () => employeeService.getAllBarbers(),
@@ -108,6 +110,14 @@ export const ModalSchedule: React.FC<ModalProps> = ({
             .mutateAsync({
               ...scheduleToEdit,
               ...data,
+              start_date_time: dayjs(selectedDate)
+                .set("hour", dayjs(data.start_date_time).get("hour"))
+                .set("minute", dayjs(data.start_date_time).get("minute"))
+                .toISOString(),
+              end_date_time: dayjs(selectedDate)
+                .set("hour", dayjs(data.end_date_time).get("hour"))
+                .set("minute", dayjs(data.end_date_time).get("minute"))
+                .toISOString(),
             })
             .then(() => {
               handleCancel();
@@ -115,7 +125,17 @@ export const ModalSchedule: React.FC<ModalProps> = ({
             .catch(() => {});
         } else {
           createSchedule
-            .mutateAsync(data)
+            .mutateAsync({
+              ...data,
+              start_date_time: dayjs(selectedDate)
+                .set("hour", dayjs(data.start_date_time).get("hour"))
+                .set("minute", dayjs(data.start_date_time).get("minute"))
+                .toISOString(),
+              end_date_time: dayjs(selectedDate)
+                .set("hour", dayjs(data.end_date_time).get("hour"))
+                .set("minute", dayjs(data.end_date_time).get("minute"))
+                .toISOString(),
+            })
             .then(() => {
               handleCancel();
             })
@@ -128,7 +148,7 @@ export const ModalSchedule: React.FC<ModalProps> = ({
   const handleSelectChange = (selectedValue: string) => {
     setSelected(selectedValue);
     // Encontre o barbeiro selecionado
-    const selectedBarber = data?.find((item) => item.name === selectedValue);
+    const selectedBarber = data?.find((item) => item.id === selectedValue);
 
     // Verifique se o barbeiro foi encontrado
     if (selectedBarber) {
@@ -137,40 +157,60 @@ export const ModalSchedule: React.FC<ModalProps> = ({
         shift.available_days.map((day) => day)
       );
 
-      // Encontre o objeto de turno que corresponde à data selecionada
-
       // Atualize o estado com os available_days
       setDayOfWeek(availableDays);
-      setTimeByShift(selectedBarber.shifts);
-
-      setSelectedDate(dayjs());
-
-      setDisabledTimes(disableTimeByShift(selectedBarber.shifts, dayjs()));
     } else {
       // Caso o barbeiro não seja encontrado, defina dayOfWeek como vazio
 
       setDayOfWeek([]);
-      setTimeByShift([]);
     }
     setSelectedDate(null);
   };
 
-  // useEffect(() => {
-  //   if (scheduleToEdit) {
-  //     setFieldsValue({
-  //       name: scheduleToEdit.name,
-  //     });
-  //   }
-  // }, [scheduleToEdit, setFieldsValue]);
+  useEffect(() => {
+    if (scheduleToEdit) {
+      setFieldsValue({
+        id: scheduleToEdit.id,
+        start_date_time: dayjs(scheduleToEdit.start_date_time),
+        end_date_time: dayjs(scheduleToEdit.end_date_time),
+        services: scheduleToEdit.services.map((service) => service.id),
+        client: scheduleToEdit.client.id,
+        employee: scheduleToEdit.employee.id,
+      });
+      handleSelectChange(scheduleToEdit.employee.id);
 
-  const handleChange = (value: string) => {
-    console.log(`selected ${value}`);
+      setSelectedDate(dayjs(scheduleToEdit.start_date_time));
+    }
+  }, [scheduleToEdit, setFieldsValue]);
+
+  const handleChangeDatePicker = (value: Dayjs | null) => {
+    setSelectedDate(value);
   };
+
+  useEffect(() => {
+    let totalMinutes = 0;
+
+    serviceWatch?.forEach((selectedService: string) => {
+      const service = dataServices?.find((item) => item.id === selectedService);
+      if (service) {
+        totalMinutes += service.time;
+      }
+    });
+
+    if (totalMinutes > 0 && startDateTimeWatch) {
+      setFieldValue(
+        "end_date_time",
+        dayjs(startDateTimeWatch).add(totalMinutes, "m")
+      );
+    } else {
+      setFieldValue("end_date_time", null);
+    }
+  }, [serviceWatch, startDateTimeWatch]);
 
   return (
     <ModalWrapper
       centered
-      title={`${scheduleToEdit ? "EDITAR" : "ADICIONAR"} AGENDAMENTO`}
+      title={`${scheduleToEdit ? "EDITAR" : "ADICIONAR"} AGENDAMENTO `}
       open={open}
       onCancel={handleCancel}
       footer={[
@@ -207,7 +247,7 @@ export const ModalSchedule: React.FC<ModalProps> = ({
           <Form.Item
             required
             label="Barbeiro"
-            name="employee_id"
+            name="employee"
             style={{ width: "100%" }}
             rules={[{ required: true, message: "Campo Obrigatório!" }]}
           >
@@ -220,7 +260,7 @@ export const ModalSchedule: React.FC<ModalProps> = ({
               }
               onChange={(value) => handleSelectChange(value as string)}
               options={data?.map((item) => ({
-                value: item.name,
+                value: item.id,
                 label: item.name,
               }))}
             />
@@ -229,7 +269,6 @@ export const ModalSchedule: React.FC<ModalProps> = ({
           <Form.Item
             required
             label="Data/Agendamento"
-            name="start_date_time"
             style={{ width: "100%" }}
             rules={[{ required: true, message: "Campo Obrigatório!" }]}
           >
@@ -238,7 +277,7 @@ export const ModalSchedule: React.FC<ModalProps> = ({
               disabledDate={(current) =>
                 disableDateByDayOfWeek(current, dayOfWeek, true)
               }
-              // onChange={handleChangeDatePicker}
+              onChange={(date) => handleChangeDatePicker(date)}
               format="DD/MM/YYYY"
               value={selectedDate}
             />
@@ -247,20 +286,19 @@ export const ModalSchedule: React.FC<ModalProps> = ({
           <Form.Item
             required
             label="Cliente"
-            name="client_id"
+            name="client"
             style={{ width: "100%" }}
             rules={[{ required: true, message: "Campo Obrigatório!" }]}
           >
             <Select
-              placeholder="Selecione um barbeiro"
+              placeholder="Selecione um cliente"
               // defaultValue="Selecione um barbeiro"
               optionFilterProp="label"
               filterOption={(input: string, option: any) =>
                 option.label.toLowerCase().includes(input.toLowerCase())
               }
-              onChange={(value) => handleSelectChange(value as string)}
               options={dataClients?.map((item) => ({
-                value: item.name,
+                value: item.id,
                 label: item.name,
               }))}
             />
@@ -281,9 +319,8 @@ export const ModalSchedule: React.FC<ModalProps> = ({
               filterOption={(input: string, option: any) =>
                 option.label.toLowerCase().includes(input.toLowerCase())
               }
-              onChange={(value) => handleSelectChange(value as string)}
               options={dataServices?.map((item) => ({
-                value: item.name,
+                value: item.id,
                 label: item.name,
               }))}
             />
@@ -294,29 +331,27 @@ export const ModalSchedule: React.FC<ModalProps> = ({
               label="Horário/Início"
               required
               style={{ display: "inline-block", width: "50%" }}
-              name="start_time"
+              name="start_date_time"
               rules={[{ required: true, message: "" }]}
             >
               <TimePicker
                 format="HH:mm"
                 style={{ width: "100%" }}
                 placeholder="Início"
-                disabledHours={() => disabledTimes.disabledHours?.()}
-                disabledMinutes={(hour) =>
-                  disabledTimes.disabledMinutes?.(hour)
-                }
+
+                // disabledTime={} Desabilitar Hours de acordo com o turno
               />
             </Form.Item>
 
             <Form.Item
               label="Horário/Fim"
               required
-              name="end_time"
+              name="end_date_time"
               style={{ display: "inline-block", width: "50%" }}
               rules={[{ required: true, message: "" }]}
             >
               <TimePicker
-                disabled
+                name="end_date_time"
                 format="HH:mm"
                 style={{ width: "100%" }}
                 placeholder="Término"

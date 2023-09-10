@@ -7,7 +7,7 @@ interface Shift {
   end_time: string;
 }
 
-interface DisabledTimes {
+export interface DisabledTimes {
   disabledHours?: () => number[];
   disabledMinutes?: (hour: number) => number[];
   disabledSeconds?: () => number[];
