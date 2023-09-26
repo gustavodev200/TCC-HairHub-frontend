@@ -13,6 +13,7 @@ import { disableDateByDayOfWeek } from "@/helpers/utils/disableDateByDayOfWeek";
 import { ScheduleOutputDTO } from "@/@types/schedules";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { employeeService } from "@/services/employee";
+import { EmployeeOutputWithSchedulesDTO } from "@/@types/employee";
 
 interface PageHeaderProps {
   pageTitle: string;
@@ -25,14 +26,19 @@ interface PageHeaderProps {
 
 export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
   pageTitle,
-  schedules,
-  statusFilter,
-  onChangeStatusFilter,
-  onChangeSearch,
   handleOpenModal,
 }) => {
-  const { data, isLoading } = useQuery(["employees"], {
-    queryFn: () => employeeService.getOnlyBarbers(),
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<ScheduleStatus | "all">(
+    "all"
+  );
+
+  const { data, isLoading } = useQuery(["employees", statusFilter, search], {
+    queryFn: () =>
+      employeeService.getOnlyBarbers({
+        filterByStatus: statusFilter !== "all" ? statusFilter : undefined,
+        query: search,
+      }),
   });
 
   const { RangePicker } = DatePicker;
@@ -101,7 +107,7 @@ export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
             filterOption={(input: string, option: any) =>
               option.label.toLowerCase().includes(input.toLowerCase())
             }
-            onChange={(value) => handleSelectChange(value as string)}
+            onChange={(value) => setStatusFilter(value as ScheduleStatus)}
             options={data?.map((item) => ({
               value: item.name,
               label: item.name,

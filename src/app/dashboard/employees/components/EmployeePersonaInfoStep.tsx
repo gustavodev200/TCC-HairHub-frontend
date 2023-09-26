@@ -1,9 +1,10 @@
 import { Employee } from "@/@types/employee";
 import { ErrorMessages } from "@/@types/messages";
 import { validateCPF } from "@/helpers/utils/validateCPF";
-import { DatePicker, Form, FormInstance, Input } from "antd";
+import { DatePicker, Form, FormInstance, Input, Upload } from "antd";
 import { MaskedInput } from "antd-mask-input";
 import dayjs from "dayjs";
+import { UploadButton } from "../../services/components/ModalService";
 
 interface EmployeePersonalInfoStepProps {
   form: FormInstance<Employee>;

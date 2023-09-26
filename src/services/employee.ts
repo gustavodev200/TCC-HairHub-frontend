@@ -3,14 +3,18 @@ import Api from "./api";
 import {
   PaginatedDataResponse,
   PaginatedRequestParams,
+  PaginatedRequestParamsSchedule,
 } from "@/@types/paginatedData";
 import { Employee, EmployeeOutputWithSchedulesDTO } from "@/@types/employee";
 import { GenericStatus } from "@/@types/genericStatus";
 
 const baseUrl = "/employees";
 
-async function getOnlyBarbers(): Promise<EmployeeOutputWithSchedulesDTO[]> {
+async function getOnlyBarbers(
+  params?: PaginatedRequestParamsSchedule
+): Promise<EmployeeOutputWithSchedulesDTO[]> {
   return Api.get(`${baseUrl}/barbers-with-schedule`, {
+    params,
     headers: { authHeader: true },
   }).then((res) => res.data);
 }

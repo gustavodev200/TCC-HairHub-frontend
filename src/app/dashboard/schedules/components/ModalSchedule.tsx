@@ -26,10 +26,6 @@ import { useEffect, useState } from "react";
 
 import styled from "styled-components";
 import isBetween from "dayjs/plugin/isBetween";
-import {
-  DisabledTimes,
-  disableTimeByShift,
-} from "@/helpers/utils/disableTimeByShift";
 dayjs.extend(isBetween);
 
 interface ModalProps {

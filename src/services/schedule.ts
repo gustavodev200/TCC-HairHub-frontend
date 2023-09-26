@@ -9,6 +9,7 @@ import {
 } from "@/@types/paginatedData";
 import Api from "./api";
 import { SuccessMessages } from "@/@types/messages";
+import { ScheduleStatus } from "@/@types/scheduleStatus";
 
 const baseUrl = "/schedulings";
 
@@ -34,20 +35,20 @@ async function update(
   }).then((res) => res.data);
 }
 
-//   async function changeStatus(
-//     id: string,
-//     status: GenericStatus
-//   ): Promise<Employee> {
-//     return Api.patch(
-//       `${baseUrl}/${id}`,
-//       { status },
-//       { headers: { authHeader: true, "success-message": SuccessMessages.MSGS03 } }
-//     ).then((res) => res.data);
-//   }
+async function changeStatus(
+  id: string,
+  schedule_status: ScheduleStatus
+): Promise<ScheduleOutputDTO> {
+  return Api.patch(
+    `${baseUrl}/${id}`,
+    { schedule_status },
+    { headers: { authHeader: true, "success-message": SuccessMessages.MSGS03 } }
+  ).then((res) => res.data);
+}
 
 export const scheduleService = {
   getPaginated,
   create,
   update,
-  // changeStatus,
+  changeStatus,
 };

@@ -1,5 +1,6 @@
 import { GenericStatus } from "./genericStatus";
 import { ScheduleStatus } from "./scheduleStatus";
+import { ScheduleEmployeeDTO } from "./schedules";
 
 export interface PaginatedRequestParams {
   query?: string;
@@ -13,6 +14,8 @@ export interface PaginatedRequestParamsSchedule {
   page?: number;
   pageSize?: number;
   filterByStatus?: ScheduleStatus;
+  filterByDate?: Date;
+  filterByEmployee?: ScheduleEmployeeDTO;
 }
 
 export interface PaginatedDataResponse<T> {
@@ -29,4 +32,6 @@ export interface PaginatedDataResponseSchedule<T> {
   totalPages: number;
   query?: string;
   filterByStatus?: ScheduleStatus;
+  filterByDate?: Date;
+  filterByEmployee?: ScheduleEmployeeDTO;
 }

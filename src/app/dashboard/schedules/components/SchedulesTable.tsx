@@ -1,15 +1,16 @@
 "use client";
 
-import { Table, Button, Tag, Space, Select } from "antd";
+import { Table, Button, Space, Select } from "antd";
 import styled from "styled-components";
 import { ColumnGroupType, ColumnType, ColumnsType } from "antd/es/table";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { categoryService } from "@/services/category";
 import { ScheduleOutputDTO } from "@/@types/schedules";
 import { ScheduleStatus } from "@/@types/scheduleStatus";
-import { useState } from "react";
 import dayjs from "dayjs";
 import { TagColor } from "@/components/Tag";
+import { scheduleService } from "@/services/schedule";
+import { renameStatusInTable } from "@/helpers/utils/ranameStatusInTable";
+import { Progress } from "antd";
 
 interface SchedulesTableProps {
   schedules: ScheduleOutputDTO[];
@@ -25,11 +26,23 @@ export const SchedulesTable: React.FC<SchedulesTableProps> = ({
       title: "Agendado para",
       key: "schedule_date",
       render: (_, record) => (
-        <span>{`${dayjs(record.start_date_time).format("DD/MM/YY")} - ${dayjs(
-          record.start_date_time
-        ).format("HH:mm")} às ${dayjs(record.end_date_time).format(
-          "HH:mm"
-        )}`}</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {record.schedule_status === "scheduled" ? (
+            <Progress
+              type="circle"
+              percent={12}
+              format={(percent) => `${percent}H`}
+              strokeColor={"#F05761"}
+              size={40}
+              strokeWidth={12}
+            />
+          ) : null}
+          <span style={{ fontWeight: "bold" }}>{`${dayjs(
+            record.start_date_time
+          ).format("DD/MM/YY")} - ${dayjs(record.start_date_time).format(
+            "HH:mm"
+          )} às ${dayjs(record.end_date_time).format("HH:mm")}`}</span>
+        </div>
       ),
     },
 
@@ -54,7 +67,7 @@ export const SchedulesTable: React.FC<SchedulesTableProps> = ({
           }}
         >
           {record.services.map((service) => (
-            <TagColor tag={service.name} color="blue" key={service.id} />
+            <TagColor tag={service.name} color="#717D7E" key={service.id} />
           ))}
         </div>
       ),
@@ -71,74 +84,92 @@ export const SchedulesTable: React.FC<SchedulesTableProps> = ({
       title: "Status",
       dataIndex: "schedule_status",
       key: "schedule_status",
-      render: (schedule_status) => {
-        return (
-          schedule_status && (
-            <StatusSelect
-              defaultValue={schedule_status}
-              customStatus={schedule_status}
-              options={[
-                { value: schedule_status, label: "Agendado" },
-                { value: ScheduleStatus.CONFIRMED, label: "Confirmado" },
-                {
-                  value: ScheduleStatus.AWAITING_SERVICE,
-                  label: "Aguardando Atendimento",
-                },
-                { value: ScheduleStatus.FINISHED, label: "Finalizado" },
-                { value: ScheduleStatus.CANCELED, label: "Cancelado" },
-              ]}
-            />
-          )
-        );
-      },
-      // render: (status) => {
-      //   return status === "active" ? (
-      //     <Tag color="#059101" key={status}>
-      //       ATIVO
-      //     </Tag>
-      //   ) : (
-      //     <Tag color="#bd0000" key={status}>
-      //       INATIVO
-      //     </Tag>
-      //   );
-      // },
+      render: (schedule_status) => (
+        <span>{renameStatusInTable(schedule_status as ScheduleStatus)}</span>
+      ),
     },
 
     {
       title: "Ações",
       key: "action",
 
-      render: ({ id, status }, record) => (
-        <Space size="middle">
-          <StatusButton
-            backgroundcolor="#C1820B"
-            type="primary"
-            onClick={() => onEdit(record)}
-          >
-            Editar
-          </StatusButton>
-          {/* <StatusButton
-            backgroundcolor={status === "active" ? "#F05761" : "#6CB66F"}
-            type="primary"
-            onClick={() =>
-              changeStatus.mutate({
-                id,
-                status: status === "active" ? "inactive" : "active",
-              })
-            }
-          >
-            {status === "active" ? "Inativar" : "Ativar"}
-          </StatusButton> */}
-        </Space>
+      render: ({ id, schedule_status }, record) => (
+        <>
+          <div style={{ display: "flex", gap: 8 }}>
+            <Space size="middle">
+              <StatusButton
+                backgroundcolor="#C1820B"
+                type="primary"
+                onClick={() => onEdit(record)}
+              >
+                Editar
+              </StatusButton>
+            </Space>
+
+            <StatusButton
+              backgroundcolor={
+                schedule_status === "scheduled"
+                  ? "#3498DB"
+                  : schedule_status === "confirmed"
+                  ? "#E67E22"
+                  : schedule_status === "awaiting_service"
+                  ? "#AAB7B8"
+                  : schedule_status === "attend"
+                  ? "#52BE80"
+                  : null
+              }
+              type="primary"
+              onClick={() =>
+                changeStatus.mutate({
+                  id,
+                  schedule_status:
+                    schedule_status === "scheduled"
+                      ? "confirmed"
+                      : schedule_status === "confirmed"
+                      ? "awaiting_service"
+                      : schedule_status === "awaiting_service"
+                      ? "attend"
+                      : schedule_status === "attend"
+                      ? "finished"
+                      : schedule_status === "finished"
+                      ? null
+                      : null,
+                })
+              }
+            >
+              {schedule_status === "scheduled"
+                ? "Confirmar"
+                : schedule_status === "confirmed"
+                ? "Aguard. Atendimento"
+                : schedule_status === "awaiting_service"
+                ? "Atender"
+                : schedule_status === "attend"
+                ? "Finalizar"
+                : null}
+            </StatusButton>
+
+            <StatusButton
+              backgroundcolor="#F05761"
+              type="primary"
+              onClick={() =>
+                changeStatus.mutate({
+                  id,
+                  schedule_status: schedule_status === "canceled",
+                })
+              }
+            >
+              Cancelar
+            </StatusButton>
+          </div>
+        </>
       ),
     },
   ];
-
   const queryClient = useQueryClient();
 
   const changeStatus = useMutation({
     mutationFn: (params: any) =>
-      categoryService.changeStatus(params.id, params.status),
+      scheduleService.changeStatus(params.id, params.schedule_status),
     onSuccess: (data) => {
       queryClient.invalidateQueries(["schedulings"]);
     },
