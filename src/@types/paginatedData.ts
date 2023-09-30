@@ -14,8 +14,8 @@ export interface PaginatedRequestParamsSchedule {
   page?: number;
   pageSize?: number;
   filterByStatus?: ScheduleStatus;
-  filterByDate?: Date;
-  filterByEmployee?: ScheduleEmployeeDTO;
+  filterByDate?: string;
+  filterByEmployee?: string;
 }
 
 export interface PaginatedDataResponse<T> {
@@ -32,6 +32,6 @@ export interface PaginatedDataResponseSchedule<T> {
   totalPages: number;
   query?: string;
   filterByStatus?: ScheduleStatus;
-  filterByDate?: Date;
-  filterByEmployee?: ScheduleEmployeeDTO;
+  filterByDate?: string;
+  filterByEmployee?: string;
 }

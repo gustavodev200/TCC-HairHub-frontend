@@ -10,11 +10,8 @@ import { GenericStatus } from "@/@types/genericStatus";
 
 const baseUrl = "/employees";
 
-async function getOnlyBarbers(
-  params?: PaginatedRequestParamsSchedule
-): Promise<EmployeeOutputWithSchedulesDTO[]> {
+async function getOnlyBarbers(): Promise<EmployeeOutputWithSchedulesDTO[]> {
   return Api.get(`${baseUrl}/barbers-with-schedule`, {
-    params,
     headers: { authHeader: true },
   }).then((res) => res.data);
 }

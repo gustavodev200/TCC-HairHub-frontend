@@ -11,6 +11,7 @@ import { TagColor } from "@/components/Tag";
 import { scheduleService } from "@/services/schedule";
 import { renameStatusInTable } from "@/helpers/utils/ranameStatusInTable";
 import { Progress } from "antd";
+import ActionsMenu from "./ActionsMenu";
 
 interface SchedulesTableProps {
   schedules: ScheduleOutputDTO[];
@@ -95,17 +96,13 @@ export const SchedulesTable: React.FC<SchedulesTableProps> = ({
 
       render: ({ id, schedule_status }, record) => (
         <>
-          <div style={{ display: "flex", gap: 8 }}>
-            <Space size="middle">
-              <StatusButton
-                backgroundcolor="#C1820B"
-                type="primary"
-                onClick={() => onEdit(record)}
-              >
-                Editar
-              </StatusButton>
-            </Space>
-
+          <ActionsMenu
+            onEdit={onEdit}
+            record={record}
+            schedule_status={schedule_status}
+            id={id}
+          />
+          {/* <div style={{ display: "flex", gap: 8 }}>
             <StatusButton
               backgroundcolor={
                 schedule_status === "scheduled"
@@ -160,7 +157,7 @@ export const SchedulesTable: React.FC<SchedulesTableProps> = ({
             >
               Cancelar
             </StatusButton>
-          </div>
+          </div> */}
         </>
       ),
     },

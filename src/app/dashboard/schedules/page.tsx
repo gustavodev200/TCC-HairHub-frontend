@@ -10,6 +10,7 @@ import { ModalSchedule } from "./components/ModalSchedule";
 import { PageHeaderSchedule } from "./components/PageHeaderSchedule";
 import { ScheduleStatus } from "@/@types/scheduleStatus";
 import { scheduleService } from "@/services/schedule";
+import { Dayjs } from "dayjs";
 
 const Page: React.FC = () => {
   const [search, setSearch] = useState("");
@@ -17,23 +18,29 @@ const Page: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<ScheduleStatus | "all">(
     "all"
   );
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
+  const [selectedBarberId, setSelectedBarberId] = useState("");
 
   const queryClient = useQueryClient();
 
-  const { data } = useQuery(["schedulings", page, statusFilter, search], {
-    queryFn: () =>
-      scheduleService.getPaginated({
-        filterByStatus: statusFilter !== "all" ? statusFilter : undefined,
-        query: search,
-        page,
-      }),
+  const { data } = useQuery(
+    ["schedulings", statusFilter, page, selectedDate, selectedBarberId],
+    {
+      queryFn: () =>
+        scheduleService.getPaginated({
+          filterByStatus: statusFilter !== "all" ? statusFilter : undefined,
+          filterByDate: selectedDate?.toISOString() || undefined,
+          filterByEmployee: selectedBarberId || undefined,
+          page,
+        }),
 
-    onSuccess: () => {
-      queryClient.invalidateQueries(["schedulings"], {
-        exact: true,
-      });
-    },
-  });
+      onSuccess: () => {
+        queryClient.invalidateQueries(["schedulings"], {
+          exact: true,
+        });
+      },
+    }
+  );
 
   const [scheduleToEdit, setcheduleToEdit] = useState<ScheduleOutputDTO>();
   const [showModalCategory, setShowModalCategory] = useState(false);
@@ -65,6 +72,10 @@ const Page: React.FC = () => {
       <PageHeaderSchedule
         pageTitle="Agendamentos"
         statusFilter={statusFilter}
+        selectedBarberId={selectedBarberId}
+        onChangeSelectedBarberId={setSelectedBarberId}
+        selectedDate={selectedDate}
+        onChangeSelectedDate={setSelectedDate}
         onChangeSearch={(value) => value}
         onChangeStatusFilter={(value) => value}
         handleOpenModal={handleOpenModalSchedule}

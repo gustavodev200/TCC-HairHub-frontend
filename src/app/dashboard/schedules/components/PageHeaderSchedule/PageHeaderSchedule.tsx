@@ -3,21 +3,22 @@
 import styled from "styled-components";
 import { PlusOutlined } from "@ant-design/icons";
 import { Select, Button } from "antd";
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
-import debounce from "lodash.debounce";
+import { useEffect, useState } from "react";
 import { DatePicker, Space } from "antd";
 import type { Dayjs } from "dayjs";
-import dayjs from "dayjs";
 import { ScheduleStatus } from "@/@types/scheduleStatus";
 import { disableDateByDayOfWeek } from "@/helpers/utils/disableDateByDayOfWeek";
 import { ScheduleOutputDTO } from "@/@types/schedules";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { employeeService } from "@/services/employee";
-import { EmployeeOutputWithSchedulesDTO } from "@/@types/employee";
 
 interface PageHeaderProps {
   pageTitle: string;
   statusFilter: ScheduleStatus | "all";
+  selectedDate: Dayjs | null;
+  selectedBarberId: string;
+  onChangeSelectedDate: (date: Dayjs | null) => void;
+  onChangeSelectedBarberId: (id: string) => void;
   onChangeStatusFilter: (status: ScheduleStatus | "all") => void;
   onChangeSearch: (search: string) => void;
   handleOpenModal: () => void;
@@ -26,31 +27,24 @@ interface PageHeaderProps {
 
 export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
   pageTitle,
+  selectedDate,
+  selectedBarberId,
+  onChangeSelectedDate,
+  onChangeStatusFilter,
+  onChangeSelectedBarberId,
+  onChangeSearch,
   handleOpenModal,
 }) => {
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<ScheduleStatus | "all">(
-    "all"
-  );
-
-  const { data, isLoading } = useQuery(["employees", statusFilter, search], {
-    queryFn: () =>
-      employeeService.getOnlyBarbers({
-        filterByStatus: statusFilter !== "all" ? statusFilter : undefined,
-        query: search,
-      }),
+  const { data, isLoading } = useQuery(["employees", selectedBarberId], {
+    queryFn: () => employeeService.getOnlyBarbers(),
   });
 
-  const { RangePicker } = DatePicker;
-
-  const [selected, setSelected] = useState("");
   const [dayOfWeek, setDayOfWeek] = useState<number[]>([]);
-  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
 
   const handleSelectChange = (selectedValue: string) => {
-    setSelected(selectedValue);
+    onChangeSelectedBarberId(selectedValue);
     // Encontre o barbeiro selecionado
-    const selectedBarber = data?.find((item) => item.name === selectedValue);
+    const selectedBarber = data?.find((item) => item.id === selectedValue);
 
     // Verifique se o barbeiro foi encontrado
     if (selectedBarber) {
@@ -66,17 +60,17 @@ export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
 
       setDayOfWeek([]);
     }
-    setSelectedDate(null);
+    onChangeSelectedDate(null);
   };
 
   const handleChangeDatePicker = (value: Dayjs | null, dateString: string) => {
-    setSelectedDate(value);
+    onChangeSelectedDate(value);
   };
 
   useEffect(() => {
-    handleSelectChange(selected);
-    handleChangeDatePicker(selectedDate, selected);
-  }, [data, selected, selectedDate]);
+    handleSelectChange(selectedBarberId);
+    handleChangeDatePicker(selectedDate, selectedBarberId);
+  }, [data, selectedBarberId, selectedDate]);
 
   return (
     <HeaderContainer>
@@ -99,6 +93,7 @@ export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
 
         <div>
           <SelectContainer
+            allowClear
             showSearch
             size="large"
             placeholder="Selecione um barbeiro"
@@ -107,9 +102,9 @@ export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
             filterOption={(input: string, option: any) =>
               option.label.toLowerCase().includes(input.toLowerCase())
             }
-            onChange={(value) => setStatusFilter(value as ScheduleStatus)}
+            onChange={(value) => handleSelectChange(value as string)}
             options={data?.map((item) => ({
-              value: item.name,
+              value: item.id,
               label: item.name,
             }))}
           />
