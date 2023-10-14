@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import {
   TagsOutlined,
   ScissorOutlined,
@@ -10,46 +10,71 @@ import {
   ShoppingOutlined,
   ScheduleOutlined,
 } from "@ant-design/icons";
-import type { MenuProps } from "antd";
+import { MenuProps, Skeleton } from "antd";
 import { Layout, Menu } from "antd";
 import styled from "styled-components";
 import { HeaderWrapper } from "./Header";
 import Image from "next/image";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { getCookie } from "cookies-next";
+import { AssignmentType } from "@/@types/role";
+import jwtDecode from "jwt-decode";
+import { getAuthorizedRoutesByRoles } from "@/helpers/utils/getAuthorizedRoutesByRole";
 
 const { Content, Sider } = Layout;
 
 type MenuItem = Required<MenuProps>["items"][number];
 
 function getItem(
-  label: React.ReactNode,
+  label: string,
   key: React.Key,
   icon?: React.ReactNode,
-  children?: MenuItem[]
+  items?: MenuItem[],
+  type?: "group"
 ): MenuItem {
   return {
     key,
     icon,
-    children,
+    items,
     label,
+    type,
   } as MenuItem;
 }
-
-const items: MenuItem[] = [
-  getItem("Home", "/dashboard", <HomeOutlined />),
-  getItem("Colaboradores", "/dashboard/employees", <UsergroupAddOutlined />),
-  getItem("Clientes", "/dashboard/clients", <UserOutlined />),
-  getItem("Serviços", "/dashboard/services", <ScissorOutlined />),
-  getItem("Categorias", "/dashboard/categories", <TagsOutlined />),
-  getItem("Produtos", "/dashboard/products", <ShoppingOutlined />),
-  getItem("Agendamentos", "/dashboard/schedules", <ScheduleOutlined />),
-];
 
 const LayoutDashboard = ({ children }: { children: ReactNode }) => {
   const [collapsed, setCollapsed] = useState(false);
 
   const { push } = useRouter();
+  const pathname = usePathname();
+  const accessToken = getCookie("@hairhub");
+
+  const { role } =
+    typeof window === "undefined"
+      ? { role: AssignmentType.ADMIN }
+      : (jwtDecode(accessToken as string) as { role: AssignmentType });
+
+  const items: MenuItem[] = [
+    getItem("Home", "/dashboard", <HomeOutlined />),
+    getItem("Colaboradores", "/dashboard/employees", <UsergroupAddOutlined />),
+    getItem("Clientes", "/dashboard/clients", <UserOutlined />),
+    getItem("Serviços", "/dashboard/services", <ScissorOutlined />),
+    getItem("Categorias", "/dashboard/categories", <TagsOutlined />),
+    getItem("Produtos", "/dashboard/products", <ShoppingOutlined />),
+    getItem("Agendamentos", "/dashboard/schedules", <ScheduleOutlined />),
+  ];
+
+  const [itemsToShow, setItemsToShow] = useState<MenuItem[]>([]);
+
+  useEffect(() => {
+    if (typeof accessToken === "string") {
+      setItemsToShow(
+        items.filter((item) =>
+          getAuthorizedRoutesByRoles(role).includes((item?.key as string) ?? "")
+        )
+      );
+    }
+  }, [accessToken]);
 
   return (
     <Layout style={{ minHeight: "100vh", minWidth: "100%", position: "fixed" }}>
@@ -68,11 +93,11 @@ const LayoutDashboard = ({ children }: { children: ReactNode }) => {
             alt="Logo Hair Hub Barbershop"
           />
         </LogoWrapper>
+
         <Menu
           theme="dark"
-          defaultSelectedKeys={["1"]}
-          mode="inline"
-          items={items}
+          items={itemsToShow}
+          defaultSelectedKeys={[pathname]}
           onClick={({ key }) => push(key)}
         />
       </SideBarWrapper>

@@ -11,6 +11,7 @@ import { PageHeaderSchedule } from "./components/PageHeaderSchedule";
 import { ScheduleStatus } from "@/@types/scheduleStatus";
 import { scheduleService } from "@/services/schedule";
 import { Dayjs } from "dayjs";
+import ConsumeModal from "./components/ConsumeModal";
 
 const Page: React.FC = () => {
   const [search, setSearch] = useState("");
@@ -32,6 +33,7 @@ const Page: React.FC = () => {
           filterByDate: selectedDate?.toISOString() || undefined,
           filterByEmployee: selectedBarberId || undefined,
           page,
+          query: search,
         }),
 
       onSuccess: () => {
@@ -43,18 +45,30 @@ const Page: React.FC = () => {
   );
 
   const [scheduleToEdit, setcheduleToEdit] = useState<ScheduleOutputDTO>();
-  const [showModalCategory, setShowModalCategory] = useState(false);
+  const [showModalSchedule, setShowModalSchedule] = useState(false);
+  const [selectedConsumeScheduleId, setSelectedConsumeScheduleId] =
+    useState<string>();
+  const [showModalConsumeSchedule, setShowModalConsumeSchedule] =
+    useState(false);
 
   const handleOpenModalSchedule = (schedule?: ScheduleOutputDTO) => {
     if (schedule) {
       setcheduleToEdit(schedule);
     }
 
-    setShowModalCategory(true);
+    setShowModalSchedule(true);
+  };
+
+  const handleOpenModalScheduleConsume = (id?: string) => {
+    if (id) {
+      setSelectedConsumeScheduleId(id);
+    }
+
+    setShowModalConsumeSchedule(true);
   };
 
   const handleCloseModalSchedule = () => {
-    setShowModalCategory(false);
+    setShowModalSchedule(false), setShowModalConsumeSchedule(false);
 
     if (scheduleToEdit) {
       setcheduleToEdit(undefined);
@@ -64,9 +78,17 @@ const Page: React.FC = () => {
   return (
     <>
       <ModalSchedule
-        open={showModalCategory}
+        open={showModalSchedule}
         scheduleToEdit={scheduleToEdit}
         onClose={handleCloseModalSchedule}
+      />
+
+      <ConsumeModal
+        open={showModalConsumeSchedule}
+        onClose={handleCloseModalSchedule}
+        selectedConsumeScheduleId={data?.data.find(
+          (schedule) => schedule.id === selectedConsumeScheduleId
+        )}
       />
 
       <PageHeaderSchedule
@@ -77,7 +99,7 @@ const Page: React.FC = () => {
         selectedDate={selectedDate}
         onChangeSelectedDate={setSelectedDate}
         onChangeSearch={(value) => value}
-        onChangeStatusFilter={(value) => value}
+        onChangeStatusFilter={(value) => setStatusFilter(value)}
         handleOpenModal={handleOpenModalSchedule}
         schedules={data?.data ?? []}
       />
@@ -85,6 +107,7 @@ const Page: React.FC = () => {
       <SchedulesTable
         schedules={data?.data ?? []}
         onEdit={handleOpenModalSchedule}
+        handleOpenModalScheduleConsume={handleOpenModalScheduleConsume}
       />
       {data && (
         <div

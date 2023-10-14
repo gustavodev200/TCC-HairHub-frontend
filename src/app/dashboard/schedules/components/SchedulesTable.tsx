@@ -15,12 +15,14 @@ import ActionsMenu from "./ActionsMenu";
 
 interface SchedulesTableProps {
   schedules: ScheduleOutputDTO[];
-  onEdit: (category: ScheduleOutputDTO) => void;
+  onEdit: (schedule: ScheduleOutputDTO) => void;
+  handleOpenModalScheduleConsume: (id?: string) => void;
 }
 
 export const SchedulesTable: React.FC<SchedulesTableProps> = ({
   schedules,
   onEdit,
+  handleOpenModalScheduleConsume,
 }) => {
   const columns: ColumnsType<ScheduleOutputDTO> = [
     {
@@ -101,7 +103,9 @@ export const SchedulesTable: React.FC<SchedulesTableProps> = ({
             record={record}
             schedule_status={schedule_status}
             id={id}
+            handleOpenModalScheduleConsume={handleOpenModalScheduleConsume}
           />
+
           {/* <div style={{ display: "flex", gap: 8 }}>
             <StatusButton
               backgroundcolor={

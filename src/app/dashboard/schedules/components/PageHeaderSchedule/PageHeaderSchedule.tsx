@@ -32,8 +32,8 @@ export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
   onChangeSelectedDate,
   onChangeStatusFilter,
   onChangeSelectedBarberId,
-  onChangeSearch,
   handleOpenModal,
+  statusFilter,
 }) => {
   const { data, isLoading } = useQuery(["employees", selectedBarberId], {
     queryFn: () => employeeService.getOnlyBarbers(),
@@ -92,6 +92,32 @@ export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
         </Space>
 
         <div>
+          <SelectWrapper>
+            <SelectContainer
+              size="large"
+              defaultValue="todos"
+              value={statusFilter}
+              onChange={(value) =>
+                onChangeStatusFilter(value as ScheduleStatus)
+              }
+              options={[
+                { value: "all", label: "Todos" },
+                { value: ScheduleStatus.SCHEDULED, label: "Agendados" },
+                { value: ScheduleStatus.CONFIRMED, label: "Confirmados" },
+                {
+                  value: ScheduleStatus.AWAITING_SERVICE,
+                  label: "Aguard. atendimento",
+                },
+                { value: ScheduleStatus.ATTEND, label: "Em atendimento" },
+                { value: ScheduleStatus.FINISHED, label: "Finalizados" },
+
+                { value: ScheduleStatus.CANCELED, label: "Cancelados" },
+              ]}
+            />
+          </SelectWrapper>
+        </div>
+
+        <div>
           <SelectContainer
             allowClear
             showSearch
@@ -143,6 +169,12 @@ const HeaderContainer = styled.div`
   }
 `;
 
+const SelectWrapper = styled.div`
+  @media (max-width: 568px) {
+    width: 100%;
+  }
+`;
+
 const HeaderActions = styled.div`
   display: flex;
   align-items: center;
@@ -167,7 +199,7 @@ const HeaderTitle = styled.div`
 
 const SelectContainer = styled(Select)`
   width: 15rem;
-  margin: 0 1.5rem;
+  margin: 0 0.5rem;
 
   @media (max-width: 568px) {
     margin: 0;

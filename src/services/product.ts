@@ -36,7 +36,14 @@ async function editProduct(data: Products): Promise<Products> {
   }).then((res) => res.data);
 }
 
+async function getOnlyProducts(): Promise<Products[]> {
+  return Api.get(`${baseUrl}/all`, {
+    headers: { authHeader: true },
+  }).then((res) => res.data);
+}
+
 export const productService = {
+  getOnlyProducts,
   changeStatus,
   createProduct,
   editProduct,

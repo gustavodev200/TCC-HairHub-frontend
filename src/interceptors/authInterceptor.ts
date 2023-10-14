@@ -1,13 +1,13 @@
 import { ErrorMessages } from "@/@types/messages";
-import { useUser } from "@/stores/useUser";
 import { InternalAxiosRequestConfig } from "axios";
+import { deleteCookie, getCookie } from "cookies-next";
 
 export const authInterceptor = async (config: InternalAxiosRequestConfig) => {
   const needsToAuth = config.headers?.authHeader !== undefined;
 
   if (needsToAuth) {
     try {
-      const { accessToken } = useUser.getState();
+      const accessToken = getCookie("@hairhub");
 
       if (!accessToken) throw new Error(ErrorMessages.MSGE12);
 
@@ -20,7 +20,7 @@ export const authInterceptor = async (config: InternalAxiosRequestConfig) => {
 
       return newConfig;
     } catch {
-      useUser.setState({ accessToken: undefined });
+      deleteCookie("@hairhub");
     }
   }
 

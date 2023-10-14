@@ -10,12 +10,6 @@ const poppinsFont = localFont({
   display: "swap",
 });
 
-// const poppinsFont = Poppins({
-//   weight: "500",
-//   subsets: ["latin"],
-//   variable: "--poppinsFont",
-// });
-
 export const metadata = {
   title: {
     default: "Hair Hub | Barbearia",

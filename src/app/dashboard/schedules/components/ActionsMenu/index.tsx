@@ -12,9 +12,16 @@ interface ActionsProps {
   record: ScheduleOutputDTO;
   schedule_status: ScheduleStatus;
   id: string;
+  handleOpenModalScheduleConsume: (id: string) => void;
 }
 
-function ActionsMenu({ onEdit, record, schedule_status, id }: ActionsProps) {
+function ActionsMenu({
+  onEdit,
+  record,
+  schedule_status,
+  id,
+  handleOpenModalScheduleConsume,
+}: ActionsProps) {
   const queryClient = useQueryClient();
 
   const changeStatus = useMutation({
@@ -103,12 +110,26 @@ function ActionsMenu({ onEdit, record, schedule_status, id }: ActionsProps) {
               </StatusButton>
             ),
           },
+          {
+            key: "4",
+            label:
+              schedule_status === "awaiting_service" ||
+              schedule_status === "finished" ? (
+                <StatusButton
+                  backgroundcolor="#250444"
+                  type="primary"
+                  onClick={() => handleOpenModalScheduleConsume(id)}
+                >
+                  Consumir
+                </StatusButton>
+              ) : null,
+          },
         ],
       }}
     >
       <a onClick={(e) => e.preventDefault()}>
         <Space>
-          <MoreOutlined />
+          <MoreOutlined style={{ fontSize: "18px" }} />
         </Space>
       </a>
     </Dropdown>
@@ -117,6 +138,7 @@ function ActionsMenu({ onEdit, record, schedule_status, id }: ActionsProps) {
 
 const StatusButton = styled(Button)`
   background: ${(props: any) => props.backgroundcolor};
+  width: 100%;
 `;
 
 export default ActionsMenu;
