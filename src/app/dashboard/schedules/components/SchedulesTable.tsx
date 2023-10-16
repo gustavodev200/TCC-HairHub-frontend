@@ -12,6 +12,7 @@ import { scheduleService } from "@/services/schedule";
 import { renameStatusInTable } from "@/helpers/utils/ranameStatusInTable";
 import { Progress } from "antd";
 import ActionsMenu from "./ActionsMenu";
+import { useEffect } from "react";
 
 interface SchedulesTableProps {
   schedules: ScheduleOutputDTO[];
@@ -97,72 +98,13 @@ export const SchedulesTable: React.FC<SchedulesTableProps> = ({
       key: "action",
 
       render: ({ id, schedule_status }, record) => (
-        <>
-          <ActionsMenu
-            onEdit={onEdit}
-            record={record}
-            schedule_status={schedule_status}
-            id={id}
-            handleOpenModalScheduleConsume={handleOpenModalScheduleConsume}
-          />
-
-          {/* <div style={{ display: "flex", gap: 8 }}>
-            <StatusButton
-              backgroundcolor={
-                schedule_status === "scheduled"
-                  ? "#3498DB"
-                  : schedule_status === "confirmed"
-                  ? "#E67E22"
-                  : schedule_status === "awaiting_service"
-                  ? "#AAB7B8"
-                  : schedule_status === "attend"
-                  ? "#52BE80"
-                  : null
-              }
-              type="primary"
-              onClick={() =>
-                changeStatus.mutate({
-                  id,
-                  schedule_status:
-                    schedule_status === "scheduled"
-                      ? "confirmed"
-                      : schedule_status === "confirmed"
-                      ? "awaiting_service"
-                      : schedule_status === "awaiting_service"
-                      ? "attend"
-                      : schedule_status === "attend"
-                      ? "finished"
-                      : schedule_status === "finished"
-                      ? null
-                      : null,
-                })
-              }
-            >
-              {schedule_status === "scheduled"
-                ? "Confirmar"
-                : schedule_status === "confirmed"
-                ? "Aguard. Atendimento"
-                : schedule_status === "awaiting_service"
-                ? "Atender"
-                : schedule_status === "attend"
-                ? "Finalizar"
-                : null}
-            </StatusButton>
-
-            <StatusButton
-              backgroundcolor="#F05761"
-              type="primary"
-              onClick={() =>
-                changeStatus.mutate({
-                  id,
-                  schedule_status: schedule_status === "canceled",
-                })
-              }
-            >
-              Cancelar
-            </StatusButton>
-          </div> */}
-        </>
+        <ActionsMenu
+          onEdit={onEdit}
+          record={record}
+          schedule_status={schedule_status}
+          id={id}
+          handleOpenModalScheduleConsume={handleOpenModalScheduleConsume}
+        />
       ),
     },
   ];

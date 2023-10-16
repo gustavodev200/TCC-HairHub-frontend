@@ -4,18 +4,20 @@ const prefix = "/dashboard";
 
 const baseRoutes = [
   prefix,
-  `${prefix}/employees`,
   `${prefix}/clients`,
   `${prefix}/services`,
-  `${prefix}/categories`,
-  `${prefix}/products`,
   `${prefix}/schedules`,
 ];
 
 const authorizedRoutesByRole = {
-  [AssignmentType.CLIENT]: baseRoutes,
+  [AssignmentType.CLIENT]: [] as string[],
   [AssignmentType.EMPLOYEE]: baseRoutes,
-  [AssignmentType.ADMIN]: [...baseRoutes, `${prefix}/employees`],
+  [AssignmentType.ADMIN]: [
+    ...baseRoutes,
+    `${prefix}/employees`,
+    `${prefix}/products`,
+    `${prefix}/categories`,
+  ],
   [AssignmentType.ATTENDANT]: baseRoutes,
 };
 

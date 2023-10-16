@@ -21,6 +21,7 @@ export const authInterceptor = async (config: InternalAxiosRequestConfig) => {
       return newConfig;
     } catch {
       deleteCookie("@hairhub");
+      window.location.href = "/";
     }
   }
 

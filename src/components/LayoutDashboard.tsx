@@ -52,7 +52,9 @@ const LayoutDashboard = ({ children }: { children: ReactNode }) => {
   const { role } =
     typeof window === "undefined"
       ? { role: AssignmentType.ADMIN }
-      : (jwtDecode(accessToken as string) as { role: AssignmentType });
+      : accessToken
+      ? (jwtDecode(accessToken as string) as { role: AssignmentType })
+      : { role: AssignmentType.ADMIN };
 
   const items: MenuItem[] = [
     getItem("Home", "/dashboard", <HomeOutlined />),

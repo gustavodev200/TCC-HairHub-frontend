@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pagination } from "antd";
 
 import { ScheduleOutputDTO } from "@/@types/schedules";

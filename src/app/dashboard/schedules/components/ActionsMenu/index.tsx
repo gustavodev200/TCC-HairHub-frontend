@@ -63,22 +63,21 @@ function ActionsMenu({
                     : null
                 }
                 type="primary"
-                onClick={() =>
-                  changeStatus.mutate({
-                    id,
-                    schedule_status:
-                      schedule_status === "scheduled"
-                        ? "confirmed"
-                        : schedule_status === "confirmed"
-                        ? "awaiting_service"
-                        : schedule_status === "awaiting_service"
-                        ? "attend"
-                        : schedule_status === "attend"
-                        ? "finished"
-                        : schedule_status === "finished"
-                        ? null
-                        : null,
-                  })
+                onClick={
+                  schedule_status === "attend"
+                    ? () => handleOpenModalScheduleConsume(id)
+                    : () =>
+                        changeStatus.mutate({
+                          id,
+                          schedule_status:
+                            schedule_status === "scheduled"
+                              ? "confirmed"
+                              : schedule_status === "confirmed"
+                              ? "awaiting_service"
+                              : schedule_status === "awaiting_service"
+                              ? "attend"
+                              : null,
+                        })
                 }
               >
                 {schedule_status === "scheduled"
@@ -113,8 +112,7 @@ function ActionsMenu({
           {
             key: "4",
             label:
-              schedule_status === "awaiting_service" ||
-              schedule_status === "finished" ? (
+              schedule_status === "awaiting_service" ? (
                 <StatusButton
                   backgroundcolor="#250444"
                   type="primary"

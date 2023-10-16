@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { Button, Form, Input, Modal, Select } from "antd";
+import { Button, Form, Input, InputNumber, Modal, Select } from "antd";
 import { ScheduleOutputDTO } from "@/@types/schedules";
 import styled from "styled-components";
 import { formatCurrency } from "@/helpers/utils/formatCurrency";
@@ -78,7 +78,7 @@ function ConsumeModal({
           // loading={createSchedule.isLoading || editSchedule.isLoading}
           // onClick={handleSubmit}
         >
-          Salvar
+          Finalizar
         </ButtonModal>,
       ]}
     >

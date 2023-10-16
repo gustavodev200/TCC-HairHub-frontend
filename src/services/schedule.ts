@@ -41,7 +41,9 @@ async function changeStatus(
 ): Promise<ScheduleOutputDTO> {
   return Api.patch(
     `${baseUrl}/${id}`,
-    { schedule_status },
+    {
+      schedule_status,
+    },
     { headers: { authHeader: true, "success-message": SuccessMessages.MSGS03 } }
   ).then((res) => res.data);
 }
