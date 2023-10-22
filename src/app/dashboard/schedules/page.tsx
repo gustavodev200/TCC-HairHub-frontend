@@ -10,7 +10,7 @@ import { ModalSchedule } from "./components/ModalSchedule";
 import { PageHeaderSchedule } from "./components/PageHeaderSchedule";
 import { ScheduleStatus } from "@/@types/scheduleStatus";
 import { scheduleService } from "@/services/schedule";
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import ConsumeModal from "./components/ConsumeModal";
 
 const Page: React.FC = () => {

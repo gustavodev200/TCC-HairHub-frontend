@@ -7,6 +7,8 @@ import styled from "styled-components";
 import { formatCurrency } from "@/helpers/utils/formatCurrency";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { productService } from "@/services/product";
+import { DeleteOutlined } from "@ant-design/icons";
+import { Products } from "@/@types/products";
 
 interface ConsumeModalProps {
   open: boolean;
@@ -185,6 +187,41 @@ const AmountToPayContainer = styled.div`
   justify-content: space-between;
   width: 100%;
   margin: 30px 0;
+`;
+
+const ProductList = styled.div`
+  margin-top: 10px;
+`;
+
+const ProductItem = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+`;
+
+const ProductName = styled.span`
+  flex-grow: 1;
+`;
+
+const QuantityContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+`;
+
+const QuantityButton = styled.button`
+  padding: 5px;
+  cursor: pointer;
+`;
+
+const QuantityInput = styled(InputNumber)`
+  margin: 0 5px;
+`;
+
+const DeleteButton = styled.button`
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
 `;
 
 export default ConsumeModal;
