@@ -1,14 +1,18 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Form, Input, InputNumber, Modal, Select } from "antd";
 import { ScheduleOutputDTO } from "@/@types/schedules";
 import styled from "styled-components";
 import { formatCurrency } from "@/helpers/utils/formatCurrency";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { productService } from "@/services/product";
-import { DeleteOutlined } from "@ant-design/icons";
-import { Products } from "@/@types/products";
+import { serviceApi } from "@/services/service";
+import { consumptionApi } from "@/services/consumptions";
+import {
+  ConsumptionInputDTO,
+  ConsumptionOutputDTO,
+} from "@/@types/Consumption";
 
 interface ConsumeModalProps {
   open: boolean;
@@ -22,6 +26,7 @@ function ConsumeModal({
   selectedConsumeScheduleId,
 }: ConsumeModalProps) {
   const [form] = Form.useForm();
+  const queryClient = useQueryClient();
   const { resetFields, setFieldsValue, validateFields, setFieldValue } = form;
 
   const { data } = useQuery(["products"], {
@@ -38,23 +43,139 @@ function ConsumeModal({
     preserve: true,
   });
 
+  const { data: dataServices, isLoading: isLoadingServices } = useQuery(
+    ["services"],
+    {
+      queryFn: () => serviceApi.getServicesOnly(),
+    }
+  );
+
+  const createConsumption = useMutation({
+    mutationFn: (data: ConsumptionOutputDTO) =>
+      consumptionApi.createConsumption(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["consumptions"]);
+    },
+  });
+
+  const editConsumption = useMutation({
+    mutationFn: (data: ConsumptionOutputDTO) => consumptionApi.update(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["consumptions"]);
+    },
+  });
+
+  const handleCancel = () => {
+    if (createConsumption.isLoading || editConsumption.isLoading) {
+      return;
+    }
+
+    resetFields();
+    onClose();
+  };
+
+  const handleSubmit = () => {
+    validateFields()
+      .then((data) => {
+        if (selectedConsumeScheduleId) {
+          editConsumption
+            .mutateAsync({
+              ...selectedConsumeScheduleId,
+              ...data,
+            })
+            .then(() => {
+              handleCancel();
+            })
+            .catch(() => {});
+        } else {
+          createConsumption
+            .mutateAsync({
+              ...data,
+            })
+            .then(() => {
+              handleCancel();
+            })
+            .catch(() => {});
+        }
+      })
+      .catch(() => {});
+  };
+
   useEffect(() => {
-    let paymentTotal = 0;
+    if (selectedConsumeScheduleId) {
+      if (
+        selectedConsumeScheduleId.services &&
+        selectedConsumeScheduleId.services.length > 0
+      ) {
+        const defaultValues = selectedConsumeScheduleId.services.map(
+          (item) => ({
+            value: item.id,
+            label: item.name,
+            price: item.price,
+          })
+        );
+
+        setFieldsValue({
+          services: defaultValues,
+        });
+      }
+    }
+  }, [selectedConsumeScheduleId, setFieldsValue]);
+
+  const [productQuantities, setProductQuantities] = useState<{
+    [productId: string]: number;
+  }>({});
+
+  const [paymentTotal, setPaymentTotal] = useState<number>(0);
+
+  useEffect(() => {
+    let total = 0;
 
     paymentTotalWatch?.forEach((selectedProduct: string) => {
       const product = data?.find((item) => String(item.id) === selectedProduct);
       if (product) {
-        paymentTotal += product.price;
+        const productQuantity = productQuantities[String(product.id)] || 0;
+        total += product.price * productQuantity;
       }
     });
 
-    if (paymentTotal > 0 && paymentTotalWatch) {
-      console.log(paymentTotal);
-      setFieldValue("payment_total", paymentTotal);
+    if (
+      selectedConsumeScheduleId &&
+      selectedConsumeScheduleId.services &&
+      selectedConsumeScheduleId.services.length > 0
+    ) {
+      selectedConsumeScheduleId.services.forEach((service) => {
+        total += service.price;
+      });
+    }
+
+    if (total > 0 && paymentTotalWatch) {
+      setPaymentTotal(total);
+      setFieldValue("payment_total", total);
     } else {
       setFieldValue("payment_total", null);
     }
-  }, [paymentTotalWatch]);
+  }, [
+    data,
+    productQuantities,
+    paymentTotalWatch,
+    selectedConsumeScheduleId,
+    setFieldValue,
+  ]);
+
+  const handleQuantityChange = (productId: string, amount: number) => {
+    setProductQuantities((prevQuantities) => {
+      const updatedQuantity = Math.max(
+        0,
+        (prevQuantities[productId] || 0) + amount
+      );
+
+      return {
+        ...prevQuantities,
+        [productId]: updatedQuantity,
+      };
+    });
+  };
 
   return (
     <ModalWrapper
@@ -77,8 +198,8 @@ function ConsumeModal({
           key="save"
           type="primary"
           backgroundcolor="#6cb66f"
-          // loading={createSchedule.isLoading || editSchedule.isLoading}
-          // onClick={handleSubmit}
+          loading={createConsumption.isLoading || editConsumption.isLoading}
+          onClick={handleSubmit}
         >
           Finalizar
         </ButtonModal>,
@@ -87,7 +208,7 @@ function ConsumeModal({
       <Form
         layout="vertical"
         size="middle"
-        // disabled={createSchedule.isLoading || editSchedule.isLoading}
+        // disabled={createConsumption.isLoading || editConsumption.isLoading}
         form={form}
         initialValues={{
           name: "",
@@ -101,18 +222,14 @@ function ConsumeModal({
           rules={[{ required: true, message: "Campo Obrigatório!" }]}
         >
           <Select
-            disabled={true}
+            disabled
             mode="tags"
             style={{ width: "100%" }}
-            placeholder="Selecione serviços"
             optionFilterProp="label"
             filterOption={(input: string, option: any) =>
               option.label.toLowerCase().includes(input.toLowerCase())
             }
-            // options={dataServices?.map((item) => ({
-            //   value: item.id,
-            //   label: item.name,
-            // }))}
+            defaultValue={[]}
           />
         </Form.Item>
 
@@ -138,6 +255,58 @@ function ConsumeModal({
           />
         </Form.Item>
 
+        {paymentTotalWatch?.length > 0 && (
+          <Form.Item label="Quantidade" name="products_consumption">
+            <>
+              {paymentTotalWatch?.map((selectedProduct: string) => {
+                const product = data?.find(
+                  (item) => String(item.id) === selectedProduct
+                );
+
+                return (
+                  <QuantityContainer key={selectedProduct}>
+                    {product && (
+                      <>
+                        <span>
+                          <strong>{product.name}</strong> - <span>1x </span>
+                          <span>{formatCurrency(product.price)}</span>
+                        </span>
+                        <QuantityPerProduct>
+                          <ButtonRemoveQuantity
+                            onClick={() =>
+                              handleQuantityChange(String(product.id), -1)
+                            }
+                          >
+                            -
+                          </ButtonRemoveQuantity>
+
+                          <InputQuantity
+                            min={0}
+                            value={productQuantities[String(product.id)] || 0}
+                            onChange={(value) =>
+                              handleQuantityChange(
+                                String(product.id),
+                                value as number
+                              )
+                            }
+                          />
+                          <ButtonAddQuantity
+                            onClick={() =>
+                              handleQuantityChange(String(product.id), 1)
+                            }
+                          >
+                            +
+                          </ButtonAddQuantity>
+                        </QuantityPerProduct>
+                      </>
+                    )}
+                  </QuantityContainer>
+                );
+              })}
+            </>
+          </Form.Item>
+        )}
+
         <Form.Item
           required
           label="Tipo de Pagamento"
@@ -156,15 +325,14 @@ function ConsumeModal({
             ]}
           />
         </Form.Item>
-
         <Form.Item name="payment_total" style={{ width: "100%" }}>
           <AmountToPayContainer>
             <h3>Valor a pagar:</h3>
             <Input
               name="payment_total"
-              disabled
               style={{ width: "50%", fontSize: "20px" }}
               placeholder="Total a pagar"
+              value={formatCurrency(paymentTotal)}
             />
           </AmountToPayContainer>
         </Form.Item>
@@ -189,39 +357,36 @@ const AmountToPayContainer = styled.div`
   margin: 30px 0;
 `;
 
-const ProductList = styled.div`
-  margin-top: 10px;
-`;
-
-const ProductItem = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 5px;
-`;
-
-const ProductName = styled.span`
-  flex-grow: 1;
-`;
-
 const QuantityContainer = styled.div`
   display: flex;
   align-items: center;
-  margin-right: 10px;
+  justify-content: space-between;
+  width: 100%;
 `;
 
-const QuantityButton = styled.button`
-  padding: 5px;
-  cursor: pointer;
+const QuantityPerProduct = styled.div`
+  display: flex;
+  gap: 5px;
+  margin-bottom: 5px;
 `;
 
-const QuantityInput = styled(InputNumber)`
-  margin: 0 5px;
+const InputQuantity = styled(InputNumber)`
+  text-align: center;
+  .ant-input-number-input {
+    text-align: center;
+  }
 `;
 
-const DeleteButton = styled.button`
-  background-color: transparent;
+const ButtonAddQuantity = styled(Button)`
+  background-color: #6cb66f;
+  color: #fff;
   border: none;
-  cursor: pointer;
+`;
+
+const ButtonRemoveQuantity = styled(Button)`
+  background-color: #e94444;
+  color: #fff;
+  border: none;
 `;
 
 export default ConsumeModal;

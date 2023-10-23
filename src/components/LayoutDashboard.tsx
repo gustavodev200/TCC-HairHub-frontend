@@ -9,6 +9,7 @@ import {
   UserOutlined,
   ShoppingOutlined,
   ScheduleOutlined,
+  LogoutOutlined,
 } from "@ant-design/icons";
 import { MenuProps, Skeleton } from "antd";
 import { Layout, Menu } from "antd";
@@ -17,7 +18,7 @@ import { HeaderWrapper } from "./Header";
 import Image from "next/image";
 
 import { usePathname, useRouter } from "next/navigation";
-import { getCookie } from "cookies-next";
+import { deleteCookie, getCookie } from "cookies-next";
 import { AssignmentType } from "@/@types/role";
 import jwtDecode from "jwt-decode";
 import { getAuthorizedRoutesByRoles } from "@/helpers/utils/getAuthorizedRoutesByRole";
@@ -31,7 +32,8 @@ function getItem(
   key: React.Key,
   icon?: React.ReactNode,
   items?: MenuItem[],
-  type?: "group"
+  type?: "group",
+  onClick?: () => void
 ): MenuItem {
   return {
     key,
@@ -39,6 +41,7 @@ function getItem(
     items,
     label,
     type,
+    onClick,
   } as MenuItem;
 }
 
@@ -48,6 +51,15 @@ const LayoutDashboard = ({ children }: { children: ReactNode }) => {
   const { push } = useRouter();
   const pathname = usePathname();
   const accessToken = getCookie("@hairhub");
+  const router = useRouter();
+
+  const handleLogout = () => {
+    // Remove o cookie
+    deleteCookie("@hairhub");
+
+    // Redireciona para a página de login ou qualquer outra página desejada
+    router.push("/");
+  };
 
   const { role } =
     typeof window === "undefined"
@@ -64,6 +76,12 @@ const LayoutDashboard = ({ children }: { children: ReactNode }) => {
     getItem("Categorias", "/dashboard/categories", <TagsOutlined />),
     getItem("Produtos", "/dashboard/products", <ShoppingOutlined />),
     getItem("Agendamentos", "/dashboard/schedules", <ScheduleOutlined />),
+    {
+      label: "Sair",
+      key: "/dashboard/login",
+      icon: <LogoutOutlined />,
+      onClick: handleLogout, // Adicionando a função de logout aqui
+    },
   ];
 
   const [itemsToShow, setItemsToShow] = useState<MenuItem[]>([]);

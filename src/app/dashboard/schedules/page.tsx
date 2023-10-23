@@ -12,6 +12,7 @@ import { ScheduleStatus } from "@/@types/scheduleStatus";
 import { scheduleService } from "@/services/schedule";
 import dayjs, { Dayjs } from "dayjs";
 import ConsumeModal from "./components/ConsumeModal";
+import { ConsumptionOutputDTO } from "@/@types/Consumption";
 
 const Page: React.FC = () => {
   const [search, setSearch] = useState("");
@@ -44,7 +45,7 @@ const Page: React.FC = () => {
     }
   );
 
-  const [scheduleToEdit, setcheduleToEdit] = useState<ScheduleOutputDTO>();
+  const [scheduleToEdit, setScheduleToEdit] = useState<ScheduleOutputDTO>();
   const [showModalSchedule, setShowModalSchedule] = useState(false);
   const [selectedConsumeScheduleId, setSelectedConsumeScheduleId] =
     useState<string>();
@@ -53,7 +54,7 @@ const Page: React.FC = () => {
 
   const handleOpenModalSchedule = (schedule?: ScheduleOutputDTO) => {
     if (schedule) {
-      setcheduleToEdit(schedule);
+      setScheduleToEdit(schedule);
     }
 
     setShowModalSchedule(true);
@@ -71,7 +72,7 @@ const Page: React.FC = () => {
     setShowModalSchedule(false), setShowModalConsumeSchedule(false);
 
     if (scheduleToEdit) {
-      setcheduleToEdit(undefined);
+      setScheduleToEdit(undefined);
     }
   };
 

@@ -2,8 +2,6 @@
 
 import { CategoryInputDTO, CategoryOutputDTO } from "@/@types/category";
 import { categoryService } from "@/services/category";
-import { serviceApi } from "@/services/service";
-import { ScissorOutlined } from "@ant-design/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button, Form, Modal, Upload, Input, InputNumber } from "antd";
 import { useEffect } from "react";

@@ -7,6 +7,7 @@ const baseRoutes = [
   `${prefix}/clients`,
   `${prefix}/services`,
   `${prefix}/schedules`,
+  `${prefix}/login`,
 ];
 
 const authorizedRoutesByRole = {
@@ -17,6 +18,7 @@ const authorizedRoutesByRole = {
     `${prefix}/employees`,
     `${prefix}/products`,
     `${prefix}/categories`,
+    ,
   ],
   [AssignmentType.ATTENDANT]: baseRoutes,
 };
