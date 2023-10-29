@@ -1,3 +1,4 @@
+import { ConsumptionOutputDTO } from "./Consumption";
 import { ScheduleStatus } from "./scheduleStatus";
 
 export interface ScheduleServiceDTO {
@@ -31,6 +32,7 @@ export interface ScheduleOutputDTO extends ScheduleInputDTO {
   awaiting_status_date_time?: Date;
   attend_status_date_time?: Date;
   finished_status_date_time?: Date;
+  consumption: ConsumptionOutputDTO;
   estimated_time?: number;
   created_at: Date;
   updated_at?: Date;

@@ -1,29 +1,33 @@
 "use client";
 
-import { Table, Button, Space, Select } from "antd";
+import { Table, Button, Space, Select, Spin } from "antd";
 import styled from "styled-components";
 import { ColumnGroupType, ColumnType, ColumnsType } from "antd/es/table";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ScheduleOutputDTO } from "@/@types/schedules";
 import { ScheduleStatus } from "@/@types/scheduleStatus";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { TagColor } from "@/components/Tag";
 import { scheduleService } from "@/services/schedule";
 import { renameStatusInTable } from "@/helpers/utils/ranameStatusInTable";
-import { Progress } from "antd";
 import ActionsMenu from "./ActionsMenu";
 import { useEffect } from "react";
+import Countdown from "./Countdown";
+import { useUpdateStore } from "@/stores/useUpdateStore";
+import { EyeOutlined } from "@ant-design/icons";
 
 interface SchedulesTableProps {
   schedules: ScheduleOutputDTO[];
   onEdit: (schedule: ScheduleOutputDTO) => void;
-  handleOpenModalScheduleConsume: (id?: string) => void;
+  handleOpenModalScheduleConsume: (id?: string, isFinishing?: boolean) => void;
+  isLoading?: boolean;
 }
 
 export const SchedulesTable: React.FC<SchedulesTableProps> = ({
   schedules,
   onEdit,
   handleOpenModalScheduleConsume,
+  isLoading,
 }) => {
   const columns: ColumnsType<ScheduleOutputDTO> = [
     {
@@ -31,16 +35,6 @@ export const SchedulesTable: React.FC<SchedulesTableProps> = ({
       key: "schedule_date",
       render: (_, record) => (
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          {record.schedule_status === "scheduled" ? (
-            <Progress
-              type="circle"
-              percent={12}
-              format={(percent) => `${percent}H`}
-              strokeColor={"#F05761"}
-              size={40}
-              strokeWidth={12}
-            />
-          ) : null}
           <span style={{ fontWeight: "bold" }}>{`${dayjs(
             record.start_date_time
           ).format("DD/MM/YY")} - ${dayjs(record.start_date_time).format(
@@ -48,6 +42,25 @@ export const SchedulesTable: React.FC<SchedulesTableProps> = ({
           )} às ${dayjs(record.end_date_time).format("HH:mm")}`}</span>
         </div>
       ),
+    },
+
+    {
+      title: "Atendimento em:",
+      key: "attended_at",
+      render: (_, record) =>
+        record.schedule_status === "scheduled" ? (
+          <Countdown key={record.id} scheduledDate={record.start_date_time} />
+        ) : (
+          <span
+            style={{
+              display: "flex",
+              alignItems: "center",
+              marginLeft: "22%",
+            }}
+          >
+            <EyeOutlined />
+          </span>
+        ),
     },
 
     {
@@ -108,25 +121,48 @@ export const SchedulesTable: React.FC<SchedulesTableProps> = ({
       ),
     },
   ];
+
+  const schedulesTableKey = useUpdateStore((state) => state.schedulesTableKey);
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    queryClient.invalidateQueries(["schedulings"]);
+  }, [schedulesTableKey]);
 
   const changeStatus = useMutation({
     mutationFn: (params: any) =>
       scheduleService.changeStatus(params.id, params.schedule_status),
+
     onSuccess: (data) => {
       queryClient.invalidateQueries(["schedulings"]);
     },
   });
 
   return (
-    <div style={{ overflow: "auto" }}>
-      <TableWrapper
-        pagination={false}
-        columns={columns as Array<ColumnType<object> | ColumnGroupType<object>>}
-        dataSource={schedules}
-        rowKey="id"
-      />
-    </div>
+    <>
+      {isLoading ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Spin />
+        </div>
+      ) : (
+        <div style={{ overflow: "auto" }}>
+          <TableWrapper
+            pagination={false}
+            columns={
+              columns as Array<ColumnType<object> | ColumnGroupType<object>>
+            }
+            dataSource={schedules}
+            rowKey="id"
+          />
+        </div>
+      )}
+    </>
   );
 };
 

@@ -35,6 +35,12 @@ async function update(
   }).then((res) => res.data);
 }
 
+async function getSchedulingById(id: string): Promise<ScheduleOutputDTO> {
+  return Api.get(`${baseUrl}/${id}`, {
+    headers: { authHeader: true, "success-message": SuccessMessages.MSGS02 },
+  }).then((res) => res.data);
+}
+
 async function changeStatus(
   id: string,
   schedule_status: ScheduleStatus
@@ -50,6 +56,7 @@ async function changeStatus(
 
 export const scheduleService = {
   getPaginated,
+  getSchedulingById,
   create,
   update,
   changeStatus,

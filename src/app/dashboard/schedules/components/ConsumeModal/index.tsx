@@ -12,18 +12,22 @@ import { consumptionApi } from "@/services/consumptions";
 import {
   ConsumptionInputDTO,
   ConsumptionOutputDTO,
+  ParamsUpdateConsumptionDTO,
 } from "@/@types/Consumption";
+import { scheduleService } from "@/services/schedule";
 
 interface ConsumeModalProps {
   open: boolean;
   onClose: () => void;
   selectedConsumeScheduleId?: ScheduleOutputDTO;
+  isFinishing?: boolean;
 }
 
 function ConsumeModal({
   open,
   onClose,
   selectedConsumeScheduleId,
+  isFinishing,
 }: ConsumeModalProps) {
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
@@ -43,15 +47,16 @@ function ConsumeModal({
     preserve: true,
   });
 
-  const { data: dataServices, isLoading: isLoadingServices } = useQuery(
-    ["services"],
-    {
-      queryFn: () => serviceApi.getServicesOnly(),
-    }
-  );
+  const { data: dataSchedulings } = useQuery(["schedulings"], {
+    queryFn: () =>
+      scheduleService.getSchedulingById(
+        selectedConsumeScheduleId?.id as string
+      ),
+    enabled: !!selectedConsumeScheduleId,
+  });
 
   const createConsumption = useMutation({
-    mutationFn: (data: ConsumptionOutputDTO) =>
+    mutationFn: (data: ConsumptionInputDTO) =>
       consumptionApi.createConsumption(data),
     onSuccess: () => {
       queryClient.invalidateQueries(["consumptions"]);
@@ -59,7 +64,8 @@ function ConsumeModal({
   });
 
   const editConsumption = useMutation({
-    mutationFn: (data: ConsumptionOutputDTO) => consumptionApi.update(data),
+    mutationFn: (data: ParamsUpdateConsumptionDTO) =>
+      consumptionApi.update(data),
     onSuccess: () => {
       queryClient.invalidateQueries(["consumptions"]);
     },
@@ -74,14 +80,27 @@ function ConsumeModal({
     onClose();
   };
 
+  const [productQuantities, setProductQuantities] = useState<{
+    [productId: string]: number;
+  }>({});
+
   const handleSubmit = () => {
     validateFields()
       .then((data) => {
-        if (selectedConsumeScheduleId) {
+        const dataToUse = {
+          ...data,
+          services_consumption: data.services?.map((item: any) => item.value),
+          products_consumption: data.products?.map((item: any) => ({
+            product_id: item,
+            quantity: productQuantities[item] || 0,
+          })),
+        };
+        console.log(data);
+        if (dataSchedulings?.consumption) {
           editConsumption
             .mutateAsync({
-              ...selectedConsumeScheduleId,
-              ...data,
+              ...dataSchedulings?.consumption,
+              ...dataToUse,
             })
             .then(() => {
               handleCancel();
@@ -90,7 +109,7 @@ function ConsumeModal({
         } else {
           createConsumption
             .mutateAsync({
-              ...data,
+              ...dataToUse,
             })
             .then(() => {
               handleCancel();
@@ -98,33 +117,30 @@ function ConsumeModal({
             .catch(() => {});
         }
       })
-      .catch(() => {});
+      .catch((err) => {
+        console.log("error", err);
+      });
   };
 
   useEffect(() => {
-    if (selectedConsumeScheduleId) {
-      if (
-        selectedConsumeScheduleId.services &&
-        selectedConsumeScheduleId.services.length > 0
-      ) {
-        const defaultValues = selectedConsumeScheduleId.services.map(
-          (item) => ({
-            value: item.id,
-            label: item.name,
-            price: item.price,
-          })
-        );
+    if (dataSchedulings) {
+      if (dataSchedulings.services && dataSchedulings.services.length > 0) {
+        const defaultValues = dataSchedulings.services?.map((item) => ({
+          value: item.id,
+          label: item.name,
+          price: item.price,
+        }));
 
         setFieldsValue({
           services: defaultValues,
+          products_consumption:
+            dataSchedulings.consumption?.products_consumption,
+          total_amount: dataSchedulings.consumption?.total_amount,
+          payment_type: dataSchedulings.consumption?.payment_type,
         });
       }
     }
-  }, [selectedConsumeScheduleId, setFieldsValue]);
-
-  const [productQuantities, setProductQuantities] = useState<{
-    [productId: string]: number;
-  }>({});
+  }, [dataSchedulings, setFieldsValue]);
 
   const [paymentTotal, setPaymentTotal] = useState<number>(0);
 
@@ -140,26 +156,26 @@ function ConsumeModal({
     });
 
     if (
-      selectedConsumeScheduleId &&
-      selectedConsumeScheduleId.services &&
-      selectedConsumeScheduleId.services.length > 0
+      dataSchedulings &&
+      dataSchedulings.services &&
+      dataSchedulings.services.length > 0
     ) {
-      selectedConsumeScheduleId.services.forEach((service) => {
+      dataSchedulings.services.forEach((service) => {
         total += service.price;
       });
     }
 
     if (total > 0 && paymentTotalWatch) {
       setPaymentTotal(total);
-      setFieldValue("payment_total", total);
+      setFieldValue("total_amount", total);
     } else {
-      setFieldValue("payment_total", null);
+      setFieldValue("total_amount", null);
     }
   }, [
     data,
     productQuantities,
     paymentTotalWatch,
-    selectedConsumeScheduleId,
+    dataSchedulings,
     setFieldValue,
   ]);
 
@@ -169,6 +185,14 @@ function ConsumeModal({
         0,
         (prevQuantities[productId] || 0) + amount
       );
+
+      // Atualize o estado do formulário com os produtos consumidos
+      form.setFieldsValue({
+        products_consumption: {
+          ...form.getFieldValue("products_consumption"),
+          [productId]: updatedQuantity,
+        },
+      });
 
       return {
         ...prevQuantities,
@@ -211,7 +235,10 @@ function ConsumeModal({
         // disabled={createConsumption.isLoading || editConsumption.isLoading}
         form={form}
         initialValues={{
-          name: "",
+          total_amount: 0,
+          products_consumption: [],
+          payment_type: "",
+          scheduling_id: selectedConsumeScheduleId?.id,
         }}
       >
         <Form.Item
@@ -307,34 +334,35 @@ function ConsumeModal({
           </Form.Item>
         )}
 
-        <Form.Item
-          required
-          label="Tipo de Pagamento"
-          name="payment_type"
-          style={{ width: "100%" }}
-          rules={[{ required: true, message: "Campo Obrigatório!" }]}
-        >
-          <Select
+        {isFinishing && (
+          <Form.Item
+            required
+            label="Tipo de Pagamento"
+            name="payment_type"
             style={{ width: "100%" }}
-            placeholder="Tipo de pagamento"
-            options={[
-              { value: "money", label: "Dinheiro" },
-              { value: "pix", label: "Pix" },
-              { value: "credit_card", label: "Cartão de Crédito" },
-              { value: "debit_card", label: "Cartão de Débito" },
-            ]}
-          />
-        </Form.Item>
-        <Form.Item name="payment_total" style={{ width: "100%" }}>
+            rules={[{ required: true, message: "Campo Obrigatório!" }]}
+          >
+            <Select
+              style={{ width: "100%" }}
+              placeholder="Tipo de pagamento"
+              options={[
+                { value: "money", label: "Dinheiro" },
+                { value: "pix", label: "Pix Barbearia" },
+                { value: "credit_card", label: "Cartão de Crédito" },
+                { value: "debit_card", label: "Cartão de Débito" },
+              ]}
+            />
+          </Form.Item>
+        )}
+        <Form.Item name="total_amount" style={{ width: "100%" }}>
           <AmountToPayContainer>
             <h3>Valor a pagar:</h3>
-            <Input
-              name="payment_total"
-              style={{ width: "50%", fontSize: "20px" }}
-              placeholder="Total a pagar"
-              value={formatCurrency(paymentTotal)}
-            />
+            <span>{formatCurrency(paymentTotal)}</span>
           </AmountToPayContainer>
+        </Form.Item>
+
+        <Form.Item name="scheduling_id" style={{ display: "none" }}>
+          <input type="text" />
         </Form.Item>
       </Form>
     </ModalWrapper>
@@ -372,6 +400,7 @@ const QuantityPerProduct = styled.div`
 
 const InputQuantity = styled(InputNumber)`
   text-align: center;
+
   .ant-input-number-input {
     text-align: center;
   }

@@ -1,7 +1,7 @@
 "use client";
 
 import styled from "styled-components";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, SyncOutlined } from "@ant-design/icons";
 import { Select, Button } from "antd";
 import { useEffect, useState } from "react";
 import { DatePicker, Space } from "antd";
@@ -11,6 +11,8 @@ import { disableDateByDayOfWeek } from "@/helpers/utils/disableDateByDayOfWeek";
 import { ScheduleOutputDTO } from "@/@types/schedules";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { employeeService } from "@/services/employee";
+import { useUpdateStore } from "@/stores/useUpdateStore";
+import { LoadingComponent } from "@/components/LoadingComponent";
 
 interface PageHeaderProps {
   pageTitle: string;
@@ -23,6 +25,7 @@ interface PageHeaderProps {
   onChangeSearch: (search: string) => void;
   handleOpenModal: () => void;
   schedules: ScheduleOutputDTO[];
+  handleButtonClick: () => void;
 }
 
 export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
@@ -34,6 +37,7 @@ export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
   onChangeSelectedBarberId,
   handleOpenModal,
   statusFilter,
+  handleButtonClick,
 }) => {
   const { data, isLoading } = useQuery(["employees", selectedBarberId], {
     queryFn: () => employeeService.getOnlyBarbers(),
@@ -79,6 +83,15 @@ export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
       </HeaderTitle>
 
       <HeaderActions>
+        <div style={{ display: "flex", marginRight: "1rem" }}>
+          <ButtonContainer
+            colorBtn="#616161"
+            type="primary"
+            icon={<SyncOutlined />}
+            size="large"
+            onClick={() => handleButtonClick()}
+          />
+        </div>
         <Space direction="vertical" size={12}>
           <DatePicker
             disabledDate={(current) =>
@@ -138,6 +151,7 @@ export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
 
         <div>
           <ButtonContainer
+            colorBtn="#6cb66f"
             type="primary"
             icon={<PlusOutlined />}
             size="large"
@@ -209,5 +223,5 @@ const SelectContainer = styled(Select)`
 `;
 
 const ButtonContainer = styled(Button)`
-  background-color: #6cb66f;
+  background-color: ${({ colorBtn }) => colorBtn};
 `;

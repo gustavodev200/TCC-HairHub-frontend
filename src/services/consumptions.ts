@@ -1,6 +1,7 @@
 import {
   ConsumptionInputDTO,
   ConsumptionOutputDTO,
+  ParamsUpdateConsumptionDTO,
 } from "@/@types/Consumption";
 import Api from "./api";
 import { SuccessMessages } from "@/@types/messages";
@@ -19,7 +20,7 @@ async function createConsumption(
 }
 
 async function update(
-  data: ConsumptionOutputDTO
+  data: ParamsUpdateConsumptionDTO
 ): Promise<ConsumptionOutputDTO> {
   return Api.put(`${baseUrl}/${data.id}`, data, {
     headers: { authHeader: true, "success-message": SuccessMessages.MSGS02 },

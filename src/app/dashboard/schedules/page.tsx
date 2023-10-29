@@ -13,8 +13,22 @@ import { scheduleService } from "@/services/schedule";
 import dayjs, { Dayjs } from "dayjs";
 import ConsumeModal from "./components/ConsumeModal";
 import { ConsumptionOutputDTO } from "@/@types/Consumption";
+import { useUpdateStore } from "@/stores/useUpdateStore";
 
 const Page: React.FC = () => {
+  const updateSchedulesTable = useUpdateStore(
+    (state) => state.updateSchedulesTable
+  );
+  const [isTableLoading, setIsTableLoading] = useState(false);
+
+  const handleButtonClick = async () => {
+    try {
+      setIsTableLoading(true);
+      await updateSchedulesTable();
+    } finally {
+      setIsTableLoading(false);
+    }
+  };
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<ScheduleStatus | "all">(
@@ -51,6 +65,7 @@ const Page: React.FC = () => {
     useState<string>();
   const [showModalConsumeSchedule, setShowModalConsumeSchedule] =
     useState(false);
+  const [isFinishing, setIsFinishing] = useState(false);
 
   const handleOpenModalSchedule = (schedule?: ScheduleOutputDTO) => {
     if (schedule) {
@@ -60,10 +75,12 @@ const Page: React.FC = () => {
     setShowModalSchedule(true);
   };
 
-  const handleOpenModalScheduleConsume = (id?: string) => {
+  const handleOpenModalScheduleConsume = (id?: string, isFinishing = false) => {
     if (id) {
       setSelectedConsumeScheduleId(id);
     }
+
+    setIsFinishing(isFinishing);
 
     setShowModalConsumeSchedule(true);
   };
@@ -74,6 +91,8 @@ const Page: React.FC = () => {
     if (scheduleToEdit) {
       setScheduleToEdit(undefined);
     }
+
+    setIsFinishing(false);
   };
 
   return (
@@ -90,6 +109,7 @@ const Page: React.FC = () => {
         selectedConsumeScheduleId={data?.data.find(
           (schedule) => schedule.id === selectedConsumeScheduleId
         )}
+        isFinishing={isFinishing}
       />
 
       <PageHeaderSchedule
@@ -103,12 +123,14 @@ const Page: React.FC = () => {
         onChangeStatusFilter={(value) => setStatusFilter(value)}
         handleOpenModal={handleOpenModalSchedule}
         schedules={data?.data ?? []}
+        handleButtonClick={handleButtonClick}
       />
 
       <SchedulesTable
         schedules={data?.data ?? []}
         onEdit={handleOpenModalSchedule}
         handleOpenModalScheduleConsume={handleOpenModalScheduleConsume}
+        isLoading={isTableLoading}
       />
       {data && (
         <div

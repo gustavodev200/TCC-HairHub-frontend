@@ -7,12 +7,37 @@ import { ScheduleStatus } from "@/@types/scheduleStatus";
 import { scheduleService } from "@/services/schedule";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+interface StatusProps {
+  backgroundcolor: string;
+  label: string;
+}
+
+const nextStatusProps: Record<string, StatusProps> = {
+  scheduled: {
+    backgroundcolor: "#3498DB",
+    label: "Confirmar",
+  },
+  confirmed: {
+    backgroundcolor: "#E67E22",
+    label: "Aguard. atendimento",
+  },
+
+  awaiting_service: {
+    backgroundcolor: "#AAB7B8",
+    label: "Atender",
+  },
+  attend: {
+    backgroundcolor: "#52BE80",
+    label: "Finalizar",
+  },
+};
+
 interface ActionsProps {
   onEdit: (category: ScheduleOutputDTO) => void;
   record: ScheduleOutputDTO;
   schedule_status: ScheduleStatus;
   id: string;
-  handleOpenModalScheduleConsume: (id: string) => void;
+  handleOpenModalScheduleConsume: (id: string, isFinishing?: boolean) => void;
 }
 
 function ActionsMenu({
@@ -52,20 +77,13 @@ function ActionsMenu({
             label: (
               <StatusButton
                 backgroundcolor={
-                  schedule_status === "scheduled"
-                    ? "#3498DB"
-                    : schedule_status === "confirmed"
-                    ? "#E67E22"
-                    : schedule_status === "awaiting_service"
-                    ? "#AAB7B8"
-                    : schedule_status === "attend"
-                    ? "#52BE80"
-                    : null
+                  nextStatusProps[schedule_status as ScheduleStatus]
+                    .backgroundcolor
                 }
                 type="primary"
                 onClick={
                   schedule_status === "attend"
-                    ? () => handleOpenModalScheduleConsume(id)
+                    ? () => handleOpenModalScheduleConsume(id, true)
                     : () =>
                         changeStatus.mutate({
                           id,
@@ -80,15 +98,7 @@ function ActionsMenu({
                         })
                 }
               >
-                {schedule_status === "scheduled"
-                  ? "Confirmar"
-                  : schedule_status === "confirmed"
-                  ? "Aguard. Atendimento"
-                  : schedule_status === "awaiting_service"
-                  ? "Atender"
-                  : schedule_status === "attend"
-                  ? "Finalizar"
-                  : null}
+                {nextStatusProps[schedule_status as ScheduleStatus].label}
               </StatusButton>
             ),
           },
@@ -112,7 +122,8 @@ function ActionsMenu({
           {
             key: "4",
             label:
-              schedule_status === "awaiting_service" ? (
+              schedule_status === "awaiting_service" ||
+              schedule_status === "attend" ? (
                 <StatusButton
                   backgroundcolor="#250444"
                   type="primary"
