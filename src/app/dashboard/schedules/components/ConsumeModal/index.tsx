@@ -11,7 +11,6 @@ import { serviceApi } from "@/services/service";
 import { consumptionApi } from "@/services/consumptions";
 import {
   ConsumptionInputDTO,
-  ConsumptionOutputDTO,
   ParamsUpdateConsumptionDTO,
 } from "@/@types/Consumption";
 import { scheduleService } from "@/services/schedule";
@@ -21,6 +20,10 @@ interface ConsumeModalProps {
   onClose: () => void;
   selectedConsumeScheduleId?: ScheduleOutputDTO;
   isFinishing?: boolean;
+}
+
+interface Product {
+  id: string;
 }
 
 function ConsumeModal({
@@ -47,19 +50,23 @@ function ConsumeModal({
     preserve: true,
   });
 
-  const { data: dataSchedulings } = useQuery(["schedulings"], {
-    queryFn: () =>
-      scheduleService.getSchedulingById(
-        selectedConsumeScheduleId?.id as string
-      ),
-    enabled: !!selectedConsumeScheduleId,
-  });
+  const { data: dataSchedulings } = useQuery(
+    ["schedulings", selectedConsumeScheduleId?.id],
+    {
+      queryFn: () =>
+        scheduleService.getSchedulingById(
+          selectedConsumeScheduleId?.id as string
+        ),
+      enabled: !!selectedConsumeScheduleId,
+    }
+  );
 
   const createConsumption = useMutation({
     mutationFn: (data: ConsumptionInputDTO) =>
       consumptionApi.createConsumption(data),
     onSuccess: () => {
       queryClient.invalidateQueries(["consumptions"]);
+      queryClient.invalidateQueries(["schedulings"]);
     },
   });
 
@@ -68,6 +75,7 @@ function ConsumeModal({
       consumptionApi.update(data),
     onSuccess: () => {
       queryClient.invalidateQueries(["consumptions"]);
+      queryClient.invalidateQueries(["schedulings"]);
     },
   });
 
@@ -80,6 +88,14 @@ function ConsumeModal({
     onClose();
   };
 
+  const changeStatus = useMutation({
+    mutationFn: (params: any) =>
+      scheduleService.changeStatus(params.id, params.schedule_status),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries(["schedulings"]);
+    },
+  });
+
   const [productQuantities, setProductQuantities] = useState<{
     [productId: string]: number;
   }>({});
@@ -91,11 +107,21 @@ function ConsumeModal({
           ...data,
           services_consumption: data.services?.map((item: any) => item.value),
           products_consumption: data.products?.map((item: any) => ({
+            id: dataSchedulings?.consumption?.products_consumption.find(
+              (product) => product.product_id === item
+            )?.id,
             product_id: item,
             quantity: productQuantities[item] || 0,
           })),
         };
-        console.log(data);
+
+        if (isFinishing) {
+          changeStatus.mutateAsync({
+            id: selectedConsumeScheduleId?.id as string,
+            schedule_status: "finished",
+          });
+        }
+
         if (dataSchedulings?.consumption) {
           editConsumption
             .mutateAsync({
@@ -131,8 +157,24 @@ function ConsumeModal({
           price: item.price,
         }));
 
+        let productQuantities = {};
+
+        dataSchedulings.consumption?.products_consumption.forEach(
+          (productConsumption) => {
+            productQuantities = {
+              ...productQuantities,
+              [productConsumption.product_id]: productConsumption.quantity,
+            };
+          }
+        );
+
+        setProductQuantities(productQuantities);
+
         setFieldsValue({
           services: defaultValues,
+          products: dataSchedulings.consumption?.products_consumption.map(
+            (item) => item.product_id
+          ),
           products_consumption:
             dataSchedulings.consumption?.products_consumption,
           total_amount: dataSchedulings.consumption?.total_amount,
@@ -150,7 +192,7 @@ function ConsumeModal({
     paymentTotalWatch?.forEach((selectedProduct: string) => {
       const product = data?.find((item) => String(item.id) === selectedProduct);
       if (product) {
-        const productQuantity = productQuantities[String(product.id)] || 0;
+        const productQuantity = productQuantities[String(product.id)] || 1;
         total += product.price * productQuantity;
       }
     });
@@ -182,8 +224,8 @@ function ConsumeModal({
   const handleQuantityChange = (productId: string, amount: number) => {
     setProductQuantities((prevQuantities) => {
       const updatedQuantity = Math.max(
-        0,
-        (prevQuantities[productId] || 0) + amount
+        1,
+        (prevQuantities[productId] || 1) + amount
       );
 
       // Atualize o estado do formulário com os produtos consumidos
@@ -203,11 +245,13 @@ function ConsumeModal({
 
   return (
     <ModalWrapper
-      title="CONSUMOS ATÉ O MOMENTO"
+      // title="CONSUMOS ATÉ O MOMENTO"
       open={open}
       onCancel={onClose}
       centered
-      // title={`${scheduleToEdit ? "EDITAR" : "ADICIONAR"} AGENDAMENTO `}
+      title={`${
+        selectedConsumeScheduleId ? "Adicionar" : "Finalizar"
+      } Consumos `}
       footer={[
         <ButtonModal
           onClick={onClose}
@@ -225,7 +269,7 @@ function ConsumeModal({
           loading={createConsumption.isLoading || editConsumption.isLoading}
           onClick={handleSubmit}
         >
-          Finalizar
+          {isFinishing ? "Finalizar" : "Salvar"}
         </ButtonModal>,
       ]}
     >
@@ -308,8 +352,8 @@ function ConsumeModal({
                           </ButtonRemoveQuantity>
 
                           <InputQuantity
-                            min={0}
-                            value={productQuantities[String(product.id)] || 0}
+                            min={1}
+                            value={productQuantities[String(product.id)] || 1}
                             onChange={(value) =>
                               handleQuantityChange(
                                 String(product.id),

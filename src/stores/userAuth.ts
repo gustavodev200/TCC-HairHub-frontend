@@ -1,5 +1,5 @@
-import create from "zustand";
 import { setCookie, getCookies, deleteCookie } from "cookies-next";
+import { create } from "zustand";
 
 interface AuthState {
   user: User | null;
@@ -13,7 +13,6 @@ interface User {
   id: string;
   name: string;
   email: string;
-  // Outros dados do usuário
 }
 
 export const useAuthStore = create<AuthState>((set) => {

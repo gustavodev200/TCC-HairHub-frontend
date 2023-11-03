@@ -74,50 +74,53 @@ function ActionsMenu({
           },
           {
             key: "2",
-            label: (
-              <StatusButton
-                backgroundcolor={
-                  nextStatusProps[schedule_status as ScheduleStatus]
-                    .backgroundcolor
-                }
-                type="primary"
-                onClick={
-                  schedule_status === "attend"
-                    ? () => handleOpenModalScheduleConsume(id, true)
-                    : () =>
-                        changeStatus.mutate({
-                          id,
-                          schedule_status:
-                            schedule_status === "scheduled"
-                              ? "confirmed"
-                              : schedule_status === "confirmed"
-                              ? "awaiting_service"
-                              : schedule_status === "awaiting_service"
-                              ? "attend"
-                              : null,
-                        })
-                }
-              >
-                {nextStatusProps[schedule_status as ScheduleStatus].label}
-              </StatusButton>
-            ),
+            label:
+              schedule_status !== "canceled" &&
+              schedule_status !== "finished" ? (
+                <StatusButton
+                  backgroundcolor={
+                    nextStatusProps[schedule_status as ScheduleStatus]
+                      .backgroundcolor
+                  }
+                  type="primary"
+                  onClick={
+                    schedule_status === "attend"
+                      ? () => handleOpenModalScheduleConsume(id, true)
+                      : () =>
+                          changeStatus.mutate({
+                            id,
+                            schedule_status:
+                              schedule_status === "scheduled"
+                                ? "confirmed"
+                                : schedule_status === "confirmed"
+                                ? "awaiting_service"
+                                : schedule_status === "awaiting_service"
+                                ? "attend"
+                                : null,
+                          })
+                  }
+                >
+                  {nextStatusProps[schedule_status as ScheduleStatus].label}
+                </StatusButton>
+              ) : null,
           },
           {
             key: "3",
-            label: (
-              <StatusButton
-                backgroundcolor="#F05761"
-                type="primary"
-                onClick={() =>
-                  changeStatus.mutate({
-                    id,
-                    schedule_status: schedule_status === "canceled",
-                  })
-                }
-              >
-                Cancelar
-              </StatusButton>
-            ),
+            label:
+              schedule_status !== "canceled" ? (
+                <StatusButton
+                  backgroundcolor="#F05761"
+                  type="primary"
+                  onClick={() =>
+                    changeStatus.mutate({
+                      id,
+                      schedule_status: "canceled",
+                    })
+                  }
+                >
+                  Cancelar
+                </StatusButton>
+              ) : null,
           },
           {
             key: "4",

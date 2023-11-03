@@ -37,7 +37,7 @@ async function update(
 
 async function getSchedulingById(id: string): Promise<ScheduleOutputDTO> {
   return Api.get(`${baseUrl}/${id}`, {
-    headers: { authHeader: true, "success-message": SuccessMessages.MSGS02 },
+    headers: { authHeader: true },
   }).then((res) => res.data);
 }
 
@@ -50,7 +50,15 @@ async function changeStatus(
     {
       schedule_status,
     },
-    { headers: { authHeader: true, "success-message": SuccessMessages.MSGS03 } }
+    {
+      headers: {
+        authHeader: true,
+        "success-message":
+          schedule_status !== ScheduleStatus.FINISHED
+            ? SuccessMessages.MSGS03
+            : undefined,
+      },
+    }
   ).then((res) => res.data);
 }
 

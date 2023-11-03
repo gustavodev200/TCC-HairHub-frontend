@@ -159,16 +159,17 @@ export const SchedulesTable: React.FC<SchedulesTableProps> = ({
             }
             dataSource={schedules}
             rowKey="id"
+            canceledRowColor={schedules.map((schedule_status) =>
+              schedule_status.schedule_status === "canceled"
+                ? "#f8d7da"
+                : "#fff"
+            )}
           />
         </div>
       )}
     </>
   );
 };
-
-const StatusButton = styled(Button)`
-  background: ${(props) => props.backgroundcolor};
-`;
 
 const TableWrapper = styled(Table)`
   width: 100%;
@@ -180,31 +181,8 @@ const TableWrapper = styled(Table)`
   thead tr th::before {
     display: none;
   }
-`;
 
-const StatusSelect = styled(Select)`
-  width: 120px;
-
-  .ant-select-selection-item {
-    color: #fff;
-  }
-
-  .ant-select-selector {
-    background-color: ${(props) => {
-      switch (props.customStatus) {
-        case ScheduleStatus.SCHEDULED:
-          return "#FF9029";
-        case ScheduleStatus.CONFIRMED:
-          return "#53A5FF";
-        case ScheduleStatus.AWAITING_SERVICE:
-          return "#f1c40f";
-        case ScheduleStatus.FINISHED:
-          return "#6CB66F";
-        case ScheduleStatus.CANCELED:
-          return "#F05761";
-        default:
-          return "#000000";
-      }
-    }}!important;
+  .ant-table-row {
+    background-color: ${({ canceledRowColor }) => canceledRowColor};
   }
 `;
