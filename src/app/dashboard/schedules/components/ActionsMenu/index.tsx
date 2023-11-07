@@ -62,15 +62,16 @@ function ActionsMenu({
         items: [
           {
             key: "1",
-            label: (
-              <StatusButton
-                backgroundcolor="#C1820B"
-                type="primary"
-                onClick={() => onEdit(record)}
-              >
-                Editar
-              </StatusButton>
-            ),
+            label:
+              schedule_status !== "canceled" ? (
+                <StatusButton
+                  backgroundcolor="#C1820B"
+                  type="primary"
+                  onClick={() => onEdit(record)}
+                >
+                  Editar
+                </StatusButton>
+              ) : null,
           },
           {
             key: "2",
@@ -133,6 +134,20 @@ function ActionsMenu({
                   onClick={() => handleOpenModalScheduleConsume(id)}
                 >
                   Consumir
+                </StatusButton>
+              ) : null,
+          },
+
+          {
+            key: "5",
+            label:
+              schedule_status === "canceled" ? (
+                <StatusButton
+                  backgroundcolor="#755531"
+                  type="primary"
+                  // onClick={() => handleOpenModalScheduleConsume(id)}
+                >
+                  Reagendar
                 </StatusButton>
               ) : null,
           },

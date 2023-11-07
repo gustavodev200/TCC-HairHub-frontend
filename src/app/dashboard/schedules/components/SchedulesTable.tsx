@@ -138,6 +138,12 @@ export const SchedulesTable: React.FC<SchedulesTableProps> = ({
     },
   });
 
+  const rowClassName = (record: ScheduleOutputDTO) => {
+    return record.schedule_status === "canceled"
+      ? "ant-table-row-canceled"
+      : "";
+  };
+
   return (
     <>
       {isLoading ? (
@@ -159,10 +165,8 @@ export const SchedulesTable: React.FC<SchedulesTableProps> = ({
             }
             dataSource={schedules}
             rowKey="id"
-            canceledRowColor={schedules.map((schedule_status) =>
-              schedule_status.schedule_status === "canceled"
-                ? "#f8d7da"
-                : "#fff"
+            canceledRowColor={schedules.flatMap((schedule) =>
+              schedule.schedule_status === "canceled" ? "#f8d7da" : "#fff"
             )}
           />
         </div>

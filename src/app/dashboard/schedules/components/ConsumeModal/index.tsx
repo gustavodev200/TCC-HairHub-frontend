@@ -401,7 +401,9 @@ function ConsumeModal({
         <Form.Item name="total_amount" style={{ width: "100%" }}>
           <AmountToPayContainer>
             <h3>Valor a pagar:</h3>
-            <span>{formatCurrency(paymentTotal)}</span>
+            <span style={{ fontWeight: "bold", fontSize: "25px" }}>
+              {formatCurrency(paymentTotal)}
+            </span>
           </AmountToPayContainer>
         </Form.Item>
 
