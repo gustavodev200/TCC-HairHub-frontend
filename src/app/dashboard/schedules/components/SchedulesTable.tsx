@@ -57,9 +57,7 @@ export const SchedulesTable: React.FC<SchedulesTableProps> = ({
               alignItems: "center",
               marginLeft: "22%",
             }}
-          >
-            <EyeOutlined />
-          </span>
+          ></span>
         ),
     },
 

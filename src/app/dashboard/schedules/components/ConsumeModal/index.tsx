@@ -40,11 +40,9 @@ function ConsumeModal({
     queryFn: () => productService.getOnlyProducts(),
   });
 
-  const paymentTypeWatch = Form.useWatch("payment_type", {
-    form,
-    preserve: true,
+  const { data: dataServices } = useQuery(["services"], {
+    queryFn: () => serviceApi.getServicesOnly(),
   });
-
   const paymentTotalWatch = Form.useWatch("products", {
     form,
     preserve: true,
@@ -105,7 +103,10 @@ function ConsumeModal({
       .then((data) => {
         const dataToUse = {
           ...data,
-          services_consumption: data.services?.map((item: any) => item.value),
+          services_consumption:
+            typeof data.services[0] === "string"
+              ? data.services
+              : data.services.map((item: any) => item.value),
           products_consumption: data.products?.map((item: any) => ({
             id: dataSchedulings?.consumption?.products_consumption.find(
               (product) => product.product_id === item
@@ -149,38 +150,35 @@ function ConsumeModal({
   };
 
   useEffect(() => {
-    if (dataSchedulings) {
-      if (dataSchedulings.services && dataSchedulings.services.length > 0) {
-        const defaultValues = dataSchedulings.services?.map((item) => ({
-          value: item.id,
-          label: item.name,
-          price: item.price,
-        }));
+    if (dataSchedulings?.services && dataSchedulings.services.length > 0) {
+      const defaultValues = dataSchedulings.services?.map((item) => ({
+        value: item.id,
+        label: item.name,
+        price: item.price,
+      }));
 
-        let productQuantities = {};
+      let productQuantities = {};
 
-        dataSchedulings.consumption?.products_consumption.forEach(
-          (productConsumption) => {
-            productQuantities = {
-              ...productQuantities,
-              [productConsumption.product_id]: productConsumption.quantity,
-            };
-          }
-        );
+      dataSchedulings.consumption?.products_consumption.forEach(
+        (productConsumption) => {
+          productQuantities = {
+            ...productQuantities,
+            [productConsumption.product_id]: productConsumption.quantity,
+          };
+        }
+      );
 
-        setProductQuantities(productQuantities);
+      setProductQuantities(productQuantities);
 
-        setFieldsValue({
-          services: defaultValues,
-          products: dataSchedulings.consumption?.products_consumption.map(
-            (item) => item.product_id
-          ),
-          products_consumption:
-            dataSchedulings.consumption?.products_consumption,
-          total_amount: dataSchedulings.consumption?.total_amount,
-          payment_type: dataSchedulings.consumption?.payment_type,
-        });
-      }
+      setFieldsValue({
+        services: defaultValues,
+        products: dataSchedulings.consumption?.products_consumption.map(
+          (item) => item.product_id
+        ),
+        products_consumption: dataSchedulings.consumption?.products_consumption,
+        total_amount: dataSchedulings.consumption?.total_amount,
+        payment_type: dataSchedulings.consumption?.payment_type,
+      });
     }
   }, [dataSchedulings, setFieldsValue]);
 
@@ -293,14 +291,17 @@ function ConsumeModal({
           rules={[{ required: true, message: "Campo Obrigatório!" }]}
         >
           <Select
-            disabled
+            disabled={!isFinishing}
             mode="tags"
             style={{ width: "100%" }}
             optionFilterProp="label"
             filterOption={(input: string, option: any) =>
               option.label.toLowerCase().includes(input.toLowerCase())
             }
-            defaultValue={[]}
+            options={dataServices?.map((item) => ({
+              value: item.id,
+              label: item.name,
+            }))}
           />
         </Form.Item>
 
