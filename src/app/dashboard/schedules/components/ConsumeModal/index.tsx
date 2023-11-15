@@ -48,6 +48,11 @@ function ConsumeModal({
     preserve: true,
   });
 
+  const servicesWatch = Form.useWatch("services", {
+    form,
+    preserve: true,
+  });
+
   const { data: dataSchedulings } = useQuery(
     ["schedulings", selectedConsumeScheduleId?.id],
     {
@@ -187,6 +192,25 @@ function ConsumeModal({
   useEffect(() => {
     let total = 0;
 
+    // Verifique se há serviços e adicione seus preços
+    servicesWatch?.forEach((selectedService: string) => {
+      const service = dataServices?.find(
+        (item) => String(item.id) === selectedService
+      );
+
+      if (service) {
+        return (total += service.price);
+      }
+    });
+
+    // if (dataSchedulings?.services) {
+    //   total += dataSchedulings.services.reduce(
+    //     (acc, service) => acc + service.price,
+    //     0
+    //   );
+    // }
+
+    // Adicione os preços dos produtos selecionados
     paymentTotalWatch?.forEach((selectedProduct: string) => {
       const product = data?.find((item) => String(item.id) === selectedProduct);
       if (product) {
@@ -195,17 +219,8 @@ function ConsumeModal({
       }
     });
 
-    if (
-      dataSchedulings &&
-      dataSchedulings.services &&
-      dataSchedulings.services.length > 0
-    ) {
-      dataSchedulings.services.forEach((service) => {
-        total += service.price;
-      });
-    }
-
-    if (total > 0 && paymentTotalWatch) {
+    if (total > 0 && (paymentTotalWatch || servicesWatch)) {
+      console.log("total", total);
       setPaymentTotal(total);
       setFieldValue("total_amount", total);
     } else {
@@ -215,8 +230,10 @@ function ConsumeModal({
     data,
     productQuantities,
     paymentTotalWatch,
+    servicesWatch,
     dataSchedulings,
     setFieldValue,
+    dataServices,
   ]);
 
   const handleQuantityChange = (productId: string, amount: number) => {

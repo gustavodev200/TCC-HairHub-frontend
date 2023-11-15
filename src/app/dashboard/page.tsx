@@ -1,50 +1,78 @@
 "use client";
 
-import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
-import { Card, Col, Row, Statistic } from "antd";
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import styled from "styled-components";
+import { Col, Divider, Row } from "antd";
+import { PageHeaderDashboard } from "@/components/PageHeader";
+import {
+  AverageTime,
+  TotalSchedules,
+  TotalSchedulesByStatus,
+} from "@/components/ComponentsDashboad";
+
+import { reportService } from "@/services/reports";
+import dayjs, { Dayjs } from "dayjs";
+import { AverageTimeReport, TotalReports } from "@/@types/reports";
+import { ClientComponentLoader } from "@/components/ClientComponentLoader/ClientComponentLoader";
 
 export default function DashboardPage() {
+  const [selectedDates, setSelectedDates] = useState<Dayjs[]>([
+    dayjs().subtract(15, "days"),
+    dayjs(),
+  ]);
+  const { data } = useQuery(["reports", selectedDates], {
+    queryFn: () =>
+      reportService.getReports(
+        dayjs(selectedDates[0]).toISOString(),
+        dayjs(selectedDates[1]).toISOString()
+      ),
+  });
+
+  const handleDateChange = (dates: any, dateStrings: [string, string]) => {
+    setSelectedDates(dates);
+  };
+
+  useEffect(() => {
+    console.log(selectedDates);
+  }, [selectedDates]);
+
   return (
     <Container>
-      <div>
-        <Row gutter={16}>
-          <Col span={12}>
-            <Card bordered={false}>
-              <Statistic
-                title="Dia"
-                value={11.28}
-                precision={2}
-                valueStyle={{ color: "#3f8600" }}
-                prefix={<ArrowUpOutlined />}
-                suffix="%"
-              />
-            </Card>
-          </Col>
+      <PageHeaderDashboard
+        pageTitle="Dashboard"
+        handleDateChange={handleDateChange}
+        selectedDates={selectedDates}
+      />
 
-          <Col span={12}>
-            <Card bordered={false}>
-              <Statistic
-                title="Idle"
-                value={9.3}
-                precision={2}
-                valueStyle={{ color: "#cf1322" }}
-                prefix={<ArrowDownOutlined />}
-                suffix="%"
-              />
-            </Card>
+      {data && (
+        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+          <Col className="gutter-row" span={5}>
+            <TotalSchedules
+              totalSchedules={data?.totalSchedules as TotalReports}
+            />
           </Col>
+          <Col className="gutter-row" span={5}>
+            <AverageTime
+              titleCard="Tempo médio de serviço"
+              averageTime={data?.averageServiceTime as AverageTimeReport}
+            />
+          </Col>
+          <Col className="gutter-row" span={5}>
+            <AverageTime
+              titleCard="Tempo médio de espera"
+              averageTime={data?.averageWaitingTime as AverageTimeReport}
+            />
+          </Col>
+          <Col className="gutter-row" span={5}></Col>
+          <Divider />
+          <TotalSchedulesByStatus
+            totalSchedulesByStatus={data?.totalSchedulesByStatus}
+          />
         </Row>
-      </div>
+      )}
 
-      <Card title="Card title" bordered={false} style={{ width: 300 }}>
-        <p>Card content</p>
-        <p>Card content</p>
-        <p>Card content</p>
-      </Card>
-      <Col span={12}>
-        <Statistic title="Active Users" value={112893} />
-      </Col>
+      <p>Nenhum dado encontrado</p>
     </Container>
   );
 }
