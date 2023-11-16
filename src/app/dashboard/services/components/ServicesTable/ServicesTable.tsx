@@ -6,16 +6,18 @@ import styled from "styled-components";
 import { ColumnGroupType, ColumnType, ColumnsType } from "antd/es/table";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { serviceApi } from "@/services/service";
-import { UserOutlined } from "@ant-design/icons";
+import { UserOutlined, FilePdfOutlined } from "@ant-design/icons";
 
 interface ServicesTableProps {
   services: IService[];
   onEdit: (service: IService) => void;
+  componentRef?: any;
 }
 
 export const ServicesTable: React.FC<ServicesTableProps> = ({
   services,
   onEdit,
+  componentRef,
 }) => {
   const columns: ColumnsType<IService> = [
     {

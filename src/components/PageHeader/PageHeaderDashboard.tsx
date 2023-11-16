@@ -4,19 +4,31 @@ import styled from "styled-components";
 import { Input, Select, Button, DatePicker, Space } from "antd";
 import { FilePdfOutlined } from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
+import { ComponentPrinter } from "../ComponentsDashboad";
+import { ReportsDTO } from "@/@types/reports";
+import { useRef } from "react";
+import { useReactToPrint } from "react-to-print";
 const { RangePicker } = DatePicker;
 
 interface PageHeaderProps {
   pageTitle: string;
   handleDateChange: (dates: any, dateStrings: [string, string]) => void;
   selectedDates: Dayjs[];
+  data: ReportsDTO;
 }
 
 export const PageHeaderDashboard: React.FC<PageHeaderProps> = ({
   pageTitle,
   handleDateChange,
   selectedDates,
+  data,
 }) => {
+  const componentRef = useRef<HTMLDivElement>(null);
+
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
+
   return (
     <HeaderContainer>
       <HeaderTitle>
@@ -33,9 +45,14 @@ export const PageHeaderDashboard: React.FC<PageHeaderProps> = ({
         />
 
         <Space>
-          <ButtonDownloadPDF size="large" type="primary">
+          <ButtonDownloadPDF size="large" type="primary" onClick={handlePrint}>
             <FilePdfOutlined size={30} />
           </ButtonDownloadPDF>
+          <ComponentPrinter
+            data={data}
+            selectedDates={selectedDates}
+            ref={componentRef}
+          />
         </Space>
       </HeaderActions>
     </HeaderContainer>

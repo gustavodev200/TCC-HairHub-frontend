@@ -1,4 +1,4 @@
-import { TotalSchedulesByStatus } from "@/@types/reports";
+import { DetailedTotalReport, TotalSchedulesByStatus } from "@/@types/reports";
 import { Tooltip } from "antd";
 import React from "react";
 import {
@@ -10,14 +10,27 @@ import {
   Legend,
 } from "recharts";
 
-interface TotalSchedulesByStatusProps {
-  totalSchedulesByStatus: TotalSchedulesByStatus[];
+interface ExecutedServicesByBarberProps {
+  executedServicesByBarber?: DetailedTotalReport[];
 }
 
-function TotalSchedulesByStatus({
-  totalSchedulesByStatus,
-}: TotalSchedulesByStatusProps) {
-  const COLORS = ["#52BE80", "#F05761"];
+function ExecutedServicesByBarber({
+  executedServicesByBarber,
+}: ExecutedServicesByBarberProps) {
+  const COLORS = [
+    "#0088FE",
+    "#00C49F",
+    "#FFBB28",
+    "#FF8042",
+    "#4CAF50",
+    "#9C27B0",
+    "#FF9800",
+    "#E91E63",
+    "#673AB7",
+    "#795548",
+    "#FF5722",
+    "#2196F3",
+  ];
 
   const RADIAN = Math.PI / 180;
   const renderCustomizedLabel = ({
@@ -48,7 +61,6 @@ function TotalSchedulesByStatus({
       </>
     );
   };
-
   return (
     <ResponsiveContainer width="100%" height={300}>
       <PieChart>
@@ -60,11 +72,11 @@ function TotalSchedulesByStatus({
           fontSize="16"
           fontWeight="bold"
         >
-          Total de Finalizados e Cancelados
+          Serviços concluídos por barbeiro
         </text>
 
         <Pie
-          data={totalSchedulesByStatus}
+          data={executedServicesByBarber || []}
           cx="50%"
           cy="50%"
           labelLine={false}
@@ -73,7 +85,7 @@ function TotalSchedulesByStatus({
           fill="#8884d8"
           dataKey="total"
         >
-          {totalSchedulesByStatus?.map((entry, index) => (
+          {(executedServicesByBarber || []).map((entry, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>
@@ -82,7 +94,7 @@ function TotalSchedulesByStatus({
           verticalAlign="bottom"
           height={36}
           formatter={(value, entry, index) =>
-            totalSchedulesByStatus[index].status
+            (executedServicesByBarber || [])[index]?.name
           }
         />
       </PieChart>
@@ -90,4 +102,4 @@ function TotalSchedulesByStatus({
   );
 }
 
-export default TotalSchedulesByStatus;
+export default ExecutedServicesByBarber;

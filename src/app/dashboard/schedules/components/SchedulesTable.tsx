@@ -11,10 +11,10 @@ import { TagColor } from "@/components/Tag";
 import { scheduleService } from "@/services/schedule";
 import { renameStatusInTable } from "@/helpers/utils/ranameStatusInTable";
 import ActionsMenu from "./ActionsMenu";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Countdown from "./Countdown";
 import { useUpdateStore } from "@/stores/useUpdateStore";
-import { EyeOutlined } from "@ant-design/icons";
+import { FilePdfOutlined } from "@ant-design/icons";
 
 interface SchedulesTableProps {
   schedules: ScheduleOutputDTO[];
@@ -186,5 +186,14 @@ const TableWrapper = styled(Table)`
 
   .ant-table-row {
     background-color: ${({ canceledRowColor }) => canceledRowColor};
+  }
+`;
+
+const ButtonDownloadPDF = styled(Button)`
+  background-color: #771a2f;
+  margin-bottom: 1rem;
+
+  span {
+    font-size: 1.2rem;
   }
 `;

@@ -1,9 +1,13 @@
 "use client";
 
 import styled from "styled-components";
-import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
-import { Input, Select, Button } from "antd";
-import { useCallback, useState } from "react";
+import {
+  SearchOutlined,
+  PlusOutlined,
+  FilePdfOutlined,
+} from "@ant-design/icons";
+import { Input, Select, Button, Space } from "antd";
+import { useCallback, useRef, useState } from "react";
 import { GenericStatus } from "@/@types/genericStatus";
 import debounce from "lodash.debounce";
 
@@ -13,6 +17,8 @@ interface PageHeaderProps {
   onChangeStatusFilter: (status: GenericStatus | "all") => void;
   onChangeSearch: (search: string) => void;
   handleOpenModal: () => void;
+  handlePrint?: () => void;
+  componentRef?: any;
 }
 
 export const PageHeader: React.FC<PageHeaderProps> = ({
@@ -21,6 +27,8 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   onChangeStatusFilter,
   onChangeSearch,
   handleOpenModal,
+  handlePrint,
+  componentRef,
 }) => {
   const debouncedSearch = useCallback(
     debounce((value: string) => {
@@ -47,6 +55,11 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
       </HeaderTitle>
 
       <HeaderActions>
+        {/* <Space>
+          <ButtonDownloadPDF size="large" type="primary" onClick={handlePrint}>
+            <FilePdfOutlined size={30} />
+          </ButtonDownloadPDF>
+        </Space> */}
         <Input
           size="large"
           placeholder="Pesquisar serviços"
@@ -153,5 +166,14 @@ const ButtonContainer = styled(Button)`
 const ButtonWrapper = styled.div`
   @media (max-width: 568px) {
     width: 100%;
+  }
+`;
+
+const ButtonDownloadPDF = styled(Button)`
+  background-color: #771a2f;
+  margin-right: 1.5rem;
+
+  span {
+    font-size: 1.2rem;
   }
 `;
