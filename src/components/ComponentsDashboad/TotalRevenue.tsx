@@ -10,7 +10,17 @@ interface TotalRevenueProps {
 
 function TotalRevenue({ totalRevenue }: TotalRevenueProps) {
   return (
-    <Card title="Receita Total" bordered={false} style={{ width: 300 }}>
+    <Card
+      title="Receita Total"
+      bordered={false}
+      style={{
+        width: 300,
+        height: 300,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+      }}
+    >
       <TotalSchedulesInfo>
         <Total>{formatCurrency(totalRevenue?.total)}</Total>
       </TotalSchedulesInfo>

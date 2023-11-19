@@ -1,9 +1,13 @@
 import { ReportsDTO } from "@/@types/reports";
+import { AssignmentType } from "@/@types/role";
+import { Token } from "@/@types/token";
 import { formatCurrency } from "@/helpers/utils/formatCurrency";
 import { Divider } from "antd";
+import { getCookie } from "cookies-next";
 import dayjs, { Dayjs } from "dayjs";
+import jwtDecode from "jwt-decode";
 import Image from "next/image";
-import React, { forwardRef, useRef } from "react";
+import React, { forwardRef, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 interface Props {
@@ -18,6 +22,17 @@ const ComponentPrinter = forwardRef<HTMLDivElement, Props>(
       const dataHoraFormatada = agora.format("DD [de] MMMM [de] YYYY, HH:mm");
       return dataHoraFormatada;
     }
+
+    const [user, setUser] = useState<Token>();
+
+    const accessToken = getCookie("@hairhub");
+
+    useEffect(() => {
+      if (accessToken) {
+        const decodedToken: Token = jwtDecode(accessToken as string);
+        setUser(decodedToken);
+      }
+    }, [accessToken]);
 
     return (
       <Container ref={ref}>
@@ -93,38 +108,42 @@ const ComponentPrinter = forwardRef<HTMLDivElement, Props>(
 
         <Divider />
 
-        <h2 style={{ marginTop: "20px", marginBottom: "20px" }}>
-          Rentabilidade e Receitas
-        </h2>
+        {user && user?.role === AssignmentType.ADMIN && (
+          <>
+            <h2 style={{ marginTop: "20px", marginBottom: "20px" }}>
+              Rentabilidade e Receitas
+            </h2>
 
-        <div>
-          <p>
-            <strong>Receita do período: </strong>
-            {formatCurrency(data?.totalRevenue?.total ?? 0)}
-          </p>
-        </div>
+            <div>
+              <p>
+                <strong>Receita do período: </strong>
+                {formatCurrency(data?.totalRevenue?.total ?? 0)}
+              </p>
+            </div>
 
-        <div style={{ marginTop: "20px", marginBottom: "20px" }}>
-          <h3 style={{ marginTop: "20px", marginBottom: "20px" }}>
-            Tipos de pagamentos mais utilizados
-          </h3>
-          <TableContainer>
-            <thead>
-              <tr>
-                <th>Tipo de pagamento</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data?.mostUsedPaymentMethods?.map((type) => (
-                <tr key={type.id}>
-                  <td>{type.name}</td>
-                  <td>{type.total}</td>
-                </tr>
-              ))}
-            </tbody>
-          </TableContainer>
-        </div>
+            <div style={{ marginTop: "20px", marginBottom: "20px" }}>
+              <h3 style={{ marginTop: "20px", marginBottom: "20px" }}>
+                Tipos de pagamentos mais utilizados
+              </h3>
+              <TableContainer>
+                <thead>
+                  <tr>
+                    <th>Tipo de pagamento</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data?.mostUsedPaymentMethods?.map((type) => (
+                    <tr key={type.id}>
+                      <td>{type.name}</td>
+                      <td>{type.total}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </TableContainer>
+            </div>
+          </>
+        )}
 
         <div style={{ marginTop: "20px", marginBottom: "20px" }}>
           <h3 style={{ marginTop: "20px", marginBottom: "20px" }}>

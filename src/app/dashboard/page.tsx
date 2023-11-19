@@ -54,7 +54,7 @@ export default function DashboardPage() {
             sm={24}
             md={12}
             lg={6}
-            style={{ marginBottom: "16px" }}
+            style={{ marginBottom: "14px" }}
           >
             <TotalSchedules
               totalSchedules={data?.totalSchedules as TotalReports}
@@ -66,7 +66,7 @@ export default function DashboardPage() {
             sm={24}
             md={12}
             lg={6}
-            style={{ marginBottom: "16px" }}
+            style={{ marginBottom: "14px" }}
           >
             <AverageTime
               titleCard="Tempo médio de serviço"
@@ -79,7 +79,7 @@ export default function DashboardPage() {
             sm={24}
             md={12}
             lg={6}
-            style={{ marginBottom: "16px" }}
+            style={{ marginBottom: "14px" }}
           >
             <AverageTime
               titleCard="Tempo médio de espera"
@@ -93,20 +93,48 @@ export default function DashboardPage() {
             sm={24}
             md={12}
             lg={6}
-            style={{ marginBottom: "16px" }}
+            style={{ marginBottom: "14px" }}
           >
             {data?.totalRevenue ? (
               <TotalRevenue totalRevenue={data.totalRevenue} />
             ) : null}
           </Col>
           <Divider />
+
           <Col
             className="gutter-row"
             xs={24}
             sm={24}
             md={12}
             lg={6}
-            style={{ marginBottom: "16px" }}
+            style={{ marginBottom: "14px" }}
+          >
+            {data?.totalRevenue ? (
+              <AverageRatingByBarber
+                averageRatingByBarber={data?.averageRatingByBarber}
+              />
+            ) : null}
+          </Col>
+          <Col
+            className="gutter-row"
+            xs={24}
+            sm={24}
+            md={12}
+            lg={6}
+            style={{ marginBottom: "14px" }}
+          >
+            <TotalSchedulesByStatus
+              totalSchedulesByStatus={data?.totalSchedulesByStatus}
+            />
+          </Col>
+
+          <Col
+            className="gutter-row"
+            xs={24}
+            sm={24}
+            md={12}
+            lg={6}
+            style={{ marginBottom: "14px" }}
           >
             {data?.executedServicesByBarber ? (
               <ExecutedServicesByBarber
@@ -121,40 +149,13 @@ export default function DashboardPage() {
             sm={24}
             md={12}
             lg={6}
-            style={{ marginBottom: "16px" }}
+            style={{ marginBottom: "14px" }}
           >
             {data?.totalRevenue ? (
               <MostUsedPaymentMethods
                 mostUsedPaymentMethods={data?.mostUsedPaymentMethods}
               />
             ) : null}
-          </Col>
-
-          <Col
-            className="gutter-row"
-            xs={24}
-            sm={24}
-            md={12}
-            lg={6}
-            style={{ marginBottom: "16px" }}
-          >
-            {data?.totalRevenue ? (
-              <AverageRatingByBarber
-                averageRatingByBarber={data?.averageRatingByBarber}
-              />
-            ) : null}
-          </Col>
-          <Col
-            className="gutter-row"
-            xs={24}
-            sm={24}
-            md={12}
-            lg={6}
-            style={{ marginBottom: "16px" }}
-          >
-            <TotalSchedulesByStatus
-              totalSchedulesByStatus={data?.totalSchedulesByStatus}
-            />
           </Col>
         </Row>
       )}
@@ -166,4 +167,5 @@ export default function DashboardPage() {
 
 const Container = styled.div`
   width: 100%;
+  overflow: hidden;
 `;
