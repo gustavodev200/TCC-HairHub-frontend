@@ -11,6 +11,7 @@ import {
   ComponentPrinter,
   ExecutedServicesByBarber,
   MostUsedPaymentMethods,
+  SchedulesWaitingConfirmation,
   TotalRevenue,
   TotalSchedules,
   TotalSchedulesByStatus,
@@ -19,12 +20,29 @@ import {
 import { reportService } from "@/services/reports";
 import dayjs, { Dayjs } from "dayjs";
 import { AverageTimeReport, ReportsDTO, TotalReports } from "@/@types/reports";
+import { getCookie } from "cookies-next";
+import { Token } from "@/@types/token";
+import jwtDecode from "jwt-decode";
+import { AssignmentType } from "@/@types/role";
+import SchedulesWaitingForService from "@/components/ComponentsDashboad/SchedulesWaitingForService";
 
 export default function DashboardPage() {
   const [selectedDates, setSelectedDates] = useState<Dayjs[]>([
     dayjs().subtract(15, "days"),
     dayjs(),
   ]);
+
+  const [user, setUser] = useState<Token>();
+
+  const accessToken = getCookie("@hairhub");
+
+  useEffect(() => {
+    if (accessToken) {
+      const decodedToken: Token = jwtDecode(accessToken as string);
+      setUser(decodedToken);
+    }
+  }, [accessToken]);
+
   const { data } = useQuery(["reports", selectedDates], {
     queryFn: () =>
       reportService.getReports(
@@ -99,34 +117,77 @@ export default function DashboardPage() {
               <TotalRevenue totalRevenue={data.totalRevenue} />
             ) : null}
           </Col>
+
+          {user && user.role === AssignmentType.ATTENDANT ? (
+            <>
+              <Col
+                className="gutter-row"
+                xs={24}
+                sm={24}
+                md={12}
+                lg={6}
+                style={{ marginBottom: "14px" }}
+              >
+                <SchedulesWaitingConfirmation
+                  schedulesWaitingConfirmation={
+                    data.schedulesWaitingConfirmation as TotalReports
+                  }
+                />
+              </Col>
+
+              <Col
+                className="gutter-row"
+                xs={24}
+                sm={24}
+                md={12}
+                lg={6}
+                style={{ marginBottom: "14px" }}
+              >
+                <SchedulesWaitingForService
+                  schedulesWaitingForService={
+                    data.schedulesWaitingForService as TotalReports
+                  }
+                />
+              </Col>
+            </>
+          ) : null}
+
           <Divider />
 
-          <Col
-            className="gutter-row"
-            xs={24}
-            sm={24}
-            md={12}
-            lg={6}
-            style={{ marginBottom: "14px" }}
-          >
-            {data?.totalRevenue ? (
-              <AverageRatingByBarber
-                averageRatingByBarber={data?.averageRatingByBarber}
-              />
-            ) : null}
-          </Col>
-          <Col
-            className="gutter-row"
-            xs={24}
-            sm={24}
-            md={12}
-            lg={6}
-            style={{ marginBottom: "14px" }}
-          >
-            <TotalSchedulesByStatus
-              totalSchedulesByStatus={data?.totalSchedulesByStatus}
-            />
-          </Col>
+          {user &&
+          user.role !== AssignmentType.ATTENDANT &&
+          user.role !== AssignmentType.CLIENT ? (
+            <>
+              <Col
+                className="gutter-row"
+                xs={24}
+                sm={24}
+                md={12}
+                lg={6}
+                style={{ marginBottom: "14px" }}
+              >
+                {data?.totalRevenue ? (
+                  <AverageRatingByBarber
+                    averageRatingByBarber={data?.averageRatingByBarber}
+                  />
+                ) : null}
+              </Col>
+              <Col
+                className="gutter-row"
+                xs={24}
+                sm={24}
+                md={12}
+                lg={6}
+                style={{ marginBottom: "14px" }}
+              >
+                <TotalSchedulesByStatus
+                  totalSchedulesByStatus={
+                    data?.totalSchedulesByStatus as TotalSchedulesByStatus[]
+                  }
+                />
+              </Col>
+            </>
+          ) : null}
 
           <Col
             className="gutter-row"

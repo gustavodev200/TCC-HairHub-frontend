@@ -1,5 +1,3 @@
-import { ScheduleStatus } from "./scheduleStatus";
-
 export interface AverageRatingReport {
   id: string;
   name: string;
@@ -23,11 +21,11 @@ export interface AverageTimeReport {
 
 export interface TotalSchedulesByStatus {
   total: number;
-  status: ScheduleStatus;
+  status: string;
 }
 
 export interface ReportsDTO {
-  totalSchedulesByStatus: TotalSchedulesByStatus[];
+  totalSchedulesByStatus?: TotalSchedulesByStatus[];
   averageWaitingTime: AverageTimeReport;
   totalSchedules: TotalReports;
   averageServiceTime: AverageTimeReport;
@@ -37,4 +35,6 @@ export interface ReportsDTO {
   mostUsedPaymentMethods?: DetailedTotalReport[];
   averageRating?: AverageRatingReport;
   mostUsedServices?: DetailedTotalReport[];
+  schedulesWaitingConfirmation?: TotalReports;
+  schedulesWaitingForService?: TotalReports;
 }

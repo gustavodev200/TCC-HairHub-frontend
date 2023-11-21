@@ -6,6 +6,7 @@ import TotalRevenue from "./TotalRevenue";
 import MostUsedPaymentMethods from "./MostUsedPaymentMethods";
 import AverageRatingByBarber from "./AverageRatingByBarber";
 import ComponentPrinter from "./ComponentPrinter";
+import SchedulesWaitingConfirmation from "./SchedulesWaitingConfirmation";
 
 export {
   TotalSchedules,
@@ -16,4 +17,5 @@ export {
   MostUsedPaymentMethods,
   AverageRatingByBarber,
   ComponentPrinter,
+  SchedulesWaitingConfirmation,
 };

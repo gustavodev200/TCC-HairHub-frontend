@@ -69,19 +69,29 @@ const ComponentPrinter = forwardRef<HTMLDivElement, Props>(
           </h2>
           <span>
             Houveram <strong>{data?.totalSchedules?.total}</strong> agendamentos
-            no período selecionado, com o tempo médio de serviço de
-            <strong> {data?.averageServiceTime?.average} minutos</strong> e
-            média de espera de{" "}
-            <strong> {data?.averageWaitingTime?.average} minutos. </strong>
-            {/* Validar plural */}
-            Dos quais <strong>
-              {data?.totalSchedulesByStatus[0].total}
-            </strong>{" "}
-            foram finalizados e{" "}
-            <strong>{data?.totalSchedulesByStatus[1].total}</strong> foram
-            cancelados.
+            {data?.totalSchedules?.total !== 1 ? "s" : ""} no período
+            selecionado, com o tempo médio de serviço de
+            <strong> {data?.averageServiceTime?.average} minuto</strong>
+            {data?.averageServiceTime?.average !== 1 ? "s" : ""} e média de
+            espera de{" "}
+            <strong> {data?.averageWaitingTime?.average} minuto</strong>
+            {data?.averageWaitingTime?.average !== 1 ? "s" : ""}. Dos quais{" "}
+            {data?.totalSchedulesByStatus &&
+            data?.totalSchedulesByStatus.length > 0 ? (
+              <>
+                <strong>{data?.totalSchedulesByStatus[0].total}</strong>{" "}
+                {data?.totalSchedulesByStatus[0].total !== 1 ? "foram" : "foi"}{" "}
+                finalizado
+                {data?.totalSchedulesByStatus[0].total !== 1 ? "s" : ""} e{" "}
+                <strong>{data?.totalSchedulesByStatus[1].total}</strong>{" "}
+                {data?.totalSchedulesByStatus[1].total !== 1 ? "foram" : "foi"}{" "}
+                cancelado
+                {data?.totalSchedulesByStatus[1].total !== 1 ? "s" : ""}.
+              </>
+            ) : (
+              "N/A"
+            )}
           </span>
-          {/* Validar plural */}
         </div>
 
         <div style={{ marginTop: "20px", marginBottom: "20px" }}>
