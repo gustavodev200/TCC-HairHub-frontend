@@ -28,7 +28,7 @@ import SchedulesWaitingForService from "@/components/ComponentsDashboad/Schedule
 
 export default function DashboardPage() {
   const [selectedDates, setSelectedDates] = useState<Dayjs[]>([
-    dayjs().subtract(15, "days"),
+    dayjs().subtract(30, "days"),
     dayjs(),
   ]);
 

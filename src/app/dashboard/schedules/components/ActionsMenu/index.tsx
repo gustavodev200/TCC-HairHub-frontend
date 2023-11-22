@@ -56,6 +56,10 @@ function ActionsMenu({
       queryClient.invalidateQueries(["schedulings"]);
     },
   });
+
+  if (schedule_status === "canceled") {
+    return null; // Retorna null para não renderizar nada
+  }
   return (
     <Dropdown
       menu={{
@@ -63,7 +67,7 @@ function ActionsMenu({
           {
             key: "1",
             label:
-              schedule_status !== "canceled" ? (
+              schedule_status !== "finished" ? (
                 <StatusButton
                   backgroundcolor="#C1820B"
                   type="primary"
@@ -76,7 +80,6 @@ function ActionsMenu({
           {
             key: "2",
             label:
-              schedule_status !== "canceled" &&
               schedule_status !== "finished" ? (
                 <StatusButton
                   backgroundcolor={
@@ -108,7 +111,7 @@ function ActionsMenu({
           {
             key: "3",
             label:
-              schedule_status !== "canceled" ? (
+              schedule_status !== "finished" ? (
                 <StatusButton
                   backgroundcolor="#F05761"
                   type="primary"
@@ -137,20 +140,19 @@ function ActionsMenu({
                 </StatusButton>
               ) : null,
           },
-
-          {
-            key: "5",
-            label:
-              schedule_status === "canceled" ? (
-                <StatusButton
-                  backgroundcolor="#755531"
-                  type="primary"
-                  // onClick={() => handleOpenModalScheduleConsume(id)}
-                >
-                  Reagendar
-                </StatusButton>
-              ) : null,
-          },
+          // {
+          //   key: "5",
+          //   label:
+          //     schedule_status === "finished" ? (
+          //       <StatusButton
+          //         backgroundcolor="#425a72"
+          //         type="primary"
+          //         onClick={() => handleOpenModalScheduleConsume(id)}
+          //       >
+          //         Detalhes
+          //       </StatusButton>
+          //     ) : null,
+          // },
         ],
       }}
     >

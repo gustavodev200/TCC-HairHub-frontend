@@ -9,10 +9,9 @@ import type { Dayjs } from "dayjs";
 import { ScheduleStatus } from "@/@types/scheduleStatus";
 import { disableDateByDayOfWeek } from "@/helpers/utils/disableDateByDayOfWeek";
 import { ScheduleOutputDTO } from "@/@types/schedules";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { employeeService } from "@/services/employee";
-import { useUpdateStore } from "@/stores/useUpdateStore";
-import { LoadingComponent } from "@/components/LoadingComponent";
+import dayjs from "dayjs";
 
 interface PageHeaderProps {
   pageTitle: string;
@@ -64,7 +63,7 @@ export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
 
       setDayOfWeek([]);
     }
-    onChangeSelectedDate(null);
+    // onChangeSelectedDate(null);
   };
 
   const handleChangeDatePicker = (value: Dayjs | null, dateString: string) => {

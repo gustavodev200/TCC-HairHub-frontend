@@ -190,27 +190,35 @@ function ConsumeModal({
   const [paymentTotal, setPaymentTotal] = useState<number>(0);
 
   useEffect(() => {
-    let total = 0;
+    // Serviços já existentes
+    const existingServiceTotal =
+      dataSchedulings?.services?.reduce(
+        (acc, existingService) => acc + existingService.price,
+        0
+      ) || 0;
 
-    // Verifique se há serviços e adicione seus preços
+    let total = existingServiceTotal;
+
+    // Serviços selecionados
     servicesWatch?.forEach((selectedService: string) => {
-      const service = dataServices?.find(
-        (item) => String(item.id) === selectedService
+      // Verifique se o serviço já existe
+      const isExistingService = dataSchedulings?.services?.some(
+        (existingService) => String(existingService.id) === selectedService
       );
 
-      if (service) {
-        return (total += service.price);
+      // Se não for um serviço já existente, adicione ao total
+      if (!isExistingService) {
+        const service = dataServices?.find(
+          (item) => String(item.id) === selectedService
+        );
+
+        if (service) {
+          total += service.price;
+        }
       }
     });
 
-    // if (dataSchedulings?.services) {
-    //   total += dataSchedulings.services.reduce(
-    //     (acc, service) => acc + service.price,
-    //     0
-    //   );
-    // }
-
-    // Adicione os preços dos produtos selecionados
+    // Produtos selecionados
     paymentTotalWatch?.forEach((selectedProduct: string) => {
       const product = data?.find((item) => String(item.id) === selectedProduct);
       if (product) {
@@ -220,7 +228,6 @@ function ConsumeModal({
     });
 
     if (total > 0 && (paymentTotalWatch || servicesWatch)) {
-      console.log("total", total);
       setPaymentTotal(total);
       setFieldValue("total_amount", total);
     } else {
@@ -243,7 +250,6 @@ function ConsumeModal({
         (prevQuantities[productId] || 1) + amount
       );
 
-      // Atualize o estado do formulário com os produtos consumidos
       form.setFieldsValue({
         products_consumption: {
           ...form.getFieldValue("products_consumption"),

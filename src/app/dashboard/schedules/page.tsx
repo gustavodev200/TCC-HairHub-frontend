@@ -34,7 +34,7 @@ const Page: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<ScheduleStatus | "all">(
     "all"
   );
-  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
   const [selectedBarberId, setSelectedBarberId] = useState("");
 
   const queryClient = useQueryClient();
@@ -113,7 +113,7 @@ const Page: React.FC = () => {
       />
 
       <PageHeaderSchedule
-        pageTitle="Agendamentos"
+        pageTitle="Agendamentos/Atendimentos"
         statusFilter={statusFilter}
         selectedBarberId={selectedBarberId}
         onChangeSelectedBarberId={setSelectedBarberId}
