@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Dropdown, Space } from "antd";
-import { MoreOutlined } from "@ant-design/icons";
+import { MoreOutlined, PrinterOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import { ScheduleOutputDTO } from "@/@types/schedules";
 import { ScheduleStatus } from "@/@types/scheduleStatus";
@@ -38,6 +38,7 @@ interface ActionsProps {
   schedule_status: ScheduleStatus;
   id: string;
   handleOpenModalScheduleConsume: (id: string, isFinishing?: boolean) => void;
+  print: () => void;
 }
 
 function ActionsMenu({
@@ -46,6 +47,7 @@ function ActionsMenu({
   schedule_status,
   id,
   handleOpenModalScheduleConsume,
+  print,
 }: ActionsProps) {
   const queryClient = useQueryClient();
 
@@ -58,7 +60,15 @@ function ActionsMenu({
   });
 
   if (schedule_status === "canceled") {
-    return null; // Retorna null para não renderizar nada
+    return null;
+  }
+
+  if (schedule_status === "finished") {
+    return (
+      <ButtonPrinterFinished onClick={print}>
+        <PrinterOutlined />
+      </ButtonPrinterFinished>
+    );
   }
   return (
     <Dropdown
@@ -66,65 +76,68 @@ function ActionsMenu({
         items: [
           {
             key: "1",
-            label:
-              schedule_status !== "finished" ? (
-                <StatusButton
-                  backgroundcolor="#C1820B"
-                  type="primary"
-                  onClick={() => onEdit(record)}
-                >
-                  Editar
-                </StatusButton>
-              ) : null,
+            label: (
+              // schedule_status !== "finished" ? (
+              <StatusButton
+                backgroundcolor="#C1820B"
+                type="primary"
+                onClick={() => onEdit(record)}
+              >
+                Editar
+              </StatusButton>
+            ),
+            // ) : null,
           },
           {
             key: "2",
-            label:
-              schedule_status !== "finished" ? (
-                <StatusButton
-                  backgroundcolor={
-                    nextStatusProps[schedule_status as ScheduleStatus]
-                      .backgroundcolor
-                  }
-                  type="primary"
-                  onClick={
-                    schedule_status === "attend"
-                      ? () => handleOpenModalScheduleConsume(id, true)
-                      : () =>
-                          changeStatus.mutate({
-                            id,
-                            schedule_status:
-                              schedule_status === "scheduled"
-                                ? "confirmed"
-                                : schedule_status === "confirmed"
-                                ? "awaiting_service"
-                                : schedule_status === "awaiting_service"
-                                ? "attend"
-                                : null,
-                          })
-                  }
-                >
-                  {nextStatusProps[schedule_status as ScheduleStatus].label}
-                </StatusButton>
-              ) : null,
+            label: (
+              // schedule_status !== "finished" ? (
+              <StatusButton
+                backgroundcolor={
+                  nextStatusProps[schedule_status as ScheduleStatus]
+                    .backgroundcolor
+                }
+                type="primary"
+                onClick={
+                  schedule_status === "attend"
+                    ? () => handleOpenModalScheduleConsume(id, true)
+                    : () =>
+                        changeStatus.mutate({
+                          id,
+                          schedule_status:
+                            schedule_status === "scheduled"
+                              ? "confirmed"
+                              : schedule_status === "confirmed"
+                              ? "awaiting_service"
+                              : schedule_status === "awaiting_service"
+                              ? "attend"
+                              : null,
+                        })
+                }
+              >
+                {nextStatusProps[schedule_status as ScheduleStatus].label}
+              </StatusButton>
+            ),
+            // ) : null,
           },
           {
             key: "3",
-            label:
-              schedule_status !== "finished" ? (
-                <StatusButton
-                  backgroundcolor="#F05761"
-                  type="primary"
-                  onClick={() =>
-                    changeStatus.mutate({
-                      id,
-                      schedule_status: "canceled",
-                    })
-                  }
-                >
-                  Cancelar
-                </StatusButton>
-              ) : null,
+            label: (
+              // schedule_status !== "finished" ? (
+              <StatusButton
+                backgroundcolor="#F05761"
+                type="primary"
+                onClick={() =>
+                  changeStatus.mutate({
+                    id,
+                    schedule_status: "canceled",
+                  })
+                }
+              >
+                Cancelar
+              </StatusButton>
+            ),
+            // ) : null,
           },
           {
             key: "4",
@@ -140,19 +153,6 @@ function ActionsMenu({
                 </StatusButton>
               ) : null,
           },
-          // {
-          //   key: "5",
-          //   label:
-          //     schedule_status === "finished" ? (
-          //       <StatusButton
-          //         backgroundcolor="#425a72"
-          //         type="primary"
-          //         onClick={() => handleOpenModalScheduleConsume(id)}
-          //       >
-          //         Detalhes
-          //       </StatusButton>
-          //     ) : null,
-          // },
         ],
       }}
     >
@@ -168,6 +168,22 @@ function ActionsMenu({
 const StatusButton = styled(Button)`
   background: ${(props: any) => props.backgroundcolor};
   width: 100%;
+`;
+
+const ButtonPrinterFinished = styled.button`
+  display: flex;
+  align-items: flex-start;
+  padding: 0.5rem;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    background-color: #e8e8e8;
+    transition: all 0.3s ease-in-out;
+    border-radius: 50%;
+  }
 `;
 
 export default ActionsMenu;

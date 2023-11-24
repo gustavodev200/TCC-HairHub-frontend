@@ -1,7 +1,11 @@
+import { Products } from "./products";
+
 export interface ProductsConsumedDTO {
   id: string;
   quantity: number;
   product_id: string;
+  name: string;
+  price: number;
 }
 
 export interface ConsumptionInputDTO {

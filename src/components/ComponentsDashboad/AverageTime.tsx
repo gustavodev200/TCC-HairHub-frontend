@@ -20,12 +20,15 @@ function AverageTime({ titleCard, averageTime }: AverageTimeProps) {
 
       <Divider />
 
-      <AverageTimeInfoPorcentage>
+      {/* <AverageTimeInfoPorcentage>
         <p>Porcentagem:</p>
         <span>
-          {averageTime?.porcentage === null ? 0 : averageTime?.porcentage}%
+          {averageTime?.porcentage === null
+            ? 0
+            : averageTime?.porcentage.toFixed(2)}
+          %
         </span>
-      </AverageTimeInfoPorcentage>
+      </AverageTimeInfoPorcentage> */}
     </Card>
   );
 }

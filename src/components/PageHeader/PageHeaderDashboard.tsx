@@ -6,8 +6,14 @@ import { FilePdfOutlined } from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
 import { ComponentPrinter } from "../ComponentsDashboad";
 import { ReportsDTO } from "@/@types/reports";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
+import { useQuery } from "@tanstack/react-query";
+import { employeeService } from "@/services/employee";
+import { EmployeeOutputWithSchedulesDTO } from "@/@types/employee";
+import { Token } from "@/@types/token";
+import { getCookie } from "cookies-next";
+import jwtDecode from "jwt-decode";
 const { RangePicker } = DatePicker;
 
 interface PageHeaderProps {
@@ -15,6 +21,8 @@ interface PageHeaderProps {
   handleDateChange: (dates: any, dateStrings: [string, string]) => void;
   selectedDates: Dayjs[];
   data: ReportsDTO;
+  setSelectedBarberId: React.Dispatch<React.SetStateAction<string | undefined>>;
+  selectedBarberId: string;
 }
 
 export const PageHeaderDashboard: React.FC<PageHeaderProps> = ({
@@ -22,12 +30,36 @@ export const PageHeaderDashboard: React.FC<PageHeaderProps> = ({
   handleDateChange,
   selectedDates,
   data,
+  setSelectedBarberId,
+  selectedBarberId,
 }) => {
   const componentRef = useRef<HTMLDivElement>(null);
+  const [user, setUser] = useState<Token>();
+
+  const accessToken = getCookie("@hairhub");
+
+  useEffect(() => {
+    if (accessToken) {
+      const decodedToken: Token = jwtDecode(accessToken as string);
+      setUser(decodedToken);
+    }
+  }, [accessToken]);
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
   });
+
+  const { data: dataEmployees, isLoading } = useQuery(["employees"], {
+    queryFn: () => employeeService.getAllBarbers(),
+  });
+
+  const selectedBarber = dataEmployees?.find(
+    (barber) => barber.id === selectedBarberId
+  );
+
+  function handleSelectChange(value: string): void {
+    setSelectedBarberId(value);
+  }
 
   return (
     <HeaderContainer>
@@ -36,6 +68,26 @@ export const PageHeaderDashboard: React.FC<PageHeaderProps> = ({
       </HeaderTitle>
 
       <HeaderActions>
+        {user?.role === "admin" ? (
+          <Space>
+            <Select
+              style={{ marginRight: "1rem", width: "15rem" }}
+              size="large"
+              allowClear={true}
+              placeholder="Selecione um barbeiro"
+              optionFilterProp="label"
+              filterOption={(input: string, option: any) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
+              onChange={(value) => handleSelectChange(value as string)}
+              options={dataEmployees?.map((item) => ({
+                value: item.id,
+                label: item.name,
+              }))}
+            />
+          </Space>
+        ) : null}
+
         <RangePicker
           size="large"
           format="DD/MM/YYYY"
@@ -52,6 +104,9 @@ export const PageHeaderDashboard: React.FC<PageHeaderProps> = ({
             data={data}
             selectedDates={selectedDates}
             ref={componentRef}
+            selectedBarberName={
+              selectedBarber as EmployeeOutputWithSchedulesDTO
+            }
           />
         </Space>
       </HeaderActions>

@@ -5,11 +5,15 @@ const baseUrl = "/reports";
 
 async function getReports(
   startDate: string,
-  endDate: string
+  endDate: string,
+  barberId?: string
 ): Promise<ReportsDTO> {
-  const url = `${baseUrl}?startDate=${startDate}&endDate=${endDate}`;
-
-  return Api.get(url, {
+  return Api.get(`${baseUrl}`, {
+    params: {
+      startDate,
+      endDate,
+      barberId,
+    },
     headers: { authHeader: true },
   }).then((res) => res.data);
 }

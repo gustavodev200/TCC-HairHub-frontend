@@ -15,7 +15,7 @@ function TotalRevenue({ totalRevenue }: TotalRevenueProps) {
       bordered={false}
       style={{
         width: 300,
-        height: 300,
+        height: 265,
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
@@ -27,12 +27,12 @@ function TotalRevenue({ totalRevenue }: TotalRevenueProps) {
 
       <Divider />
 
-      <TotalSchedulesInfoPorcentage>
+      {/* <TotalSchedulesInfoPorcentage>
         <p>Porcentagem:</p>
         <span>
           {totalRevenue?.porcentage === null ? 0 : totalRevenue?.porcentage}%
         </span>
-      </TotalSchedulesInfoPorcentage>
+      </TotalSchedulesInfoPorcentage> */}
     </Card>
   );
 }

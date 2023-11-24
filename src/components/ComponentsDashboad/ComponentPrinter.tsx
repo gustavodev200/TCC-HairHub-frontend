@@ -1,3 +1,4 @@
+import { EmployeeOutputWithSchedulesDTO } from "@/@types/employee";
 import { ReportsDTO } from "@/@types/reports";
 import { AssignmentType } from "@/@types/role";
 import { Token } from "@/@types/token";
@@ -13,10 +14,11 @@ import styled from "styled-components";
 interface Props {
   data: ReportsDTO;
   selectedDates: Dayjs[];
+  selectedBarberName: EmployeeOutputWithSchedulesDTO;
 }
 
 const ComponentPrinter = forwardRef<HTMLDivElement, Props>(
-  ({ data, selectedDates }, ref) => {
+  ({ data, selectedDates, selectedBarberName }, ref) => {
     function obterDataHoraAtual() {
       const agora = dayjs();
       const dataHoraFormatada = agora.format("DD [de] MMMM [de] YYYY, HH:mm");
@@ -60,6 +62,11 @@ const ComponentPrinter = forwardRef<HTMLDivElement, Props>(
           <h3>
             RELATÓRIO DO PERÍODO {selectedDates[0].format("DD/MM/YYYY")} À{" "}
             {selectedDates[1].format("DD/MM/YYYY")}
+            {selectedBarberName ? (
+              <p style={{ textAlign: "center" }}>
+                BARBEIRO: {selectedBarberName?.name}
+              </p>
+            ) : null}
           </h3>
         </div>
 
@@ -143,8 +150,8 @@ const ComponentPrinter = forwardRef<HTMLDivElement, Props>(
                   </tr>
                 </thead>
                 <tbody>
-                  {data?.mostUsedPaymentMethods?.map((type) => (
-                    <tr key={type.id}>
+                  {data?.mostUsedPaymentMethods?.map((type, index) => (
+                    <tr key={index + 1}>
                       <td>{type.name}</td>
                       <td>{type.total}</td>
                     </tr>
@@ -214,7 +221,7 @@ const Container = styled.div`
   justify-content: center;
   flex-direction: column;
   font-size: 0.875rem;
-  margin: 8px;
+  margin: 40px;
   @media print {
     display: block;
   }

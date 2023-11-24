@@ -12,6 +12,10 @@ import { ScheduleOutputDTO } from "@/@types/schedules";
 import { useQuery } from "@tanstack/react-query";
 import { employeeService } from "@/services/employee";
 import dayjs from "dayjs";
+import { Token } from "@/@types/token";
+import { getCookie } from "cookies-next";
+import jwtDecode from "jwt-decode";
+import { AssignmentType } from "@/@types/role";
 
 interface PageHeaderProps {
   pageTitle: string;
@@ -75,6 +79,17 @@ export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
     handleChangeDatePicker(selectedDate, selectedBarberId);
   }, [data, selectedBarberId, selectedDate]);
 
+  const [user, setUser] = useState<Token>();
+
+  const accessToken = getCookie("@hairhub");
+
+  useEffect(() => {
+    if (accessToken) {
+      const decodedToken: Token = jwtDecode(accessToken as string);
+      setUser(decodedToken);
+    }
+  }, [accessToken]);
+
   return (
     <HeaderContainer>
       <HeaderTitle>
@@ -94,7 +109,9 @@ export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
         <Space direction="vertical" size={12}>
           <DatePicker
             disabledDate={(current) =>
-              disableDateByDayOfWeek(current, dayOfWeek, true)
+              selectedBarberId
+                ? disableDateByDayOfWeek(current, dayOfWeek, true)
+                : false
             }
             onChange={handleChangeDatePicker}
             format="DD/MM/YYYY"
@@ -129,24 +146,26 @@ export const PageHeaderSchedule: React.FC<PageHeaderProps> = ({
           </SelectWrapper>
         </div>
 
-        <div>
-          <SelectContainer
-            allowClear
-            showSearch
-            size="large"
-            placeholder="Selecione um barbeiro"
-            // defaultValue="Selecione um barbeiro"
-            optionFilterProp="label"
-            filterOption={(input: string, option: any) =>
-              option.label.toLowerCase().includes(input.toLowerCase())
-            }
-            onChange={(value) => handleSelectChange(value as string)}
-            options={data?.map((item) => ({
-              value: item.id,
-              label: item.name,
-            }))}
-          />
-        </div>
+        {user?.role !== AssignmentType.EMPLOYEE ? (
+          <div>
+            <SelectContainer
+              allowClear
+              showSearch
+              size="large"
+              placeholder="Selecione um barbeiro"
+              // defaultValue="Selecione um barbeiro"
+              optionFilterProp="label"
+              filterOption={(input: string, option: any) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
+              onChange={(value) => handleSelectChange(value as string)}
+              options={data?.map((item) => ({
+                value: item.id,
+                label: item.name,
+              }))}
+            />
+          </div>
+        ) : null}
 
         <div>
           <ButtonContainer

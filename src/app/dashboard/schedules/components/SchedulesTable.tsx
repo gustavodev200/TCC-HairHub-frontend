@@ -11,10 +11,11 @@ import { TagColor } from "@/components/Tag";
 import { scheduleService } from "@/services/schedule";
 import { renameStatusInTable } from "@/helpers/utils/ranameStatusInTable";
 import ActionsMenu from "./ActionsMenu";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Countdown from "./Countdown";
 import { useUpdateStore } from "@/stores/useUpdateStore";
 import { FilePdfOutlined } from "@ant-design/icons";
+import ComponentPrinterSchedules from "./ComponentPrinterSchedules";
 
 interface SchedulesTableProps {
   schedules: ScheduleOutputDTO[];
@@ -115,6 +116,7 @@ export const SchedulesTable: React.FC<SchedulesTableProps> = ({
           schedule_status={schedule_status}
           id={id}
           handleOpenModalScheduleConsume={handleOpenModalScheduleConsume}
+          print={() => setPrintSchedules(record)}
         />
       ),
     },
@@ -122,6 +124,7 @@ export const SchedulesTable: React.FC<SchedulesTableProps> = ({
 
   const schedulesTableKey = useUpdateStore((state) => state.schedulesTableKey);
   const queryClient = useQueryClient();
+  const [printSchedules, setPrintSchedules] = useState<ScheduleOutputDTO>();
 
   useEffect(() => {
     queryClient.invalidateQueries(["schedulings"]);
@@ -167,6 +170,12 @@ export const SchedulesTable: React.FC<SchedulesTableProps> = ({
               schedule.schedule_status === "canceled" ? "#f8d7da" : "#fff"
             )}
           />
+          {printSchedules !== undefined && (
+            <ComponentPrinterSchedules
+              data={printSchedules}
+              clearData={() => setPrintSchedules(undefined)}
+            />
+          )}
         </div>
       )}
     </>

@@ -16,13 +16,13 @@ function TotalSchedules({ totalSchedules }: TotalSchedulesProps) {
 
       <Divider />
 
-      <TotalSchedulesInfoPorcentage>
+      {/* <TotalSchedulesInfoPorcentage>
         <p>Porcentagem:</p>
         <span>
           {totalSchedules?.porcentage === null ? 0 : totalSchedules?.porcentage}
           %
         </span>
-      </TotalSchedulesInfoPorcentage>
+      </TotalSchedulesInfoPorcentage> */}
     </Card>
   );
 }

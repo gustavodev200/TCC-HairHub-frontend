@@ -35,6 +35,9 @@ export default function DashboardPage() {
   const [user, setUser] = useState<Token>();
 
   const accessToken = getCookie("@hairhub");
+  const [selectedBarberId, setSelectedBarberId] = useState<
+    string | undefined
+  >();
 
   useEffect(() => {
     if (accessToken) {
@@ -43,11 +46,12 @@ export default function DashboardPage() {
     }
   }, [accessToken]);
 
-  const { data } = useQuery(["reports", selectedDates], {
+  const { data } = useQuery(["reports", selectedDates, selectedBarberId], {
     queryFn: () =>
       reportService.getReports(
         dayjs(selectedDates[0]).toISOString(),
-        dayjs(selectedDates[1]).toISOString()
+        dayjs(selectedDates[1]).toISOString(),
+        selectedBarberId
       ),
   });
 
@@ -62,6 +66,8 @@ export default function DashboardPage() {
         handleDateChange={handleDateChange}
         selectedDates={selectedDates}
         data={data as ReportsDTO}
+        setSelectedBarberId={setSelectedBarberId}
+        selectedBarberId={selectedBarberId as string}
       />
 
       {data && (
