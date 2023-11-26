@@ -145,7 +145,7 @@ const Page: React.FC = () => {
             hideOnSinglePage
             responsive
             current={page}
-            total={data.totalPages * 10}
+            total={data.totalPages * 6}
             onChange={(newPage) => setPage(newPage)}
           />
         </div>
