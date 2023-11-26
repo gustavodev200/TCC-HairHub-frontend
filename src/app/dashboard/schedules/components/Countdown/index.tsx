@@ -15,11 +15,14 @@ const Countdown: React.FC<CountdownProps> = ({ scheduledDate }) => {
       const now = dayjs();
       const difference = dayjs(scheduledDate).diff(now);
 
-      setTimeRemaining(difference);
+      // Garante que o tempo restante nunca seja negativo
+      const nonNegativeDifference = Math.max(difference, 0);
 
-      if (difference > 2 * 24 * 60 * 60 * 1000) {
+      setTimeRemaining(nonNegativeDifference);
+
+      if (nonNegativeDifference > 2 * 24 * 60 * 60 * 1000) {
         setColor("green");
-      } else if (difference >= 24 * 60 * 60 * 1000) {
+      } else if (nonNegativeDifference >= 24 * 60 * 60 * 1000) {
         setColor("gold");
       } else {
         setColor("red");
