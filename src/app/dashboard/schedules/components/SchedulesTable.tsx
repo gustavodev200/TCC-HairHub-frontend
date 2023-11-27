@@ -49,7 +49,9 @@ export const SchedulesTable: React.FC<SchedulesTableProps> = ({
       title: "Atendimento em:",
       key: "attended_at",
       render: (_, record) =>
-        record.schedule_status === "scheduled" ? (
+        record.schedule_status === ScheduleStatus.SCHEDULED ||
+        record.schedule_status === ScheduleStatus.CONFIRMED ||
+        record.schedule_status === ScheduleStatus.AWAITING_SERVICE ? (
           <Countdown key={record.id} scheduledDate={record.start_date_time} />
         ) : (
           <span

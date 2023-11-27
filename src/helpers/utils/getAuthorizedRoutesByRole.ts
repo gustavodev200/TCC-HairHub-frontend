@@ -5,7 +5,6 @@ const prefix = "/dashboard";
 const baseRoutes = [
   prefix,
   `${prefix}/clients`,
-  `${prefix}/services`,
   `${prefix}/schedules`,
   `${prefix}/login`,
 ];
@@ -17,6 +16,7 @@ const authorizedRoutesByRole = {
     ...baseRoutes,
     `${prefix}/employees`,
     `${prefix}/products`,
+    `${prefix}/services`,
     `${prefix}/categories`,
     ,
   ],
